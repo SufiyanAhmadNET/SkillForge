@@ -12,12 +12,7 @@ namespace SkillForge.Areas.User.Controllers
     [Area("User")]
     public class HomeController : UserBaseController
     {
-        private SkillForgeDbContext _context;
-
-        public HomeController(SkillForgeDbContext context)
-        {
-            _context = context;
-        }
+        // Use the DbContext provided by UserBaseController via property injection
 
         //Dashboard
         [Authorize(Roles = "Student")]
@@ -28,15 +23,15 @@ namespace SkillForge.Areas.User.Controllers
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return View( new DashboardVM {  Email = email } );
+            return View(new DashboardVM { Email = email });
         }
 
         //Profile - get
         public IActionResult Profile()
         {
 
-              var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(id, out var studentId))
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(id ?? string.Empty, out var studentId))
             {
                 // No valid user id in claims — redirect to login or return Unauthorized
                 return RedirectToAction("StudentLogin");
@@ -75,7 +70,11 @@ namespace SkillForge.Areas.User.Controllers
         public IActionResult Profile(StudentProfile profile, IFormFile PhotoFile)
         {
             // fetch student id from claim
-            var id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim ?? string.Empty, out var id))
+            {
+                return RedirectToAction("StudentLogin");
+            }
             profile.StudentId = id;
 
             // handle photo upload

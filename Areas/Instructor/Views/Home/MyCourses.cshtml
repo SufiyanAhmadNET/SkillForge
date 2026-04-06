@@ -1,4 +1,4 @@
-@* @model IEnumerable<CourseListViewModel> *@
+@model IEnumerable<SkillForge.Areas.Instructor.Models.Course>?
 @{
     ViewData["Title"] = "My Courses";
     Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
@@ -49,7 +49,7 @@
     </div>
     @* dummy courses - for testing UI *@
     @* course grid *@
-    @if (false)
+    @if (!(Model?.Any() ?? false))
     {
         @* empty state *@
         <div class="text-center py-5">

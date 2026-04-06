@@ -16,9 +16,11 @@ public class EmailService
         var link = $"{baseUrl}/User/Auth/VerifyEmail?token={token}";
 
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(
-            _config["EmailSettings:SenderName"],
-            _config["EmailSettings:SenderEmail"]));
+        var senderName = _config["EmailSettings:SenderName"] ?? string.Empty;
+        var senderEmail = _config["EmailSettings:SenderEmail"] ?? string.Empty;
+        var senderPassword = _config["EmailSettings:SenderPassword"] ?? string.Empty;
+
+        message.From.Add(new MailboxAddress(senderName, senderEmail));
         message.To.Add(MailboxAddress.Parse(toEmail));
         message.Subject = "Verify your SkillForge account";
         message.Body = new TextPart("html")
@@ -34,9 +36,7 @@ public class EmailService
         System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
         // connect using IP directly to force IPv4
         smtp.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-        smtp.Authenticate(
-            _config["EmailSettings:SenderEmail"],
-            _config["EmailSettings:SenderPassword"]);
+        smtp.Authenticate(senderEmail, senderPassword);
         smtp.Send(message);
         smtp.Disconnect(true);
     }

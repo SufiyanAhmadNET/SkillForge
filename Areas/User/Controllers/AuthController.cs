@@ -171,7 +171,7 @@ namespace SkillForge.Areas.User.Controllers
                     return RedirectToAction("StudentLogin");
                 }
 
-                await SigninUser(result.Id, result.Email, "Student", result.PhotoPath);
+                await SigninUser(result.Id, result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
                 return RedirectToAction("Dashboard", "Home", new { area = "User" });
             }
             catch (InvalidJwtException)
@@ -179,13 +179,11 @@ namespace SkillForge.Areas.User.Controllers
                 TempData["Alert"] = "Invalid Google token.";
                 return RedirectToAction("StudentLogin");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log ex and items in ex.Data for diagnosis
-                // (Assuming you have a logger; otherwise temporarily inspect in debugger)
                 TempData["Alert"] = "Something went wrong during Google login.";
                 return RedirectToAction("StudentLogin");
-            }
+            }   
         }
 
         //Send Verification Email

@@ -8,17 +8,17 @@ namespace SkillForge.Areas.Instructor.Models
         [Key]
         public int Pid { get; set; }
         public int InstructorId { get; set; }
-        public string FirstName { get; set;}
-        public string LastName { get; set; }
-        public string PhotoPath { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? PhotoPath { get; set; }
 
-        public string Mobile { get; set; }
-        public string Location { get; set; }
+        public string? Mobile { get; set; }
+        public string? Location { get; set; }
 
-        public string Bio { get; set; }
-        public string Profession { get; set; }
+        public string? Bio { get; set; }
+        public string? Profession { get; set; }
 
         //Navigation Property
-        public Instructor instructor { get; set; }
+        public Instructor? Instructor { get; set; }
     }
 }

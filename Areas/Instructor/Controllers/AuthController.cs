@@ -127,7 +127,7 @@ namespace SkillForge.Areas.Instructor.Controllers
             }
 
             //Login
-            await SigninUser(result.Id, result.Email, "Instructor", result.PhotoPath);
+            await SigninUser(result.Id, result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
             return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
         }//Login Method
 
@@ -172,19 +172,19 @@ namespace SkillForge.Areas.Instructor.Controllers
                 // Sign in user
                 await SigninUser(
                     result.Id,
-                    result.Email,
+                    result.Email ?? string.Empty,
                     "Instructor",
                     result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif"
                 );
 
                 return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
             }
-            catch (InvalidJwtException ex)
+            catch (InvalidJwtException )
             {
                 // Token invalid or tampered
                 return Unauthorized("Invalid Google token.");
             }
-            catch (Exception ex)
+            catch (Exception )
             {       
                return StatusCode(500, "Something went wrong during login.");
             }
@@ -240,37 +240,7 @@ namespace SkillForge.Areas.Instructor.Controllers
         }
 
 
-        //########################
-        //Sign in User Private Helper Method
-        private async Task SigninUser(int Id, string Email, string Role, string PhotoPath)
-        {
-            //=================
-            //Claims to Manage Account
-
-            var claims = new List<Claim>
-            {
-                new Claim (ClaimTypes.Email,Email),
-                new Claim (ClaimTypes.Role,Role),
-                new Claim (ClaimTypes.NameIdentifier,Id.ToString()),
-                 new Claim("PhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif")
-            };
-
-            //Claim Identity
-            var identity = new ClaimsIdentity(claims, "Cookies");
-
-            //Wrap Identity in Principle
-            var principal = new ClaimsPrincipal(identity);
-
-            //Sign in Request 
-            await HttpContext.SignInAsync("Cookies", principal);
-
-            //Session
-            HttpContext.Session.SetString("UserRole", Role);
-            HttpContext.Session.SetInt32("UserId", Id);
-            HttpContext.Session.SetString("UserEmail", Email);
-            HttpContext.Session.SetString("UserPhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-
-        } //Sign in User Method
+        // Use SigninUser from AuthBaseController (inherited)
     }
 }
 

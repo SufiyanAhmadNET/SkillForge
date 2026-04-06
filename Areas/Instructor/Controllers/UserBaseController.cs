@@ -9,7 +9,7 @@ namespace SkillForge.Areas.Instructor.Controllers
     {
 
         [FromServices]
-        public SkillForgeDbContext _context { get; set; }
+        public required SkillForgeDbContext _context { get; set; }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             // read id from claims 

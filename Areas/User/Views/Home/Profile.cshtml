@@ -18,7 +18,7 @@
         <div class="section-card text-center p-3">
 
             <!-- PROFILE PHOTO -->
-            <img src="@(Model?.PhotoPath + "?t=" + DateTime.Now.Ticks)"
+            <img src="@((Model?.PhotoPath ?? "/images/DefaultProfilePhoto.jfif") + "?t=" + DateTime.Now.Ticks)"
                  id="avatarPreview"
                  class="rounded-circle mb-2"
                  style="width:100px;height:100px;object-fit:cover;">
@@ -29,8 +29,8 @@
             </label>
 
 
-            <h6 class="fw-bold mt-2 mb-0">@Model.FirstName @Model.LastName</h6>
-            <p class="text-muted small mb-2">@Model.Email</p>
+            <h6 class="fw-bold mt-2 mb-0">@(Model?.FirstName ?? "Guest") @(Model?.LastName ?? "User")</h6>
+            <p class="text-muted small mb-2">@Model?.Email</p>
 
             <!-- ACTION BUTTONS -->
             <button class="btn btn-sm w-100 mt-2 py-1 btn-basic-info"
@@ -111,7 +111,7 @@
 
                 <div id="pwd-otp" style="display:none">
                     <input type="email" class="form-control form-control-sm mb-1"
-                           value="@Model.Email" readonly>
+                           value="@Model?.Email" readonly>
 
                     <button type="button"
                             class="btn btn-outline-primary w-100 mb-1 btn-sm py-1">
@@ -178,21 +178,21 @@
                     <div class="col-md-6">
                         <label class="form-label small fw-medium">First Name</label>
                         <input type="text" class="form-control"
-                               value="@(Model.FirstName ?? "Guest")"
+                               value="@(Model?.FirstName ?? "Guest")"
                                name="FirstName">
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label small fw-medium">Last Name</label>
                         <input type="text" class="form-control"
-                               value="@(Model.LastName ?? "User")"
+                               value="@(Model?.LastName ?? "User")"
                                name="LastName">
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label small fw-medium">Email Address</label>
                         <input type="email" class="form-control"
-                               value="@Model.Email"
+                               value="@Model?.Email"
                                name="Email"
                                readonly>
                     </div>
@@ -200,7 +200,7 @@
                     <div class="col-md-6">
                         <label class="form-label small fw-medium">Phone Number</label>
                         <input type="tel" class="form-control"
-                               value="@(Model.Mobile ?? "1234567890")"
+                               value="@(Model?.Mobile ?? "1234567890")"
                                name="Mobile">
                     </div>
 
@@ -208,20 +208,20 @@
                         <label class="form-label small fw-medium">Bio</label>
                         <textarea class="form-control"
                                   rows="3"
-                                  name="Bio">@Model.Bio</textarea>
+                                  name="Bio">@Model?.Bio</textarea>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label small fw-medium">City</label>
                         <input type="text" class="form-control"
-                               value="@Model.City"
+                               value="@Model?.City"
                                name="City">
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label small fw-medium">Profession</label>
                         <input type="text" class="form-control"
-                               value="@(Model.Profession ?? "Your Profession")"
+                               value="@(Model?.Profession ?? "Your Profession")"
                                name="Profession">
                     </div>
 

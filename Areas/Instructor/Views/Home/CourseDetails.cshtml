@@ -9,34 +9,26 @@
             <i class="bi bi-arrow-left me-1"></i>My Courses
         </a>
         <div class="d-flex gap-2 flex-wrap">
-            <a asp-action="EditCourse" @* asp-route-id="@Model.Id" *@
-               class="btn btn-sm btn-outline-secondary">
+            <a asp-action="EditCourse" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-pencil me-1"></i>Edit
             </a>
             @* preview as student *@
-            <a href="#" target="_blank"
-               class="btn btn-sm btn-outline-secondary">
+            <a href="#" target="_blank" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-eye me-1"></i>Preview as Student
             </a>
-            @* action changes based on current status *@
-            @if (true)
-            {
-                @* dummy data - showing Published state for demo *@
-                @* main CTA - using dummy status *@
-                <form asp-action="SubmitForReview" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="1" />
-                    <button type="submit" class="btn btn-sm fw-semibold px-3"
-                            style="background:var(--orange);color:#fff;border:none;">
-                        <i class="bi bi-send me-1"></i>Submit for Review
-                    </button>
-                </form>
-            }
+            @* main CTA - using dummy status for demo *@
+            <form asp-action="SubmitForReview" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="1" />
+                <button type="submit" class="btn btn-sm fw-semibold px-3"
+                        style="background:var(--orange);color:#fff;border:none;">
+                    <i class="bi bi-send me-1"></i>Submit for Review
+                </button>
+            </form>
         </div>
     </div>
     @* dummy data - rejection reason hidden for demo *@
-    @if (false)
-    {
+    @*
         <div class="alert alert-danger d-flex gap-2 align-items-start mb-3" style="font-size:13px;">
             <i class="bi bi-exclamation-circle-fill mt-1"></i>
             <div>
@@ -44,7 +36,7 @@
                 <br><small class="text-muted">Fix the issue and re-submit for review.</small>
             </div>
         </div>
-    }
+    *@
     <div class="row g-3">
         @* LEFT: course info card *@
         <div class="col-lg-4">

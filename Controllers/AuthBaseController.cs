@@ -13,10 +13,10 @@ namespace SkillForge.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim (ClaimTypes.Email,Email),
-                new Claim (ClaimTypes.Role,Role),
-                new Claim (ClaimTypes.NameIdentifier,Id.ToString()),
-                 new Claim("PhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif")
+                new Claim (ClaimTypes.Email, Email ?? string.Empty),
+                new Claim (ClaimTypes.Role, Role ?? string.Empty),
+                new Claim (ClaimTypes.NameIdentifier, Id.ToString()),
+                new Claim("PhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif")
             };
 
             //Claim Identity
@@ -29,9 +29,9 @@ namespace SkillForge.Controllers
             await HttpContext.SignInAsync("Cookies", principal);
 
             //Session
-            HttpContext.Session.SetString("UserRole", Role);
+            HttpContext.Session.SetString("UserRole", Role ?? string.Empty);
             HttpContext.Session.SetInt32("UserId", Id);
-            HttpContext.Session.SetString("UserEmail", Email);
+            HttpContext.Session.SetString("UserEmail", Email ?? string.Empty);
             HttpContext.Session.SetString("UserPhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
 
         }

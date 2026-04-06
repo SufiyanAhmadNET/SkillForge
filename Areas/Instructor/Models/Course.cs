@@ -5,33 +5,42 @@ namespace SkillForge.Areas.Instructor.Models
     public class Course
     {
         [Key]
-        int Id { get; set; }
-
-         [Required]
-        string Title { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        string Description { get; set; }
-        [Required]
-        int Duration { get; set; }
-        [Required]
+        public string Title { get; set; } = string.Empty;
 
-        string Category { get; set; }
         [Required]
-        string Difficulty { get; set; }
-        [Required]
-        decimal Price {  get; set; }
-        [Required]
-        int Discount_Percentage { get; set; }
-        [Required]
-        decimal Discount_Total { get; set; }
-        [Required]
-        decimal Total_Price { get; set; }
-        [Required]
-        string Outcomes { get; set; }
-        string Thumbnail { get; set; }[Required]
+        public string Description { get; set; } = string.Empty;
 
-        string? Intro_video { get; set; } 
+        [Required]
+        public int Duration { get; set; }
+
+        [Required]
+        public string Category { get; set; } = string.Empty;
+
+        [Required]
+        public string Difficulty { get; set; } = string.Empty;
+
+        [Required]
+        public decimal Price { get; set; }
+
+        [Required]
+        public int Discount_Percentage { get; set; }
+
+        [Required]
+        public decimal Discount_Total { get; set; }
+
+        [Required]
+        public decimal Total_Price { get; set; }
+
+        [Required]
+        public string Outcomes { get; set; } = string.Empty;
+
+        [Required]
+        public string? Thumbnail { get; set; }
+
+        public string? Intro_video { get; set; }
 
 
     }

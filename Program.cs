@@ -11,7 +11,7 @@ if (File.Exists(secretConfigPath))
 {
     builder.Configuration.AddJsonFile(secretConfigPath, optional: true, reloadOnChange: false);
 }
-
+    
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
