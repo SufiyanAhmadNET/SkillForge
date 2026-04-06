@@ -122,6 +122,40 @@
         </div>
     </header>
     <!-- ── /HEADER ── -->
+
+<!-- ── MOBILE HEADER ── -->
+
+   <header class="sf-header">
+
+    <div class="sf-logo">
+        <i class="bi bi-mortarboard-fill"></i> SkillForge
+    </div>
+
+    <div class="sf-menu-icon" onclick="openMenu()">☰</div>
+
+</header>
+
+
+<!-- ── MOBILE Sidebar── -->
+
+<div id="sfMobileMenu" class="sf-mobile-menu">
+
+    <div class="sf-close" onclick="closeMenu()">✕</div>
+
+    <a href="/">Home</a>
+    <a href="/Courses">Courses</a>
+    <a href="/Programs">Programs</a>
+    <a href="/About">About</a>
+    <a href="/Contact">Contact</a>
+
+    <a href="/Auth/Login">Sign In</a>
+    <a href="/Auth/Register">Sign Up</a>
+
+</div>
+
+
+
+
     <!-- ── PAGE BODY — full-width with comfortable gutter ── -->
     <main class="sf-page-body">
         @RenderBody()
@@ -163,6 +197,14 @@
             document.addEventListener('click',   closeAll);
             document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
         });
+
+        function openMenu() {
+    document.getElementById("sfMobileMenu").style.display = "flex";
+}
+
+function closeMenu() {
+    document.getElementById("sfMobileMenu").style.display = "none";
+}
     </script>
 </body>
 </html>
