@@ -1,0 +1,235 @@
+﻿@model SkillForge.Areas.User.Models.DashboardVM
+
+@{
+    Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
+}
+
+@* email not verified *@
+@if (TempData["Verify"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show py-4 small" role="alert">
+        <i class="bi bi-envelope-exclamation me-1"></i> @TempData["NotVerified"]
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+    </div>
+}
+ 
+    <!-- welcome banner -->
+    <div class="welcome-banner">
+        <div class="row align-items-center">
+            <div class="col">
+            <h4 class="fw-bold mb-1">Welcome back,<span>@ViewBag.FirstName</span> 👋</h4>
+                <p class="mb-3 opacity-75">You're on a 5-day learning streak. Keep it up!</p>
+                <a asp-area="User" asp-controller="Home" asp-action="EnrolledCourses"
+                class="btn btn-light btn-sm px-4 fw-semibold">
+                    Continue Learning
+                </a>
+            </div>
+            <div class="col-auto d-none d-md-block">
+                <i class="bi bi-fire" style="font-size:4rem;opacity:.3"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- stat cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#fff3e0">
+                    <i class="bi bi-play-btn-fill" style="color:var(--orange)"></i>
+                </div>
+                <div><h4>4</h4><p>Enrolled Courses</p></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#e8f5e9">
+                    <i class="bi bi-check-circle-fill" style="color:#2e7d32"></i>
+                </div>
+                <div><h4>1</h4><p>Completed</p></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#e3f2fd">
+                    <i class="bi bi-award-fill" style="color:#1565c0"></i>
+                </div>
+                <div><h4>1</h4><p>Certificates</p></div>
+            </div>
+        </div>
+        <div class="col-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon" style="background:#fce4ec">
+                    <i class="bi bi-clock-fill" style="color:#c62828"></i>
+                </div>
+                <div><h4>42h</h4><p>Hours Learned</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- main grid -->
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="section-card">
+                <div class="section-card-title">
+                    Continue Learning <a >View all →</a>
+                </div>
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <div class="enrolled-card">
+                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600" alt="">
+                            <div class="p-3">
+                                <h6 class="fw-bold mb-1 small">Full Stack Web Development</h6>
+                                <p class="text-muted mb-2" style="font-size:.75rem">Section 5 of 8 · Lecture 32</p>
+                                <span style="font-size:.75rem;color:var(--orange);font-weight:600">65% complete</span>
+                                <div class="progress my-2"><div class="progress-bar" style="width:65%"></div></div>
+                                <a href="/Student/CoursePlayer/1" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="enrolled-card">
+                            <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600" alt="">
+                            <div class="p-3">
+                                <h6 class="fw-bold mb-1 small">Machine Learning A–Z</h6>
+                                <p class="text-muted mb-2" style="font-size:.75rem">Section 3 of 10 · Lecture 18</p>
+                                <span style="font-size:.75rem;color:var(--orange);font-weight:600">30% complete</span>
+                                <div class="progress my-2"><div class="progress-bar" style="width:30%"></div></div>
+                                <a href="/Student/CoursePlayer/2" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="enrolled-card">
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600" alt="">
+                            <div class="p-3">
+                                <h6 class="fw-bold mb-1 small">AWS Cloud Practitioner</h6>
+                                <p class="text-muted mb-2" style="font-size:.75rem">Section 1 of 6 · Lecture 4</p>
+                                <span style="font-size:.75rem;color:var(--orange);font-weight:600">10% complete</span>
+                                <div class="progress my-2"><div class="progress-bar" style="width:10%"></div></div>
+                                <a href="/Student/CoursePlayer/3" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="enrolled-card">
+                            <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600" alt="">
+                            <div class="p-3">
+                                <h6 class="fw-bold mb-1 small">UI/UX Design Fundamentals</h6>
+                                <p class="text-muted mb-2" style="font-size:.75rem">Completed · All 6 sections</p>
+                                <span style="font-size:.75rem;color:#2e7d32;font-weight:600">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Completed
+                                </span>
+                                <div class="progress my-2">
+                                    <div class="progress-bar" style="width:100%;background:#2e7d32"></div>
+                                </div>
+                                <a asp-area="User" asp-controller="Home" asp-action="Certificates"
+                                class="btn-resume" style="background:#2e7d32">
+                                    <i class="bi bi-award me-1"></i>Get Certificate
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-card-title">Certificates Earned <a href="/Student/Certificates">View all →</a></div>
+                <div class="cert-card">
+                    <div class="cert-icon"><i class="bi bi-patch-check-fill"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold small">UI/UX Design Fundamentals</div>
+                        <div class="text-muted" style="font-size:.78rem">Issued Jan 15, 2026 · SkillForge</div>
+                    </div>
+                    <a href="#" class="btn-resume" style="padding:6px 14px">
+                        <i class="bi bi-download me-1"></i>Download
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="section-card">
+                <div class="section-card-title">Recent Activity</div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#fff3e0"><i class="bi bi-play-fill" style="color:var(--orange)"></i></div>
+                    <div><div class="fw-medium">Watched lecture 32</div><div class="text-muted" style="font-size:.75rem">Full Stack Web Dev · 2 hours ago</div></div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#e8f5e9"><i class="bi bi-check-lg" style="color:#2e7d32"></i></div>
+                    <div><div class="fw-medium">Completed Section 4</div><div class="text-muted" style="font-size:.75rem">Full Stack Web Dev · Yesterday</div></div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#e3f2fd"><i class="bi bi-award" style="color:#1565c0"></i></div>
+                    <div><div class="fw-medium">Certificate earned</div><div class="text-muted" style="font-size:.75rem">UI/UX Design · Jan 15, 2026</div></div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#fff3e0"><i class="bi bi-cart-check" style="color:var(--orange)"></i></div>
+                    <div><div class="fw-medium">Enrolled in course</div><div class="text-muted" style="font-size:.75rem">AWS Cloud · Jan 10, 2026</div></div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-card-title">Recommended for You <a href="/Courses">Browse →</a></div>
+                <a class="rec-card" href="/Course/Detail/4">
+                    <img src="https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?w=200" alt="">
+                    <div><div class="rec-card-title">React & Next.js Masterclass</div><div class="rec-card-meta"><span style="color:#f5a623">★</span> 4.9 · ₹5,499</div></div>
+                </a>
+                <a class="rec-card" href="/Course/Detail/5">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=200" alt="">
+                    <div><div class="rec-card-title">Docker & Kubernetes</div><div class="rec-card-meta"><span style="color:#f5a623">★</span> 4.8 · ₹5,999</div></div>
+                </a>
+                <a class="rec-card" href="/Course/Detail/6">
+                    <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=200" alt="">
+                    <div><div class="rec-card-title">Prompt Engineering for LLMs</div><div class="rec-card-meta"><span style="color:#f5a623">★</span> 4.7 · ₹2,499</div></div>
+                </a>
+            </div>
+
+            <!-- streak -->
+            <div class="section-card">
+                <div class="section-card-title">Learning Streak 🔥</div>
+                <div class="d-flex gap-1 justify-content-between mb-2">
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--orange);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><i class="bi bi-check-lg text-white" style="font-size:.7rem"></i></div>
+                        <div style="font-size:.65rem;color:var(--muted)">Mon</div>
+                    </div>
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--orange);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><i class="bi bi-check-lg text-white" style="font-size:.7rem"></i></div>
+                        <div style="font-size:.65rem;color:var(--muted)">Tue</div>
+                    </div>
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--orange);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><i class="bi bi-check-lg text-white" style="font-size:.7rem"></i></div>
+                        <div style="font-size:.65rem;color:var(--muted)">Wed</div>
+                    </div>
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--orange);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><i class="bi bi-check-lg text-white" style="font-size:.7rem"></i></div>
+                        <div style="font-size:.65rem;color:var(--muted)">Thu</div>
+                    </div>
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--orange);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><i class="bi bi-check-lg text-white" style="font-size:.7rem"></i></div>
+                        <div style="font-size:.65rem;color:var(--muted)">Fri</div>
+                    </div>
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);margin:0 auto 4px;display:flex;align-items:center;justify-content:center"><i class="bi bi-circle" style="font-size:.5rem;color:var(--orange)"></i></div>
+                        <div style="font-size:.65rem;color:var(--orange);font-weight:600">Sat</div>
+                    </div>
+                    <div class="text-center" style="flex:1">
+                        <div style="width:32px;height:32px;border-radius:50%;background:#eee;margin:0 auto 4px"></div>
+                        <div style="font-size:.65rem;color:var(--muted)">Sun</div>
+                    </div>
+                </div>
+                <p class="text-muted small mb-0 text-center">🔥 <strong>5-day streak</strong> — Keep going!</p>
+            </div>
+
+        </div>
+    </div>
+
+

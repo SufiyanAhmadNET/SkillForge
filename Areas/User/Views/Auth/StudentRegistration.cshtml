@@ -1,0 +1,157 @@
+﻿@{
+    Layout = "~/Areas/Pubic/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Register";
+    ViewData["RoleClass"] = "role-student";
+}
+
+@* ================= Registration Section ================= *@
+
+<section class="d-flex align-items-center justify-content-center py-4 bg-light">
+
+    <div class="card auth-card p-3">
+        <form method="post" 
+              asp-area="User" asp-controller="Auth" asp-action="StudentRegistration">
+
+            @Html.AntiForgeryToken()
+           
+            <input type="hidden" name="role" value="Student" />
+           
+            <!-- Title -->
+            <h2 class="text-center fw-bold mb-3">Create Account</h2>
+
+       
+            @*  Alert Messages *@ 
+                @if (TempData["Alert"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
+                    <span>@TempData["Alert"]</span>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["Email"] != null)
+            {
+                <div class="alert alert-success d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
+                    <div>
+                        @TempData["Email"]
+                        <div class="text-muted" style="font-size:11px;">check inbox or spam folder</div>
+                    </div>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["Verify"] != null)
+            {
+                <div class="alert alert-warning d-flex flex-column py-2 px-3 mb-3 rounded-2 small shadow-sm">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            @TempData["Verify"]
+                            <div class="text-muted" style="font-size:11px;">verify email to continue</div>
+                        </div>
+
+                        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    @* resend verification *@
+                    @if (TempData["UnverifiedEmail"] != null)
+                    {
+                        <form method="post" asp-area="User" asp-controller="Auth" asp-action="SendVerificationEmail" class="mt-2">
+                            <input type="hidden" name="Email" value="@TempData["UnverifiedEmail"]" />
+
+                            <button type="submit" class="btn btn-sm btn-warning w-100">
+                                Resend Verification Email
+                            </button>
+                        </form>
+                    }
+                </div>
+            }
+
+            @if (TempData["Sent"] != null)
+            {
+                <div class="alert alert-info d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
+                    <span>@TempData["Sent"]</span>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+                </div>
+            }@*  Alert Messages *@ 
+
+
+
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input type="email" class="form-control" name="email" placeholder="you@example.com">
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Create a password">
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="confirmpassword" placeholder="Repeat password">
+            </div>
+
+            <!-- Submit -->
+            <button class="btn-orange btn-lg w-100 py-2">
+                Create Account
+            </button>
+
+            <!-- Divider -->
+            <div class="d-flex align-items-center my-3">
+                <hr class="flex-grow-1">
+                <span class="text-muted small px-2">OR</span>
+                <hr class="flex-grow-1">
+            </div>
+
+            <!-- Google Sign In -->
+            <div id="g_id_onload"
+                 data-client_id="@ViewBag.GoogleClientId"
+                 data-callback="handleGoogleLogin"
+                 data-auto_prompt="false">
+            </div>
+
+            <!-- actual Google button -->
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-width="100%">
+            </div>
+
+            <!-- Already have account -->
+            <p class="text-center text-muted small mt-2 mb-0">
+                Already have an account?
+                <a asp-area="User" asp-controller="Auth" asp-action="StudentLogin"
+                class="btn btn-outline-success btn-sm" text-primary">Login</a>
+            </p>
+
+            <!-- Login as different role -->
+            <div class="border-top pt-3 mt-3">
+                <p class="text-center text-muted mb-2" style="font-size:.75rem; letter-spacing:.4px;">
+                    LOGIN AS
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a asp-area="Pubic" asp-controller="Authentication" asp-action="AdminLogin"
+                       class="btn btn-sm btn-outline-secondary px-3"
+                       style="font-size:.78rem; border-radius:8px;">
+                        <i class="bi bi-shield-lock me-1"></i> Admin
+                    </a>
+                    <a asp-area="Instructor" asp-controller="Auth" asp-action="InstructorLogin"
+                       class="btn btn-sm btn-outline-secondary px-3"
+                       style="font-size:.78rem; border-radius:8px;">
+                        <i class="bi bi-person-video3 me-1"></i> Instructor
+                    </a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</section>

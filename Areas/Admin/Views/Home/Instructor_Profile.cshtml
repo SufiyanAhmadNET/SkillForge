@@ -1,0 +1,147 @@
+﻿
+@{
+    ViewData["Title"] = "Instructor_Profile";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<body>
+<main class="p-4 flex-grow-1 admin-bg">
+
+    <!-- Back link + actions -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <a href="admin-instructors.html" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Instructors
+        </a>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-danger">Deactivate Account</button>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Left: Profile card -->
+        <div class="col-lg-4">
+            <div class="card border-0 admin-card mb-3">
+                <div class="card-body text-center py-4">
+                    <!-- big avatar -->
+                    <div class="profile-avatar-lg mx-auto mb-3" style="background:var(--orange-soft);color:var(--orange);">S</div>
+                    <h5 class="fw-bold mb-0">Suresh Kumar</h5>
+                    <p class="text-muted" style="font-size:13px;">Full Stack Developer</p>
+                    <span class="badge bg-success mb-3">Active</span>
+                    <div class="d-grid gap-2 mt-2">
+                        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-envelope me-1"></i>Send Email</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- contact details -->
+            <div class="card border-0 admin-card">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold">Contact Info</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-envelope text-muted"></i>
+                        <span style="font-size:13px;">suresh.k@email.com</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-telephone text-muted"></i>
+                        <span style="font-size:13px;">+91 98765 43210</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-geo-alt text-muted"></i>
+                        <span style="font-size:13px;">Mumbai, India</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar text-muted"></i>
+                        <span style="font-size:13px;">Joined Nov 5, 2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: stats + courses -->
+        <div class="col-lg-8">
+
+            <!-- mini stats -->
+            <div class="row g-3 mb-3">
+                <div class="col-4">
+                    <div class="card border-0 admin-card text-center py-3">
+                        <div class="stat-value" style="color:#198754;">3</div>
+                        <div class="stat-label">Courses</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 admin-card text-center py-3">
+                        <div class="stat-value" style="color:var(--orange);">1,240</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card border-0 admin-card text-center py-3">
+                        <div class="stat-value" style="color:#0d6efd;">4.8 ★</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses taught by this instructor -->
+            <div class="card border-0 admin-card mb-3">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-journal-bookmark me-2 text-success"></i>Courses</h6>
+                    <a href="admin-courses.html" class="small" style="color:var(--orange);">View in Courses →</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>Course</th><th>Students</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Full Stack Web Development</td>
+                                <td>840</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>React & Node.js Bootcamp</td>
+                                <td>280</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>DSA with JavaScript</td>
+                                <td>120</td>
+                                <td><span class="badge bg-secondary">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="card border-0 admin-card">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold">About</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-1" style="font-size:14px;">
+                        Suresh is a senior full stack developer with 8 years of industry experience at companies including Infosys and TCS. He specialises in React, Node.js, and cloud deployment.
+                    </p>
+                    <div class="d-flex gap-2 mt-2 flex-wrap">
+                        <span class="badge bg-light text-dark border">React</span>
+                        <span class="badge bg-light text-dark border">Node.js</span>
+                        <span class="badge bg-light text-dark border">JavaScript</span>
+                        <span class="badge bg-light text-dark border">AWS</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+</div>
+
+</body>

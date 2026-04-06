@@ -1,0 +1,193 @@
+﻿
+
+
+
+:root {
+    --orange: #ff7a00;
+    --orange-dark: #e66e00;
+    --orange-soft: rgba(255,122,0,.1);
+    /* Admin theme => dark green */
+    --sidebar-bg: #0d1f1a;
+    --sidebar-hover: rgba(255,255,255,.07);
+    --sidebar-active: rgba(25,135,84,.18);
+    --sidebar-active-text: #4ade80;
+    --sidebar-w: 230px;
+    --header-h: 60px;
+}
+
+body {
+    font-family: Inter, system-ui, sans-serif;
+}
+
+/* bg */
+.admin-bg {
+    background: #f0f4f2;
+}
+
+
+/* ===== SIDEBAR ===== */
+
+.sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+/* Small uppercase section dividers */
+.nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,.28);
+    padding-left: 12px;
+    margin-bottom: 4px;
+}
+
+.sidebar-link {
+    color: rgba(255,255,255,.52);
+    border-radius: 8px;
+    font-size: 14px;
+    padding: 9px 12px;
+    transition: .2s ease;
+}
+
+    .sidebar-link:hover {
+        background: var(--sidebar-hover);
+        color: #fff;
+    }
+
+    /* Green = admin active state */
+    .sidebar-link.active {
+        background: var(--sidebar-active);
+        color: var(--sidebar-active-text);
+        font-weight: 600;
+    }
+
+/* ADMIN badge */
+.admin-badge {
+    background: #198754;
+    color: #fff;
+    font-size: 9px;
+    letter-spacing: .5px;
+}
+
+
+/* ===== HEADER ===== */
+
+.admin-header {
+    height: var(--header-h);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 6px rgba(0,0,0,.06);
+}
+
+.main-wrap {
+    min-height: 100vh;
+}
+
+
+/* ===== STAT CARDS ===== */
+
+.stat-card {
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.06);
+    transition: transform .2s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.2;
+}
+
+
+/* =====  AVATAR ===== */
+
+.tbl-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+
+/* ===== ADMIN AVATAR in header ===== */
+
+.admin-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #198754;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+
+/* PAGE TITLE BAR */
+
+.page-title-bar {
+    border-left: 4px solid #198754; /* green left border — admin identity */
+    padding-left: 12px;
+}
+
+
+/* ===== PROFILE DETAIL CARD  ===== */
+
+.profile-avatar-lg {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+
+/* ===== CARD  shadow ===== */
+
+.admin-card {
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.06);
+}

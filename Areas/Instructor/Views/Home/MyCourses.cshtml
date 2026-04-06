@@ -1,0 +1,273 @@
+@* @model IEnumerable<CourseListViewModel> *@
+@{
+    ViewData["Title"] = "My Courses";
+    Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
+}
+<main class="p-4 flex-grow-1 inst-bg">
+    @* header *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h5 class="fw-bold mb-0">My Courses</h5>
+            <small class="text-muted">Manage and track your courses</small>
+        </div>
+        <a asp-action="AddCourse" class="btn fw-semibold px-4"
+           style="background:var(--orange);color:#fff;border:none;">
+            <i class="bi bi-plus-lg me-1"></i>Add Course
+        </a>
+    </div>
+    @* search + filter bar *@
+    <div class="card border-0 inst-card p-3 mb-4">
+        <div class="row g-2">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0 bg-light"
+                           placeholder="Search by title..." id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="catFilter">
+                    <option value="">All Categories</option>
+                    <option>Software Development</option>
+                    <option>Data Science</option>
+                    <option>AI / Machine Learning</option>
+                    <option>DevOps & Cloud</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="Draft">Draft</option>
+                    <option value="PendingReview">Pending Review</option>
+                    <option value="Published">Published</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    @* dummy courses - for testing UI *@
+    @* course grid *@
+    @if (false)
+    {
+        @* empty state *@
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x text-muted" style="font-size:48px;"></i>
+            <h6 class="text-muted mt-3 mb-1">No courses yet</h6>
+            <p class="text-muted small mb-3">Create your first course and start teaching</p>
+            <a asp-action="AddCourse" class="btn px-4 fw-semibold"
+               style="background:var(--orange);color:#fff;border:none;">
+                Create Course
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4" id="courseGrid">
+            @* dummy course 1 - Full Stack Web Development *@
+            <div class="col-xl-3 col-lg-4 col-md-6 course-item"
+                 data-title="full stack web development"
+                 data-category="Software Development"
+                 data-status="Published">
+                <div class="card border-0 inst-card h-100">
+                    <div class="position-relative" style="cursor:pointer;"
+                         onclick="window.location='/instructor/course/details/1'">
+                        <img src="/img/course-placeholder.jpg"
+                             class="w-100 rounded-top"
+                             style="height:155px; object-fit:cover;">
+                        <span class="badge bg-success position-absolute top-0 start-0 m-2"
+                              style="font-size:10px;">Published</span>
+                    </div>
+                    <div class="dropdown position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-light btn-sm rounded-circle"
+                                style="width:28px;height:28px;padding:0;line-height:1;"
+                                data-bs-toggle="dropdown">
+                            ⋮
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
+                            <li><a class="dropdown-item" href="/instructor/course/edit/1"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><a class="dropdown-item" href="/instructor/course/details/1"><i class="bi bi-eye me-2"></i>View</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/instructor/course/delete/1" onclick="return confirm('Delete this course? This cannot be undone.')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <h6 class="fw-semibold mb-1" style="font-size:14px; line-height:1.4;">Full Stack Web Development</h6>
+                        <small class="text-muted mb-2">Software Development</small>
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                            <span class="fw-bold" style="color:var(--orange);">₹4999</span>
+                            <a href="/instructor/course/details/1" class="btn btn-sm btn-outline-secondary" style="font-size:12px;">Manage →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* dummy course 2 - Data Science Masterclass *@
+            <div class="col-xl-3 col-lg-4 col-md-6 course-item"
+                 data-title="data science masterclass"
+                 data-category="Data Science"
+                 data-status="PendingReview">
+                <div class="card border-0 inst-card h-100">
+                    <div class="position-relative" style="cursor:pointer;"
+                         onclick="window.location='/instructor/course/details/2'">
+                        <img src="/img/course-placeholder.jpg"
+                             class="w-100 rounded-top"
+                             style="height:155px; object-fit:cover;">
+                        <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2"
+                              style="font-size:10px;">Pending Review</span>
+                    </div>
+                    <div class="dropdown position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-light btn-sm rounded-circle"
+                                style="width:28px;height:28px;padding:0;line-height:1;"
+                                data-bs-toggle="dropdown">
+                            ⋮
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
+                            <li><a class="dropdown-item" href="/instructor/course/edit/2"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><a class="dropdown-item" href="/instructor/course/details/2"><i class="bi bi-eye me-2"></i>View</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/instructor/course/delete/2" onclick="return confirm('Delete this course? This cannot be undone.')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <h6 class="fw-semibold mb-1" style="font-size:14px; line-height:1.4;">Data Science Masterclass</h6>
+                        <small class="text-muted mb-2">Data Science</small>
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                            <span class="fw-bold" style="color:var(--orange);">₹6999</span>
+                            <a href="/instructor/course/details/2" class="btn btn-sm btn-outline-secondary" style="font-size:12px;">Manage →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* dummy course 3 - AI for Beginners *@
+            <div class="col-xl-3 col-lg-4 col-md-6 course-item"
+                 data-title="ai for beginners"
+                 data-category="AI / Machine Learning"
+                 data-status="Draft">
+                <div class="card border-0 inst-card h-100">
+                    <div class="position-relative" style="cursor:pointer;"
+                         onclick="window.location='/instructor/course/details/3'">
+                        <img src="/img/course-placeholder.jpg"
+                             class="w-100 rounded-top"
+                             style="height:155px; object-fit:cover;">
+                        <span class="badge bg-secondary position-absolute top-0 start-0 m-2"
+                              style="font-size:10px;">Draft</span>
+                    </div>
+                    <div class="dropdown position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-light btn-sm rounded-circle"
+                                style="width:28px;height:28px;padding:0;line-height:1;"
+                                data-bs-toggle="dropdown">
+                            ⋮
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
+                            <li><a class="dropdown-item" href="/instructor/course/edit/3"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><a class="dropdown-item" href="/instructor/course/details/3"><i class="bi bi-eye me-2"></i>View</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/instructor/course/delete/3" onclick="return confirm('Delete this course? This cannot be undone.')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <h6 class="fw-semibold mb-1" style="font-size:14px; line-height:1.4;">AI for Beginners</h6>
+                        <small class="text-muted mb-2">AI / Machine Learning</small>
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                            <span class="fw-bold" style="color:var(--orange);">Free</span>
+                            <a href="/instructor/course/details/3" class="btn btn-sm btn-outline-secondary" style="font-size:12px;">Manage →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* dummy course 4 - DevOps Fundamentals *@
+            <div class="col-xl-3 col-lg-4 col-md-6 course-item"
+                 data-title="devops fundamentals"
+                 data-category="DevOps & Cloud"
+                 data-status="Rejected">
+                <div class="card border-0 inst-card h-100">
+                    <div class="position-relative" style="cursor:pointer;"
+                         onclick="window.location='/instructor/course/details/4'">
+                        <img src="/img/course-placeholder.jpg"
+                             class="w-100 rounded-top"
+                             style="height:155px; object-fit:cover;">
+                        <span class="badge bg-danger position-absolute top-0 start-0 m-2"
+                              style="font-size:10px;">Rejected</span>
+                    </div>
+                    <div class="dropdown position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-light btn-sm rounded-circle"
+                                style="width:28px;height:28px;padding:0;line-height:1;"
+                                data-bs-toggle="dropdown">
+                            ⋮
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
+                            <li><a class="dropdown-item" href="/instructor/course/edit/4"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><a class="dropdown-item" href="/instructor/course/details/4"><i class="bi bi-eye me-2"></i>View</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/instructor/course/delete/4" onclick="return confirm('Delete this course? This cannot be undone.')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <h6 class="fw-semibold mb-1" style="font-size:14px; line-height:1.4;">DevOps Fundamentals</h6>
+                        <small class="text-muted mb-2">DevOps & Cloud</small>
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                            <span class="fw-bold" style="color:var(--orange);">₹3999</span>
+                            <a href="/instructor/course/details/4" class="btn btn-sm btn-outline-secondary" style="font-size:12px;">Manage →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* dummy course 5 - Cybersecurity Essentials *@
+            <div class="col-xl-3 col-lg-4 col-md-6 course-item"
+                 data-title="cybersecurity essentials"
+                 data-category="Cybersecurity"
+                 data-status="Published">
+                <div class="card border-0 inst-card h-100">
+                    <div class="position-relative" style="cursor:pointer;"
+                         onclick="window.location='/instructor/course/details/5'">
+                        <img src="/img/course-placeholder.jpg"
+                             class="w-100 rounded-top"
+                             style="height:155px; object-fit:cover;">
+                        <span class="badge bg-success position-absolute top-0 start-0 m-2"
+                              style="font-size:10px;">Published</span>
+                    </div>
+                    <div class="dropdown position-absolute top-0 end-0 m-2">
+                        <button class="btn btn-light btn-sm rounded-circle"
+                                style="width:28px;height:28px;padding:0;line-height:1;"
+                                data-bs-toggle="dropdown">
+                            ⋮
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
+                            <li><a class="dropdown-item" href="/instructor/course/edit/5"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><a class="dropdown-item" href="/instructor/course/details/5"><i class="bi bi-eye me-2"></i>View</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/instructor/course/delete/5" onclick="return confirm('Delete this course? This cannot be undone.')"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                        </ul>
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <h6 class="fw-semibold mb-1" style="font-size:14px; line-height:1.4;">Cybersecurity Essentials</h6>
+                        <small class="text-muted mb-2">Cybersecurity</small>
+                        <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                            <span class="fw-bold" style="color:var(--orange);">₹5499</span>
+                            <a href="/instructor/course/details/5" class="btn btn-sm btn-outline-secondary" style="font-size:12px;">Manage →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</main>
+@* client-side filter *@
+<script>
+    // wire up all three filters to same fn
+    ['searchInput','catFilter','statusFilter'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', filterCourses);
+    });
+    function filterCourses() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const cat    = document.getElementById('catFilter').value;
+        const status = document.getElementById('statusFilter').value;
+        document.querySelectorAll('.course-item').forEach(el => {
+            const matchTitle  = el.dataset.title.includes(search);
+            const matchCat    = !cat    || el.dataset.category === cat;
+            const matchStatus = !status || el.dataset.status   === status;
+            el.style.display  = matchTitle && matchCat && matchStatus ? '' : 'none';
+        });
+    }
+</script>

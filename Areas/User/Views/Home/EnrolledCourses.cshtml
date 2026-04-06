@@ -1,0 +1,216 @@
+﻿@{
+    Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+        <h4 class="fw-bold mb-0">My Courses</h4>
+        <span class="text-muted small">4 courses enrolled</span>
+    </div>
+    <a href="/Courses" class="btn-orange" style="padding:8px 20px;font-size:.88rem;text-decoration:none">
+        <i class="bi bi-plus me-1"></i> Browse More
+    </a>
+</div>
+
+<!-- filter + search bar -->
+<div class="section-card mb-4 p-3">
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="filter-pill active" onclick="filterCourses(this,'all')">All (4)</button>
+            <button class="filter-pill" onclick="filterCourses(this,'inprogress')">In Progress (3)</button>
+            <button class="filter-pill" onclick="filterCourses(this,'completed')">Completed (1)</button>
+        </div>
+        <div class="input-group" style="max-width:240px">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" placeholder="Search…" id="courseSearch"
+                   oninput="searchCourses(this.value)">
+        </div>
+    </div>
+</div>
+
+<!-- course list -->
+<div class="d-flex flex-column gap-3" id="courseList">
+
+    <!-- Course 1 — in progress -->
+    <div class="my-course-card" data-status="inprogress" data-title="full stack web development">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" alt="">
+        <div class="card-body">
+            <div>
+                <div class="d-flex gap-2 mb-1 flex-wrap">
+                    <span class="badge-level">Web Dev</span>
+                    <span class="badge-tag">12 weeks</span>
+                </div>
+                <h6 class="fw-bold mb-1">Full Stack Web Development</h6>
+                <p class="text-muted small mb-2">By Arjun Mehta · Section 5 of 8 · Lecture 32</p>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="progress-label">65% complete</span>
+                </div>
+                <div class="progress mb-0" style="max-width:300px">
+                    <div class="progress-bar" style="width:65%"></div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+                <a href="/Student/CoursePlayer/1" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                <a href="/Course/Detail/1" class="btn btn-sm btn-outline-secondary px-3"
+                   style="border-radius:8px;font-size:.82rem">Course Details</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course 2 — in progress -->
+    <div class="my-course-card" data-status="inprogress" data-title="machine learning">
+        <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=400" alt="">
+        <div class="card-body">
+            <div>
+                <div class="d-flex gap-2 mb-1 flex-wrap">
+                    <span class="badge-level">AI & ML</span>
+                    <span class="badge-tag">12 weeks</span>
+                </div>
+                <h6 class="fw-bold mb-1">Machine Learning A–Z</h6>
+                <p class="text-muted small mb-2">By Priya Sharma · Section 3 of 10 · Lecture 18</p>
+                <span class="progress-label">30% complete</span>
+                <div class="progress mb-0 mt-1" style="max-width:300px">
+                    <div class="progress-bar" style="width:30%"></div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+                <a href="/Student/CoursePlayer/2" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                <a href="/Course/Detail/2" class="btn btn-sm btn-outline-secondary px-3"
+                   style="border-radius:8px;font-size:.82rem">Course Details</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course 3 — in progress -->
+    <div class="my-course-card" data-status="inprogress" data-title="aws cloud">
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400" alt="">
+        <div class="card-body">
+            <div>
+                <div class="d-flex gap-2 mb-1 flex-wrap">
+                    <span class="badge-level">Cloud</span>
+                    <span class="badge-tag">8 weeks</span>
+                </div>
+                <h6 class="fw-bold mb-1">AWS Cloud Practitioner</h6>
+                <p class="text-muted small mb-2">By Ravi Kumar · Section 1 of 6 · Lecture 4</p>
+                <span class="progress-label">10% complete</span>
+                <div class="progress mb-0 mt-1" style="max-width:300px">
+                    <div class="progress-bar" style="width:10%"></div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+                <a href="/Student/CoursePlayer/3" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                <a href="/Course/Detail/3" class="btn btn-sm btn-outline-secondary px-3"
+                   style="border-radius:8px;font-size:.82rem">Course Details</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course 4 — completed -->
+    <div class="my-course-card" data-status="completed" data-title="ui ux design">
+        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400" alt="">
+        <div class="card-body">
+            <div>
+                <div class="d-flex gap-2 mb-1 flex-wrap">
+                    <span class="badge-level">UI/UX</span>
+                    <span class="badge-tag">6 weeks</span>
+                    <!-- completed badge -->
+                    <span style="background:#e8f5e9;color:#2e7d32;font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:6px">
+                        <i class="bi bi-check-circle-fill me-1"></i>Completed
+                    </span>
+                </div>
+                <h6 class="fw-bold mb-1">UI/UX Design Fundamentals</h6>
+                <p class="text-muted small mb-2">By Sneha Patil · All 6 sections done</p>
+                <span class="progress-label done">100% complete</span>
+                <div class="progress mb-0 mt-1" style="max-width:300px">
+                    <div class="progress-bar" style="width:100%;background:#2e7d32"></div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+                <a href="/Student/Certificates" class="btn-resume" style="background:#2e7d32">
+                    <i class="bi bi-award me-1"></i>Get Certificate
+                </a>
+                <a href="/Student/CoursePlayer/4" class="btn btn-sm btn-outline-secondary px-3"
+                   style="border-radius:8px;font-size:.82rem">Rewatch</a>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /courseList -->
+
+
+<style>
+    /* course card — landscape layout for my courses page */
+    .my-course-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        gap: 0;
+        transition: box-shadow .2s, transform .2s;
+    }
+
+        .my-course-card:hover {
+            box-shadow: 0 6px 24px rgba(0,0,0,.09);
+            transform: translateY(-2px);
+        }
+
+        .my-course-card img {
+            width: 200px;
+            height: 140px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .my-course-card .card-body {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+    /* filter pill — same as index.html */
+    .filter-pill {
+        padding: 6px 16px;
+        border-radius: 50px;
+        border: 1.5px solid #eee;
+        background: #fff;
+        font-size: .82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: .2s;
+        color: var(--muted);
+    }
+
+        .filter-pill:hover, .filter-pill.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: #fff;
+        }
+
+    /* progress label */
+    .progress-label {
+        font-size: .75rem;
+        font-weight: 600;
+        color: var(--orange);
+    }
+
+        .progress-label.done {
+            color: #2e7d32;
+        }
+
+    media (max-width: 576px) {
+        .my-course-card
+
+    {
+        flex-direction: column;
+    }
+
+    .my-course-card img {
+        width: 100%;
+        height: 160px;
+    }
+
+    }
+</style>

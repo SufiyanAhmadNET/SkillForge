@@ -1,0 +1,157 @@
+﻿
+@{
+    ViewData["Title"] = "Instructors";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<body>
+<main class="p-4 flex-grow-1 admin-bg">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="page-title-bar">
+            <h5 class="fw-bold mb-0">Instructor List</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">All approved instructors on SkillForge.</p>
+        </div>
+        <a href="admin-reports.html" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </a>
+    </div>
+
+    <!-- Filter row -->
+    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="input-group input-group-sm" style="max-width:260px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control" placeholder="Search by name…">
+        </div>
+        <select class="form-select form-select-sm" style="max-width:150px;">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>Inactive</option>
+            <option>Pending</option>
+        </select>
+        <small class="text-muted ms-auto">Showing 5 of 148 instructors</small>
+    </div>
+
+    <!-- INSTRUCTORS TABLE -->
+    <div class="card border-0 admin-card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Instructor</th>
+                        <th>Email</th>
+                        <th>Courses</th>
+                        <th>Total Students</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="text-muted">1</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar" style="background:var(--orange-soft);color:var(--orange);">S</div>Suresh Kumar</div></td>
+                        <td class="text-muted">suresh.k@email.com</td>
+                        <td>3</td>
+                        <td>1,240</td>
+                        <td class="text-muted small">Nov 5, 2025</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">2</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-primary bg-opacity-10 text-primary">N</div>Neha Verma</div></td>
+                        <td class="text-muted">neha.v@email.com</td>
+                        <td>2</td>
+                        <td>890</td>
+                        <td class="text-muted small">Oct 18, 2025</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">3</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-success bg-opacity-10 text-success">A</div>Anjali Singh</div></td>
+                        <td class="text-muted">anjali.s@email.com</td>
+                        <td>1</td>
+                        <td>560</td>
+                        <td class="text-muted small">Dec 2, 2025</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">4</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-warning bg-opacity-10 text-warning">K</div>Karan Mehta</div></td>
+                        <td class="text-muted">karan.mehta@email.com</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td class="text-muted small">Pending</td>
+                        <td><span class="badge bg-warning text-dark">Pending</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-approvals.html" class="btn btn-sm btn-outline-secondary">Review</a>
+                                <button class="btn btn-sm btn-success">Approve</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">5</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-danger bg-opacity-10 text-danger">R</div>Rahul Nair</div></td>
+                        <td class="text-muted">rahul.n@email.com</td>
+                        <td>1</td>
+                        <td>120</td>
+                        <td class="text-muted small">Sep 10, 2025</td>
+                        <td><span class="badge bg-secondary">Inactive</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
+                                <button class="btn btn-sm btn-outline-success">Activate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <small class="text-muted">Showing 1–5 of 148 instructors</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+</div>
+
+</body>
+

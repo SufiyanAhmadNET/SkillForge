@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SkillForge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="~/css/User.css" rel="stylesheet" asp-append-version="true" />
+    <link href="/css/index.css" rel="stylesheet" asp-append-version="true">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <!-- ── HEADER ── -->
+    <header class="sf-header">
+
+        <!-- Left: brand + explore -->
+        <div class="sf-header-left">
+            <a class="sf-brand" asp-area="User" asp-controller="Home" asp-action="Dashboard">
+                <i class="bi bi-mortarboard-fill"></i> SkillForge
+            </a>
+            <a asp-area="User" asp-controller="Home" asp-action="Courses" class="sf-explore">
+                Explore
+            </a>
+        </div>
+
+        <!-- Center: search -->
+        <div class="sf-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search courses..." />
+        </div>
+
+        <!-- Right: links + bell + apps + avatar -->
+        <div class="sf-header-right">
+
+            <div class="sf-header-links">
+                <a href="#" class="sf-hlink">FAQ</a>
+                <a href="#" class="sf-hlink">Help</a>
+                <a href="#" class="sf-hlink">Community</a>
+            </div>
+
+            <!-- Bell -->
+            <button class="sf-bell">
+                <i class="bi bi-bell"></i>
+                <span class="sf-bell-dot"></span>
+            </button>
+
+            <!-- Apps grid popup -->
+            <div class="sf-apps-wrap">
+                <button class="sf-apps-btn" id="appsBtn">
+                    <div class="sf-dot-grid">
+                        <i></i><i></i><i></i>
+                        <i></i><i></i><i></i>
+                        <i></i><i></i><i></i>
+                    </div>
+                </button>
+
+                <div class="sf-apps-popup" id="appsMenu">
+                    <div class="sf-apps-grid">
+                        <a asp-area="User" asp-controller="Home" asp-action="Dashboard" class="sf-app-item">
+                            <i class="bi bi-grid-1x2"></i> Dashboard
+                        </a>
+                        <a asp-area="User" asp-controller="Home" asp-action="EnrolledCourses" class="sf-app-item">
+                            <i class="bi bi-play-btn"></i> My Courses
+                        </a>
+                        <a asp-area="User" asp-controller="Home" asp-action="Wishlist" class="sf-app-item">
+                            <i class="bi bi-heart"></i> Wishlist
+                        </a>
+                        <a asp-area="User" asp-controller="Home" asp-action="Certificates" class="sf-app-item">
+                            <i class="bi bi-award"></i> Certificates
+                        </a>
+                        <a asp-area="User" asp-controller="Home" asp-action="Orders" class="sf-app-item">
+                            <i class="bi bi-receipt"></i> Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avatar + profile dropdown -->
+            <div class="sf-profile" id="profileBtn">
+                <button class="sf-avatar-btn">
+                    <img class="sf-avatar-img" src="@(Model?.PhotoPath + "?t=" + DateTime.Now.Ticks)" alt="Profile" />
+                </button>
+
+                <div class="sf-profile-menu" id="profileMenu">
+                    <!-- user info block -->
+                    <div class="sf-profile-head">
+                        <img src="@(Model?.PhotoPath)" class="sf-profile-thumb" alt="Profile" />
+                        <div>
+                            <div class="sf-profile-name">@(ViewBag.FirstName + " " + ViewBag.LastName)</div>
+                            <div class="sf-profile-meta" style="font-size:11px;color:#666">@ViewBag.Email</div>
+                        </div>
+                    </div>
+
+                    <a class="sf-menu-item" asp-area="User" asp-controller="Home" asp-action="Profile">
+                        <i class="bi bi-person"></i> My Profile
+                    </a>
+                    <a class="sf-menu-item" asp-area="User" asp-controller="Home" asp-action="Dashboard">
+                        <i class="bi bi-house"></i> Home
+                    </a>
+
+                    <div style="height:1px;background:#eee;margin:8px 0;"></div>
+
+                    <!-- icon-only actions row -->
+                    <div class="sf-icon-row">
+                        <a asp-area="User" asp-controller="Profile" asp-action="ChangePassword" class="sf-icon-btn">
+                            <i class="bi bi-key"></i>
+                        </a>
+                        <form asp-area="User" asp-controller="Auth" asp-action="Logout" method="post"
+                              style="flex:1;display:flex;margin:0">
+                            <button type="submit" class="sf-icon-btn sf-icon-danger" style="width:100%;border:none">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+    <!-- ── /HEADER ── -->
+    <!-- ── PAGE BODY — full-width with comfortable gutter ── -->
+    <main class="sf-page-body">
+        @RenderBody()
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const appsBtn    = document.getElementById('appsBtn');
+            const appsMenu   = document.getElementById('appsMenu');
+            const profileBtn = document.getElementById('profileBtn');
+            const profileMenu = document.getElementById('profileMenu');
+
+            function closeAll() {
+                appsMenu?.classList.remove('open');
+                appsBtn?.classList.remove('active-btn');
+                profileMenu?.classList.remove('open');
+                profileBtn?.classList.remove('active-btn');
+            }
+
+            function toggle(menu, btn, e) {
+                e.stopPropagation();
+                const wasOpen = menu.classList.contains('open');
+                closeAll();
+                if (!wasOpen) {
+                    menu.classList.add('open');
+                    btn.classList.add('active-btn');
+                }
+            }
+
+            appsBtn?.addEventListener('click', e => toggle(appsMenu, appsBtn, e));
+
+            profileBtn.querySelector('.sf-avatar-btn')
+                      ?.addEventListener('click', e => toggle(profileMenu, profileBtn, e));
+
+            // clicks inside popups shouldn't close them
+            appsMenu?.addEventListener('click',    e => e.stopPropagation());
+            profileMenu?.addEventListener('click', e => e.stopPropagation());
+
+            document.addEventListener('click',   closeAll);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+        });
+    </script>
+</body>
+</html>

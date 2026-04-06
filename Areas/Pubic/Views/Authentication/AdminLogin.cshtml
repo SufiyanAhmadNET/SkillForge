@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "~/Areas/Pubic/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Login";
+    ViewData["RoleClass"] = "role-admin";
+}
+
+
+@* Alert Box for Admin Login *@
+@* If Fields are empty *@
+
+@if (ViewBag.Error != null)
+{
+    <div class=" alert alert-danger">
+        @ViewBag.Error
+    </div>
+}
+@* If Wrong Details *@
+@if (ViewBag.InvalidDetails != null)
+{
+    <div class=" alert alert-danger">
+        @ViewBag.InvalidDetails
+    </div>
+}
+
+
+<!-- auth card  -->
+<section class="d-flex align-items-center justify-content-center py-5 flex-grow-1">
+    <div class="auth-card">
+
+        <form method="post" asp-area="Pubic" asp-controller="Authentication" asp-action="AdminLogin" asp>
+
+            <!-- role badge — green for admin -->
+            <div class="text-center mb-1">
+                <span class="role-badge">
+                    <i class="bi bi-shield-lock-fill"></i> ADMIN PORTAL
+                </span>
+            </div>
+
+            <h2 class="text-center fw-bold mb-1" style="font-size:1.5rem">Admin Login</h2>
+            <p class="text-center text-muted small mb-4">Platform management access only</p>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label class="form-label">Admin Email</label>
+                <input type="email" class="form-control" name="email"
+                       placeholder="admin@skillforge.com" autocomplete="email">
+            </div>
+
+            <!-- Password + toggle -->
+            <div class="mb-4">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" name="password"
+                           id="adminPass" placeholder="Enter password" autocomplete="current-password">
+                    <button class="btn btn-outline-secondary pass-toggle" type="button"
+                            onclick="togglePass('adminPass','adminEye')">
+                        <i class="bi bi-eye" id="adminEye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- submit -->
+            <button type="submit" class="btn-auth mb-3">
+                <i class="bi bi-shield-check me-2"></i> Login as Admin
+            </button>
+
+            <!-- no self-register for admin — intentional -->
+            <p class="text-center text-muted mb-3" style="font-size:.78rem">
+                Admin accounts are created by the platform owner only.
+            </p>
+
+            <!-- role switcher -->
+            <div class="role-switcher">
+                <div class="role-switcher-label">LOGIN AS</div>
+                <div class="role-switcher-links">
+                    <!-- current = admin, so admin link hidden via CSS -->
+                    <a asp-area="Pubic" asp-controller="Authentication" asp-action="AdminLogin" class="role-link current">
+                        <i class="bi bi-shield-lock"></i> Admin
+                    </a>
+                    <a asp-area="User" asp-controller="Account" asp-action="StudentLogin" class="role-link">
+                        <i class="bi bi-mortarboard"></i> Student
+                    </a>
+
+                    <a asp-area="Instructor" asp-controller="Auth" asp-action="InstructorLogin" class="role-link">
+                        <i class="bi bi-person-video3"></i> Instructor
+                    </a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+

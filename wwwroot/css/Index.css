@@ -1,0 +1,461 @@
+
+:root {
+    --orange: #ff7a00;
+    --orange-dark: #e66e00;
+    --orange-soft: rgba(255,122,0,.10);
+    --orange-softer: rgba(255,122,0,.06);
+    --dark: #1a1d23;
+    --muted: #6c757d;
+    --border: #e9ecef;
+    --light: #f8f9fa;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--dark);
+    background: #fff;
+}
+
+/* =====================
+       BUTTONS — reuse these in all 3 modules
+    ===================== */
+.btn-orange {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: .2s ease;
+    cursor: pointer;
+}
+
+    .btn-orange:hover {
+        background: var(--orange-dark);
+        color: #fff;
+    }
+
+.btn-orange-outline {
+    background: transparent;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: .2s ease;
+    cursor: pointer;
+}
+
+    .btn-orange-outline:hover {
+        background: var(--orange);
+        color: #fff;
+    }
+
+.bg-orange {
+    background: var(--orange);
+    color: #fff;
+}
+
+/* =====================
+       NAVBAR
+    ===================== */
+.navbar-brand i {
+    color: var(--orange);
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--dark) !important;
+    transition: color .2s;
+}
+
+    .nav-link:hover {
+        color: var(--orange) !important;
+    }
+
+/* =====================
+   PROGRAMS OVERLAY
+===================== */
+.program-overlay {
+    position: absolute;
+    top: 64px;
+    left: 5%;
+    width: 90%;
+    background: var(--orange);
+    color: var(--dark);
+    z-index: 1040;
+    border-top: 2px solid white;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(255,122,0,.10);
+}
+
+.overlay-title {
+    color: white;
+    letter-spacing: 1px;
+    font-size: .75rem;
+}
+
+/* card */
+.program-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+    background: #fff;
+    text-decoration: none;
+    color: var(--dark);
+}
+
+    .program-card:hover {
+        background: #fff8f0; 
+        border-color: rgba(255,255,255,.9);
+        color: var(--dark);
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 20px rgba(0,0,0,.10);
+    }
+
+    .program-card h6 {
+        margin: 0;
+        font-size: .95rem;
+        color: var(--dark);
+    }
+
+    .program-card p {
+        margin: 0;
+        font-size: .8rem;
+        color: var(--muted);
+    }
+
+/* icon box  */
+.program-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+/* popular badge inside card */
+.badge-popular {
+    background: #c57d00;
+    color: #fff;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+
+/* =====================
+       HERO
+    ===================== */
+.section-padding {
+    padding: 50px 0;
+}
+
+.hero-section {
+    padding-top: 20px;
+}
+
+.hero-img {
+    height: 480px;
+    object-fit: cover;
+    border-radius: 18px;
+}
+
+/* small trust badge row */
+.trust-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--orange-softer);
+    border: 1px solid var(--orange-soft);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--orange);
+}
+
+/* =====================
+       STATS
+    ===================== */
+.stat-box i {
+    font-size: 30px;
+    color: var(--orange);
+}
+
+/* =====================
+       CATEGORY PILLS — filter bar above course rows
+    ===================== */
+.category-pill {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 7px 18px;
+    font-size: .85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: .2s ease;
+    white-space: nowrap;
+    color: var(--dark);
+}
+
+    .category-pill:hover,
+    .category-pill.active {
+        background: var(--orange);
+        border-color: var(--orange);
+        color: #fff;
+    }
+
+/* =====================
+       COURSE ROWS — horizontal scroll with arrows
+       3 visible at a time, arrow swipes left
+    ===================== */
+.course-row-wrap {
+    position: relative;
+}
+
+/* hide native scrollbar but keep scroll working */
+.course-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 8px;
+    /* hide scrollbar in all browsers */
+    scrollbar-width: none;
+}
+
+    .course-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+/* each card fixed width so exactly 3 show */
+.course-card {
+    min-width: calc(33.33% - 14px);
+    flex-shrink: 0;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: #fff;
+    transition: box-shadow .2s, transform .2s;
+}
+
+    .course-card:hover {
+        box-shadow: 0 8px 30px rgba(0,0,0,.10);
+        transform: translateY(-3px);
+    }
+
+    .course-card img {
+        height: 180px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+/* arrow buttons on the side */
+.scroll-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,.10);
+    transition: background .2s, color .2s;
+}
+
+    .scroll-arrow:hover {
+        background: var(--orange);
+        color: #fff;
+        border-color: var(--orange);
+    }
+
+    .scroll-arrow.left {
+        left: -20px;
+    }
+
+    .scroll-arrow.right {
+        right: -20px;
+    }
+
+/* rating stars */
+.rating-stars {
+    color: #f5a623;
+    font-size: .8rem;
+}
+
+/* course badge */
+.badge-level {
+    background: var(--orange-soft);
+    color: var(--orange);
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.badge-tag {
+    background: #eef0f3;
+    color: #555;
+    font-size: .72rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+/* price */
+.price-main {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--dark);
+}
+
+.price-old {
+    font-size: .82rem;
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+/* =====================
+       WHY US — icon grid
+    ===================== */
+.why-card {
+    padding: 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    transition: box-shadow .2s;
+}
+
+    .why-card:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,.07);
+    }
+
+.why-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--orange-soft);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--orange);
+    margin-bottom: 14px;
+}
+
+/* =====================
+       TESTIMONIALS
+    ===================== */
+.testimonial-card {
+    padding: 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+}
+
+.testimonial-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* =====================
+       INSTRUCTORS
+    ===================== */
+.instructor-card {
+    text-align: center;
+    padding: 24px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    transition: box-shadow .2s, transform .2s;
+}
+
+    .instructor-card:hover {
+        box-shadow: 0 6px 24px rgba(0,0,0,.08);
+        transform: translateY(-3px);
+    }
+
+.instructor-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+    border: 3px solid var(--orange-soft);
+}
+
+/* =====================
+       FOOTER
+    ===================== */
+.footer a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+    .footer a:hover {
+        color: var(--orange);
+    }
+
+/* =====================
+       SEARCH BAR in hero
+    ===================== */
+.hero-search {
+    background: #fff;
+    border-radius: 12px;
+    padding: 6px 6px 6px 16px;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 480px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.07);
+}
+
+    .hero-search input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: .95rem;
+        background: transparent;
+    }
+
+/* =====================
+       SECTION HEADER pattern
+    ===================== */
+.section-label {
+    display: inline-block;
+    background: var(--orange-soft);
+    color: var(--orange);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .8px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+}
+
+
+/*Restric Actions if EMail is not verified*/
+.disabled-link {
+    pointer-events: none;
+    opacity: 0.5;
+}

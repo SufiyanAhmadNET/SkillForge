@@ -1,0 +1,260 @@
+﻿/* =====================================================
+   auth.css — shared across ALL auth pages
+   Student / Instructor / Admin login & register
+   Import this + index.css on every auth page
+   (index.css has --orange vars we need here)
+===================================================== */
+
+/* full height page layout */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f5f6fa;
+}
+
+/* =====================
+   AUTH CARD
+   same card shell for every role — role color applied via modifier
+===================== */
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    border: 1px solid #e9ecef;
+    background: #fff;
+    padding: 2rem;
+}
+
+    /* =====================
+   INPUTS
+===================== */
+    .auth-card .form-control {
+        padding: 9px 13px;
+        border-radius: 10px;
+        font-size: .9rem;
+    }
+
+        /* orange focus ring — works for all roles */
+        .auth-card .form-control:focus {
+            border-color: var(--role-color, var(--orange));
+            box-shadow: 0 0 0 .2rem rgba(var(--role-color-rgb, 255,122,0), .15);
+        }
+
+    .auth-card label {
+        font-size: .88rem;
+        margin-bottom: .25rem;
+        font-weight: 500;
+    }
+
+/* =====================
+   SUBMIT BUTTON
+   uses --role-color so each role gets its own color automatically
+===================== */
+.btn-auth {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: filter .2s;
+    background: var(--role-color, var(--orange));
+    color: #fff;
+}
+
+    .btn-auth:hover {
+        filter: brightness(.9);
+    }
+
+/* =====================
+   ROLE BADGE — colored pill at top of card
+   shows which role this auth page is for
+===================== */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(var(--role-color-rgb, 255,122,0), .1);
+    color: var(--role-color, var(--orange));
+    border: 1px solid rgba(var(--role-color-rgb, 255,122,0), .2);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .4px;
+    margin-bottom: 12px;
+}
+
+/* =====================
+   SOCIAL LOGIN BUTTON
+===================== */
+.auth-social {
+    text-decoration: none;
+    color: var(--dark);
+    font-weight: 500;
+    transition: background .2s;
+    font-size: .88rem;
+}
+
+    .auth-social:hover {
+        background: #f8f9fa;
+        color: var(--dark);
+    }
+
+/* =====================
+   OR DIVIDER
+===================== */
+.auth-card hr {
+    margin: .5rem 0;
+}
+
+/* =====================
+   REMEMBER ME / CHECKBOX accent
+===================== */
+.form-check-input:checked {
+    background-color: var(--role-color, var(--orange));
+    border-color: var(--role-color, var(--orange));
+}
+
+/* =====================
+   SHOW/HIDE PASSWORD TOGGLE
+===================== */
+.pass-toggle {
+    border: none;
+    background: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0 6px;
+    transition: color .2s;
+}
+
+    .pass-toggle:hover {
+        color: var(--role-color, var(--orange));
+    }
+
+/* =====================
+   ROLE SWITCHER — bottom of every auth card
+   "Login as Admin / Instructor / Student"
+===================== */
+.role-switcher {
+    border-top: 1px solid #eee;
+    padding-top: 14px;
+    margin-top: 4px;
+}
+
+.role-switcher-label {
+    font-size: .7rem;
+    letter-spacing: .5px;
+    color: #bbb;
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.role-switcher-links {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.role-link {
+    font-size: .78rem;
+    padding: 5px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #dee2e6;
+    background: #fff;
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    transition: .2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .role-link:hover {
+        border-color: var(--role-color, var(--orange));
+        color: var(--role-color, var(--orange));
+    }
+    /* hide the current role link — no point linking to yourself */
+    .role-link.current {
+        display: none;
+    }
+
+/* =====================
+   MINIMAL TOPBAR — auth pages only
+===================== */
+.auth-topbar {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .auth-topbar .brand {
+        font-weight: 700;
+        font-size: 1.05rem;
+        text-decoration: none;
+        color: #1a1d23;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .auth-topbar .brand i {
+            color: var(--orange);
+        }
+/* always orange — brand identifier */
+
+/* =====================
+   MINIMAL FOOTER — auth pages only
+===================== */
+.auth-footer {
+    text-align: center;
+    color: #aaa;
+    font-size: .78rem;
+    padding: 14px;
+    border-top: 1px solid #eee;
+    background: #fff;
+    margin-top: auto;
+}
+
+    .auth-footer a {
+        color: #aaa;
+        text-decoration: none;
+    }
+
+        .auth-footer a:hover {
+            color: var(--orange);
+        }
+
+/* =====================
+   ROLE COLOR TOKENS
+   Set these on <body> or a wrapper per page
+   Student  → --role-color: #ff7a00  (orange)
+   Instructor → --role-color: #4f46e5 (indigo/purple)
+   Admin    → --role-color: #1a6b3c  (dark green)
+===================== */
+
+/* student — default orange, no override needed */
+.role-student {
+    --role-color: #ff7a00;
+    --role-color-rgb: 255, 122, 0;
+}
+
+/* instructor — deep indigo (matches instructor module) */
+.role-instructor {
+    --role-color: #4f46e5;
+    --role-color-rgb: 79, 70, 229;
+}
+
+/* admin — dark green (matches admin module) */
+.role-admin {
+    --role-color: #1a6b3c;
+    --role-color-rgb: 26, 107, 60;
+}

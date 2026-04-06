@@ -1,0 +1,186 @@
+﻿@{
+    Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
+}
+
+<div class="mb-4">
+    <h4 class="fw-bold mb-0">Certificates</h4>
+    <span class="text-muted small">1 earned · 3 in progress</span>
+</div>
+
+<!-- EARNED -->
+<div class="section-card mb-4">
+    <div class="section-card-title">Earned Certificates</div>
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <div class="cert-card-full">
+                <div class="cert-icon-lg"><i class="bi bi-patch-check-fill"></i></div>
+                <h6 class="fw-bold mb-1">UI/UX Design Fundamentals</h6>
+                <p class="text-muted small mb-1">Issued January 15, 2026</p>
+                <p class="text-muted small mb-0">Certificate ID: <strong>SF-2026-00142</strong></p>
+                <div class="cert-actions">
+                    <a href="#" class="btn-cert-action primary"><i class="bi bi-download"></i> Download PDF</a>
+                    <a href="#" class="btn-cert-action"><i class="bi bi-linkedin"></i> Add to LinkedIn</a>
+                    <a href="#" class="btn-cert-action"><i class="bi bi-share"></i> Share</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- IN PROGRESS — locked certs -->
+<div class="section-card">
+    <div class="section-card-title">Complete to Unlock</div>
+    <div class="row g-3">
+
+        <div class="col-md-4">
+            <div class="cert-card-locked">
+                <div class="cert-icon-lg"><i class="bi bi-lock"></i></div>
+                <h6 class="fw-bold mb-1 small">Full Stack Web Development</h6>
+                <p class="text-muted small mb-2">65% complete</p>
+                <div class="progress"><div class="progress-bar" style="width:65%"></div></div>
+                <a href="/Student/CoursePlayer/1" class="btn-resume mt-3 d-inline-block" style="font-size:.78rem;padding:5px 12px">
+                    <i class="bi bi-play-fill me-1"></i>Continue
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="cert-card-locked">
+                <div class="cert-icon-lg"><i class="bi bi-lock"></i></div>
+                <h6 class="fw-bold mb-1 small">Machine Learning A–Z</h6>
+                <p class="text-muted small mb-2">30% complete</p>
+                <div class="progress"><div class="progress-bar" style="width:30%"></div></div>
+                <a href="/Student/CoursePlayer/2" class="btn-resume mt-3 d-inline-block" style="font-size:.78rem;padding:5px 12px">
+                    <i class="bi bi-play-fill me-1"></i>Continue
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">       
+            <div class="cert-card-locked">
+                <div class="cert-icon-lg"><i class="bi bi-lock"></i></div>
+                <h6 class="fw-bold mb-1 small">AWS Cloud Practitioner</h6>
+                <p class="text-muted small mb-2">10% complete</p>
+                <div class="progress"><div class="progress-bar" style="width:10%"></div></div>
+                <a href="/Student/CoursePlayer/3" class="btn-resume mt-3 d-inline-block" style="font-size:.78rem;padding:5px 12px">
+                    <i class="bi bi-play-fill me-1"></i>Continue
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+/*
+==================
+Certificate CSS
+==================*/
+
+<style>
+    cert-card-full {
+        background: linear-gradient(135deg, #fffaf5 0%, #fff 60%);
+        border: 1.5px solid rgba(255,122,0,.18);
+        border-radius: 16px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+    }
+
+    .cert-card-full:hover {
+        box-shadow: 0 8px 28px rgba(255,122,0,.12);
+        transform: translateY(-3px);
+    }
+    /* decorative corner ribbon */
+    .cert-card-full::before {
+        content: '';
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 100px;
+        height: 100px;
+        background: var(--orange-soft);
+        border-radius: 50%;
+    }
+
+    .cert-icon-lg {
+        width: 56px;
+        height: 56px;
+        background: var(--orange-soft);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        color: var(--orange);
+        margin-bottom: 12px;
+    }
+
+    /* locked cert — courses not yet completed */
+    .cert-card-locked {
+        background: #f8f9fa;
+        border: 1.5px dashed #dee2e6;
+        border-radius: 16px;
+        padding: 24px;
+        opacity: .7;
+    }
+
+        .cert-card-locked .cert-icon-lg {
+            background: #eee;
+            color: #aaa;
+        }
+
+    /* share/download button row */
+    .cert-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-cert-action {
+        font-size: .78rem;
+        padding: 5px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        color: var(--dark);
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: .2s;
+    }
+
+        .btn-cert-action:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .btn-cert-action.primary {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: #fff;
+        }
+
+            .btn-cert-action.primary:hover {
+                background: var(--orange-dark);
+            }
+
+    /* empty state */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+    }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: .3;
+            margin-bottom: 16px;
+        }
+</style>

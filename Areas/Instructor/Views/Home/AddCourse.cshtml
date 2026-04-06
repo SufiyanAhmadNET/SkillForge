@@ -1,0 +1,42 @@
+@* @model CourseFormViewModel *@
+
+@{
+    ViewData["Title"] = "Add Course";
+    Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
+}
+<main class="p-4 flex-grow-1 inst-bg">
+    @* page header *@
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h5 class="fw-bold mb-0">Add New Course</h5>
+            <p class="text-muted mb-0" style="font-size:13px;">
+                Saved as Draft first — submit for admin review when ready
+            </p>
+        </div>
+        <a asp-action="MyCourses" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Cancel
+        </a>
+    </div>
+    @* form posts to AddCourse POST action *@
+    <form asp-action="AddCourse" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        @*  partial View *@
+       @await Html.PartialAsync("_CourseForm")
+ 
+        @* actions *@
+        <div class="d-flex gap-2 mt-3">
+            @* saves Status = Draft *@
+            <button type="submit" name="action" value="draft"
+                    class="btn btn-outline-secondary px-4 fw-semibold">
+                <i class="bi bi-floppy me-1"></i>Save as Draft
+            </button>
+            @* saves + flags PendingReview — admin gets notified *@
+            <button type="submit" name="action" value="submit"
+                    class="btn fw-semibold px-4" style="background:var(--orange);color:#fff;border:none;">
+                <i class="bi bi-send me-1"></i>Submit for Review
+            </button>
+        </div>
+    </form>
+</main>
+<script src="/js/Discount.js"></script>

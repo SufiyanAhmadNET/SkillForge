@@ -1,0 +1,192 @@
+﻿
+@{
+    ViewData["Title"] = "Courses";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<body>
+<main class="p-4 flex-grow-1 admin-bg">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="page-title-bar">
+            <h5 class="fw-bold mb-0">Course Management</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">Monitor all courses across the platform.</p>
+        </div>
+        <a href="admin-reports.html" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </a>
+    </div>
+
+    <!-- Quick stat pills — fast overview -->
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+        <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
+            <span class="badge bg-success">183</span><span style="font-size:13px;">Active</span>
+        </div>
+        <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
+            <span class="badge bg-secondary">94</span><span style="font-size:13px;">Completed</span>
+        </div>
+        <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
+            <span class="badge bg-warning text-dark">12</span><span style="font-size:13px;">Pending Review</span>
+        </div>
+    </div>
+
+    <!-- Filter row -->
+    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="input-group input-group-sm" style="max-width:260px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control" placeholder="Search courses…">
+        </div>
+        <select class="form-select form-select-sm" style="max-width:160px;">
+            <option>All Categories</option>
+            <option>Software Dev</option>
+            <option>Data Science</option>
+            <option>AI / ML</option>
+            <option>DevOps</option>
+        </select>
+        <select class="form-select form-select-sm" style="max-width:140px;">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>Completed</option>
+            <option>Pending</option>
+        </select>
+        <small class="text-muted ms-auto">Showing 6 of 289 courses</small>
+    </div>
+
+    <!-- COURSES TABLE -->
+    <div class="card border-0 admin-card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Course</th>
+                        <th>Instructor</th>
+                        <th>Category</th>
+                        <th>Enrolled</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="text-muted">1</td>
+                        <td class="fw-semibold">Full Stack Web Development</td>
+                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Suresh Kumar</a></td>
+                        <td><span class="badge bg-light text-dark border">Software Dev</span></td>
+                        <td>840</td>
+                        <td>12 weeks</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">2</td>
+                        <td class="fw-semibold">Data Science with AI</td>
+                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Neha Verma</a></td>
+                        <td><span class="badge bg-light text-dark border">Data Science</span></td>
+                        <td>890</td>
+                        <td>16 weeks</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">3</td>
+                        <td class="fw-semibold">DevOps and Cloud Computing</td>
+                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Suresh Kumar</a></td>
+                        <td><span class="badge bg-light text-dark border">DevOps</span></td>
+                        <td>430</td>
+                        <td>10 weeks</td>
+                        <td><span class="badge bg-secondary">Completed</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-success">Reopen</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">4</td>
+                        <td class="fw-semibold">Advanced ML & AI</td>
+                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Anjali Singh</a></td>
+                        <td><span class="badge bg-light text-dark border">AI / ML</span></td>
+                        <td>560</td>
+                        <td>20 weeks</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">5</td>
+                        <td class="fw-semibold">React & Node.js Bootcamp</td>
+                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Suresh Kumar</a></td>
+                        <td><span class="badge bg-light text-dark border">Software Dev</span></td>
+                        <td>280</td>
+                        <td>8 weeks</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">6</td>
+                        <td class="fw-semibold">Cybersecurity Fundamentals</td>
+                        <td class="text-muted">—</td>
+                        <td><span class="badge bg-light text-dark border">Security</span></td>
+                        <td>—</td>
+                        <td>12 weeks</td>
+                        <td><span class="badge bg-warning text-dark">Pending</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">Review</button>
+                                <button class="btn btn-sm btn-success">Approve</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <small class="text-muted">Showing 1–6 of 289 courses</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+</div>
+
+</body>

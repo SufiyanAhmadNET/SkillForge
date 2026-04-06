@@ -1,0 +1,169 @@
+﻿
+@{
+    ViewData["Title"] = "Students";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<body>
+<main class="p-4 flex-grow-1 admin-bg">
+
+    <!-- Page title + export button -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="page-title-bar">
+            <h5 class="fw-bold mb-0">Student List</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">All registered students on SkillForge.</p>
+        </div>
+        <!-- export goes to Reports later, wired via controller -->
+        <a href="admin-reports.html" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </a>
+    </div>
+
+    <!-- Filter row -->
+    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="input-group input-group-sm" style="max-width:260px;">
+            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control" placeholder="Search by name or email…">
+        </div>
+        <!-- status filter dropdown -->
+        <select class="form-select form-select-sm" style="max-width:150px;">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>Inactive</option>
+        </select>
+        <small class="text-muted ms-auto">Showing 6 of 50,240 students</small>
+    </div>
+
+    <!-- STUDENTS TABLE -->
+    <div class="card border-0 admin-card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Enrolled Courses</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="text-muted">1</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar" style="background:var(--orange-soft);color:var(--orange);">A</div>Aarav Sharma</div></td>
+                        <td class="text-muted">aarav.s@email.com</td>
+                        <td>Full Stack, DSA</td>
+                        <td class="text-muted small">Jan 10, 2026</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">2</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-primary bg-opacity-10 text-primary">P</div>Priya Patel</div></td>
+                        <td class="text-muted">priya.p@email.com</td>
+                        <td>Data Science</td>
+                        <td class="text-muted small">Feb 3, 2026</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">3</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-secondary bg-opacity-10 text-secondary">R</div>Rohan Khan</div></td>
+                        <td class="text-muted">rohan.k@email.com</td>
+                        <td>DevOps, Cloud</td>
+                        <td class="text-muted small">Dec 15, 2025</td>
+                        <td><span class="badge bg-secondary">Inactive</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-success">Activate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">4</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-success bg-opacity-10 text-success">M</div>Meera Iyer</div></td>
+                        <td class="text-muted">meera.i@email.com</td>
+                        <td>ML & AI</td>
+                        <td class="text-muted small">Mar 1, 2026</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">5</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-info bg-opacity-10 text-info">S</div>Sneha Desai</div></td>
+                        <td class="text-muted">sneha.d@email.com</td>
+                        <td>Full Stack Dev</td>
+                        <td class="text-muted small">Feb 20, 2026</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="text-muted">6</td>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-warning bg-opacity-10 text-warning">D</div>Dev Patel</div></td>
+                        <td class="text-muted">dev.p@email.com</td>
+                        <td>Advanced AI</td>
+                        <td class="text-muted small">Jan 28, 2026</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-secondary">View</button>
+                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <small class="text-muted">Showing 1–6 of 50,240 students</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+</div>
+
+</body>

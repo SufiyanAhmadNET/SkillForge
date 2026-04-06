@@ -1,0 +1,265 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+@* ALert Box for Admin Login Success Message *@
+@if (TempData["LoginSuccess"] != null)
+{
+    <div class="success-alert" id="successAlert">
+        ✅ @TempData["LoginSuccess"]
+        <span onclick="document.getElementById('successAlert').style.display='none'"
+              style="margin-left:20px; cursor:pointer; font-weight:bold; font-size:16px; opacity:0.7;">
+            ✕
+        </span>
+    </div>
+}
+
+<style>
+    .success-alert {
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        padding: 14px 28px;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        font-weight: 500;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 280px;
+        justify-content: space-between;
+        animation: fadeOut 0.5s ease 2.5s forwards;
+    }
+
+    keyframes fadeOut {
+        to
+
+    {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    }
+</style>
+
+<body>
+<main class="p-4 flex-grow-1 admin-bg">
+
+    <!-- Welcome row -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="page-title-bar">
+            <h5 class="fw-bold mb-0">Welcome back, Admin 👋</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">Here's what's happening on SkillForge today.</p>
+        </div>
+
+        <span class="badge rounded-pill px-3 py-2" style="background:var(--orange);font-size:12px;">
+            <i class="bi bi-circle-fill me-1" style="font-size:8px;"></i>Live
+        </span>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card border-0 stat-card">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-people-fill"></i></div>
+                    <div>
+                        <div class="stat-label">Total Students</div>
+                        <div class="stat-value">50,240</div>
+                        <small class="text-success">↑ 12% this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 stat-card">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-person-video3"></i></div>
+                    <div>
+                        <div class="stat-label">Total Instructors</div>
+                        <div class="stat-value">148</div>
+                        <small class="text-success">↑ 3 new this week</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 stat-card">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <!-- orange — brand tie-in -->
+                    <div class="stat-icon" style="background:var(--orange-soft);color:var(--orange);"><i class="bi bi-journal-check"></i></div>
+                    <div>
+                        <div class="stat-label">Active Courses</div>
+                        <div class="stat-value">183</div>
+                        <small class="text-success">↑ 8 this month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 stat-card">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <div class="stat-icon bg-secondary bg-opacity-10 text-secondary"><i class="bi bi-trophy-fill"></i></div>
+                    <div>
+                        <div class="stat-label">Completed Courses</div>
+                        <div class="stat-value">94</div>
+                        <small class="text-muted">All time</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /STAT CARDS -->
+    <!-- PENDING APPROVALS preview -->
+    <div class="card border-0 admin-card mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-person-check me-2 text-success"></i>Instructor Approvals</h6>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger">3 Pending</span>
+                <a href="admin-approvals.html" class="small" style="color:var(--orange);">View All →</a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>Instructor</th><th>Specialisation</th><th>Applied</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-success bg-opacity-10 text-success">K</div>Karan Mehta</div></td>
+                        <td class="text-muted">DevOps & Cloud</td>
+                        <td><span class="badge bg-warning text-dark">2 days ago</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-approvals.html" class="btn btn-sm btn-outline-secondary">Review</a>
+                                <button class="btn btn-sm btn-success">Approve</button>
+                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-primary bg-opacity-10 text-primary">T</div>Tanvi Joshi</div></td>
+                        <td class="text-muted">Machine Learning</td>
+                        <td><span class="badge bg-warning text-dark">4 days ago</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="admin-approvals.html" class="btn btn-sm btn-outline-secondary">Review</a>
+                                <button class="btn btn-sm btn-success">Approve</button>
+                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- STUDENT LIST + INSTRUCTOR LIST -->
+    <div class="row g-3">
+
+        <!-- Students -->
+        <div class="col-lg-6">
+            <div class="card border-0 admin-card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-people me-2 text-success"></i>Recent Students</h6>
+                    <a href="admin-students.html" class="small" style="color:var(--orange);">View All →</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>Student</th><th>Courses</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar" style="background:var(--orange-soft);color:var(--orange);">A</div>Aarav Sharma</div></td>
+                                <td class="text-muted small">Full Stack, DSA</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-primary bg-opacity-10 text-primary">P</div>Priya Patel</div></td>
+                                <td class="text-muted small">Data Science</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-secondary bg-opacity-10 text-secondary">R</div>Rohan Khan</div></td>
+                                <td class="text-muted small">DevOps, Cloud</td>
+                                <td><span class="badge bg-secondary">Inactive</span></td>
+                            </tr>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-success bg-opacity-10 text-success">M</div>Meera Iyer</div></td>
+                                <td class="text-muted small">ML & AI</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructors -->
+        <div class="col-lg-6">
+            <div class="card border-0 admin-card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-person-video3 me-2 text-success"></i>Instructor Overview</h6>
+                    <a href="admin-instructors.html" class="small" style="color:var(--orange);">View All →</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr><th>Instructor</th><th>Course</th><th>Status</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar" style="background:var(--orange-soft);color:var(--orange);">S</div>Suresh Kumar</div></td>
+                                <td class="text-muted small">Full Stack Dev</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td><a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a></td>
+                            </tr>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-primary bg-opacity-10 text-primary">N</div>Neha Verma</div></td>
+                                <td class="text-muted small">Data Science, ML</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td><a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a></td>
+                            </tr>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-warning bg-opacity-10 text-warning">K</div>Karan Mehta</div></td>
+                                <td class="text-muted small">DevOps & Cloud</td>
+                                <td><span class="badge bg-warning text-dark">Pending</span></td>
+                                <td><a href="admin-approvals.html" class="btn btn-sm btn-outline-secondary">Review</a></td>
+                            </tr>
+                            <tr>
+                                <td><div class="d-flex align-items-center gap-2"><div class="tbl-avatar bg-success bg-opacity-10 text-success">A</div>Anjali Singh</div></td>
+                                <td class="text-muted small">Advanced AI</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td><a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /Student + Instructor row -->
+
+</main>
+
+</div>
+</div>
+
+</body>

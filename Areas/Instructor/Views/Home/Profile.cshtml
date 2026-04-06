@@ -1,0 +1,144 @@
+﻿
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
+}
+
+<body>
+<main class="p-4 flex-grow-1 inst-bg">
+
+    <div class="mb-4 page-title-bar">
+        <h5 class="fw-bold mb-0">My Profile</h5>
+        <p class="text-muted mb-0" style="font-size:14px;">Update your public profile and account settings.</p>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Left: avatar + quick info -->
+        <div class="col-lg-3">
+            <div class="card border-0 inst-card text-center p-4">
+                <div class="profile-avatar-lg mx-auto mb-3" style="background:var(--purple-soft);color:var(--purple);">S</div>
+                <h6 class="fw-bold mb-0">Suresh Kumar</h6>
+                <p class="text-muted small mb-2">Full Stack Developer</p>
+                <span class="badge bg-success mb-3">Active</span>
+                <input type="file" class="form-control form-control-sm" accept="image/*">
+                <small class="text-muted d-block mt-1">Change profile photo</small>
+            </div>
+        </div>
+
+        <!-- Right: edit forms -->
+        <div class="col-lg-9">
+
+            <!-- Personal info -->
+            <div class="card border-0 inst-card mb-3">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold">Personal Information</h6>
+                </div>
+                <div class="card-body">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;">First Name</label>
+                            <input type="text" class="form-control" value="Suresh">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;">Last Name</label>
+                            <input type="text" class="form-control" value="Kumar">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;">Email</label>
+                            <!-- email usually not editable without verification — disabled -->
+                            <input type="email" class="form-control" value="suresh.k@email.com" disabled>
+                            <small class="text-muted">Contact support to change email</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;">Phone</label>
+                            <input type="tel" class="form-control" value="+91 98765 43210">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size:13px;">Location</label>
+                        <input type="text" class="form-control" value="Mumbai, India">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size:13px;">Bio</label>
+                        <textarea class="form-control" rows="3">Senior full stack developer with 8 years of industry experience. Worked at Infosys and TCS. Passionate about teaching practical, job-ready skills.</textarea>
+                    </div>
+
+                    <!-- Skills tags — comma separated, in .NET store as a string or list -->
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size:13px;">Skills / Expertise</label>
+                        <input type="text" class="form-control" value="React, Node.js, JavaScript, AWS, MongoDB">
+                        <small class="text-muted">Comma separated</small>
+                    </div>
+
+                    <button class="btn fw-semibold px-4" style="background:var(--orange);color:#fff;border:none;">
+                        Save Changes
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- Social links -->
+            <div class="card border-0 inst-card mb-3">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold">Social Links</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;"><i class="bi bi-linkedin me-1 text-primary"></i>LinkedIn</label>
+                            <input type="url" class="form-control" placeholder="https://linkedin.com/in/…">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;"><i class="bi bi-github me-1"></i>GitHub</label>
+                            <input type="url" class="form-control" placeholder="https://github.com/…">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size:13px;"><i class="bi bi-globe me-1"></i>Personal Website</label>
+                            <input type="url" class="form-control" placeholder="https://…">
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm mt-3 px-4">Save Links</button>
+                </div>
+            </div>
+
+            <!-- Change password -->
+            <div class="card border-0 inst-card">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold">Change Password</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px;">Current Password</label>
+                            <input type="password" class="form-control" placeholder="Current password">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px;">New Password</label>
+                            <input type="password" class="form-control" placeholder="New password">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" style="font-size:13px;">Confirm New Password</label>
+                            <input type="password" class="form-control" placeholder="Confirm password">
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm mt-3 px-4">Update Password</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+</div>
+
+</body>

@@ -1,0 +1,52 @@
+@* @model CourseFormViewModel *@
+@{
+    ViewData["Title"] = "Edit Course";
+    Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
+}
+
+<main class="p-4 flex-grow-1 inst-bg">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h5 class="fw-bold mb-0">Edit Course</h5>
+            {{!-- model title shown so instructor knows which course --}}
+            <p class="text-muted mb-0" style="font-size:13px;">Editing: @Model.Title</p>
+        </div>
+        <a asp-action="CourseDetails" asp-route-id="@Model.Id"
+           class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Cancel
+        </a>
+    </div>
+
+    @if (false)
+    {
+        <div class="alert alert-warning d-flex align-items-center gap-2 mb-3" style="font-size:13px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>This course is <strong>Published</strong>. Changes will go back to <strong>Pending Review</strong>.</span>
+        </div>
+    }
+
+    {{!-- same form, model is pre-filled from DB --}}
+    <form asp-action="EditCourse" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" />
+
+       @* partial view*@
+        @await Html.PartialAsync("_CourseForm")
+
+        <div class="d-flex gap-2 mt-3">
+
+            <button type="submit" name="action" value="draft"
+                    class="btn btn-outline-secondary px-4 fw-semibold">
+                <i class="bi bi-floppy me-1"></i>Save Changes
+            </button>
+
+            {{!-- re-submit for review after edit --}}
+            <button type="submit" name="action" value="submit"
+                    class="btn fw-semibold px-4" style="background:var(--orange);color:#fff;border:none;">
+                <i class="bi bi-send me-1"></i>Submit for Review
+            </button>
+        </div>
+    </form>
+</main>
+<script src="/js/Discount.js"></script>
