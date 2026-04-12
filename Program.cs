@@ -6,7 +6,7 @@ using SkillForge.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Load optional secret configuration (not checked into source)
-var secretConfigPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.secrect.json");
+var secretConfigPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.secret.json");
 if (File.Exists(secretConfigPath))
 {
     builder.Configuration.AddJsonFile(secretConfigPath, optional: true, reloadOnChange: false);
@@ -20,6 +20,9 @@ builder.Services.AddScoped<EmailService>();
 
 //Register AUthService
 builder.Services.AddScoped<AuthService>();
+
+//Register Course service
+builder.Services.AddScoped<CourseService>();
 
 //Register Database
 builder.Services.AddDbContext<SkillForgeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

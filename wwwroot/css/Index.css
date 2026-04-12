@@ -1,3 +1,11 @@
+/* DESKTOP DEFAULT */
+.sf-home-header {
+    display: none !important;
+}
+
+.navbar {
+    display: flex !important;
+}
 
 :root {
     --orange: #ff7a00;
@@ -460,6 +468,16 @@ body {
     opacity: 0.5;
 }
 
+/* DESKTOP DEFAULT */
+.sf-home-header {
+    display: none !important;
+}
+
+.navbar {
+    display: flex !important;
+}
+
+
 /* =====================
    MOBILE RESPONSIVE 
 ===================== */
@@ -485,22 +503,19 @@ body {
         display: none;
     }
 
-    /* SHOW MOBILE HEADER */
-    .sf-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 14px 16px;
+    .sf-home-header {
+        display: flex !important;
     }
 
-    /* HIDE DESKTOP NAVBAR */
     .navbar {
         display: none !important;
     }
+      
+    
 }
 
 /* MOBILE MENU (OUTSIDE media query) */
-.sf-header {
+.sf-home-header{
     display: none;
 }
 

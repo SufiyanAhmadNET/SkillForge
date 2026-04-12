@@ -12,18 +12,16 @@ namespace SkillForge.Areas.User.Controllers
         public required SkillForgeDbContext _context { get; set; }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            // read id from claims 
-            var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (!string.IsNullOrEmpty(idClaim))
+            // claims 
+            var id = CurrentUserId();
+            if (id.HasValue)
             {
-                int id = int.Parse(idClaim);
-                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == id);
+                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == id.Value);
 
-                ViewBag.Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                ViewBag.Email = CurrentUserEmail(); //helper method
                 ViewBag.FirstName = profile?.FirstName;
                 ViewBag.LastName = profile?.LastName;
-                ViewBag.PhotoPath = profile?.PhotoPath;
+                ViewBag.PhotoPath = CurrentUserPhotoPath(); //helper method
             }
 
             base.OnActionExecuting(context);

@@ -1,14 +1,8 @@
 ﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SkillForge.Areas.User.Models;
-using SkillForge.Data;
 using SkillForge.Services;
-using System;
-using System.Security.Claims;
 
 namespace SkillForge.Areas.User.Controllers
 {
@@ -140,6 +134,8 @@ namespace SkillForge.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
         {
+            Console.WriteLine("Hit Instructor.GoogleLogin");
+
             try
             {
                     if (request == null || string.IsNullOrEmpty(request.Token))

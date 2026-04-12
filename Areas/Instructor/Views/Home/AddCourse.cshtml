@@ -1,4 +1,4 @@
-@* @model CourseFormViewModel *@
+ @model CourseVM
 
 @{
     ViewData["Title"] = "Add Course";
@@ -17,12 +17,32 @@
             <i class="bi bi-arrow-left me-1"></i>Cancel
         </a>
     </div>
-    @* form posts to AddCourse POST action *@
-    <form asp-action="AddCourse" method="post" enctype="multipart/form-data">
+
+    @* form *@
+    <form asp-area="Instructor" asp-controller="Home" asp-action="AddCourse" method="post" enctype="multipart/form-data">
+          
         @Html.AntiForgeryToken()
 
+         @* Validation Messages *@
+        @if ( TempData["EmptyFields"] != null)
+        {
+            <div>@TempData["EmptyFields"]</div>
+        }
+       
+            @if ( TempData["CourseAdded"] != null)
+        {
+            <div>@TempData["CourseAdded"]</div>
+        }  
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                <strong>Error:</strong> @ViewBag.ErrorMessage
+            </div>
+        }
+        
+
         @*  partial View *@
-       @await Html.PartialAsync("_CourseForm")
+      @await Html.PartialAsync("_CourseForm", Model)
  
         @* actions *@
         <div class="d-flex gap-2 mt-3">

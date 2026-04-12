@@ -1,22 +1,23 @@
 ﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SkillForge.Areas.Instructor.Models;
+using Microsoft.Extensions.Logging;
+using SkillForge.Areas.User.Controllers;
 using SkillForge.Areas.User.Models;
-using SkillForge.Data;
 using SkillForge.Services;
-using System.Security.Claims;
-
+using System.Data;
+using System.Diagnostics;
 namespace SkillForge.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    public class AuthController : InstructorBaseController
+    public class AuthController : UserBaseController
     {
+        private readonly ILogger<AuthController> _logger;
         private readonly AuthService _authService;
         private readonly IConfiguration _config;
-        public AuthController(AuthService authService, IConfiguration config)
+        public AuthController(AuthService authService, IConfiguration config, ILogger<AuthController> logger)
         {
+            _logger = logger;
             _authService = authService;
             _config = config;
         }
@@ -27,13 +28,13 @@ namespace SkillForge.Areas.Instructor.Controllers
         public IActionResult InstructorRegistration()
         {
             return View();
-        } 
-        [HttpPost]  
+        }
+        [HttpPost]
         public IActionResult InstructorRegistration(string Email, string Password, string ConfirmPassword)
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             //pass paramters to Auth Service CLass
-            var result = _authService.Register(Email,Password,ConfirmPassword,"Instructor",baseUrl);
+            var result = _authService.Register(Email, Password, ConfirmPassword, "Instructor", baseUrl);
 
             //Check Invalid or Valid
             //empty fields
@@ -92,7 +93,7 @@ namespace SkillForge.Areas.Instructor.Controllers
             return View();
         }
 
-        [HttpPost]  
+        [HttpPost]
         public async Task<IActionResult> InstructorLogin(string Email, string Password)
         {
             var result = _authService.Login(Email, Password, "Instructor");
@@ -129,14 +130,16 @@ namespace SkillForge.Areas.Instructor.Controllers
             //Login
             await SigninUser(result.Id, result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
             return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
+        
+        
         }//Login Method
 
-
-
-        //########################
+            
+         //########################
         [HttpPost]
      public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
         {
+            Console.WriteLine("Hit Instructor.GoogleLogin");
             try
             {
                 // validation 
@@ -153,7 +156,7 @@ namespace SkillForge.Areas.Instructor.Controllers
                     return Unauthorized("Google verification failed.");
                 }
 
-                // 3. Call Auth Service
+                // Call Auth Service
                 var result = _authService.GoogleAuth(
                     verify.Email,
                     verify.GivenName,
@@ -161,12 +164,12 @@ namespace SkillForge.Areas.Instructor.Controllers
                     verify.Subject,
                     verify.Picture,
                     "Instructor"
-                );
+                );      
 
                 if (result == null || !result.Success)
                 {
                     TempData["Alert"] = "Google login failed";
-                    return RedirectToAction("StudentLogin");
+                    return RedirectToAction("InstructorLogin");
                 }
 
                 // Sign in user
@@ -181,11 +184,11 @@ namespace SkillForge.Areas.Instructor.Controllers
             }
             catch (InvalidJwtException )
             {
-                // Token invalid or tampered
+                // Token invalid
                 return Unauthorized("Invalid Google token.");
             }
             catch (Exception )
-            {       
+            {
                return StatusCode(500, "Something went wrong during login.");
             }
         }

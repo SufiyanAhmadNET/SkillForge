@@ -163,6 +163,50 @@
             </form>
         </div>
     </section>
+
+    <script>
+        // Google Identity Services callback
+        // Called by data-callback="handleGoogleLogin"
+        async function handleGoogleLogin(response) {
+            try {
+                if (!response || !response.credential) {
+                    alert('Google login failed: no credential.');
+                    return;
+                }
+
+                const token = response.credential;
+
+                const res = await fetch('/Instructor/Auth/GoogleLogin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                // If server redirected, follow that redirection
+                if (res.redirected) {
+                    window.location = res.url;
+                    return;
+                }
+
+                if (res.ok) {
+                    // on success redirect to dashboard
+                    window.location = '/Instructor/Home/Dashboard';
+                    return;
+                }
+
+                // failure: show message and stay on page
+                const text = await res.text();
+                console.error('Google login failed:', text);
+                alert('Google login failed. Check console for details.');
+            } catch (err) {
+                console.error('Google login error:', err);
+                alert('Google login error. See console.');
+            }
+        }
+    </script>
 </body>
 
 

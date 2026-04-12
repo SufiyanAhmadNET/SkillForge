@@ -1,18 +1,21 @@
 ﻿namespace SkillForge.Services
 {
-    public enum CourseMessag
+    public enum CourseMessage
     {
         None,
 
         //For Instructor
-        CoursesAdded,
+        EmptyFields,
+        CourseAdded,
         CourseNotAdded,
         SavedToDraft,
         SentForApproval,
         CoursePublished,
         CourseActive,
-        CourseDelete,
+        CourseDeleted,
         CourseUpdate,
+        thumbnailUploaded,
+        thumbnailNotUpload,
 
         //For Student
         PurchaseSUccess,

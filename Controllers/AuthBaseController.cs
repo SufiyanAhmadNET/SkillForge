@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace SkillForge.Controllers
 {
@@ -34,6 +35,40 @@ namespace SkillForge.Controllers
             HttpContext.Session.SetString("UserEmail", Email ?? string.Empty);
             HttpContext.Session.SetString("UserPhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
 
+        }
+
+        // Helpers to read current user info. Prefer claims
+        // fall back to session values written during sign-in.
+        protected int? CurrentUserId()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(idClaim) && int.TryParse(idClaim, out var id))
+            {
+                return id;
+            }
+
+            return HttpContext.Session.GetInt32("UserId");
+        }
+
+        protected string CurrentUserEmail()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (!string.IsNullOrEmpty(email)) return email;
+            return HttpContext.Session.GetString("UserEmail") ?? string.Empty;
+        }
+
+        protected string CurrentUserRole()
+        {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (!string.IsNullOrEmpty(role)) return role;
+            return HttpContext.Session.GetString("UserRole") ?? string.Empty;
+        }
+
+        protected string CurrentUserPhotoPath()
+        {
+            var photo = User.FindFirst("PhotoPath")?.Value;
+            if (!string.IsNullOrEmpty(photo)) return photo;
+            return HttpContext.Session.GetString("UserPhotoPath") ?? "/images/DefaultProfilePhoto.jfif";
         }
     }
 }

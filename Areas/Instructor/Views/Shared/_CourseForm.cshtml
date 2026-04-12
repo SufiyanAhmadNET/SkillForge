@@ -1,9 +1,7 @@
-@* Shared form *@
-@* @model CourseFormViewModel; *@
-@model dynamic
+
+@model CourseVM
 
 <div class="row g-3">
-
     @*  LEFT COLUMN ─ *@
     <div class="col-lg-8">
         @* Basic Info *@
@@ -13,26 +11,27 @@
                     <i class="bi bi-journal-text me-2" style="color:var(--orange)"></i>Basic Information
                 </h6>
             </div>
-            <div class="card-body pt-2">
 
+            <div class="card-body pt-2">
+               @*  title *@
                 <div class="mb-3">
                     <label class="form-label fw-semibold" style="font-size:13px;">
                         Course Title <span class="text-danger">*</span>
                     </label>
                     <input type="text" class="form-control"
-                           placeholder="e.g. Full Stack Web Development">
+                           placeholder="Enter Course Title " name="title">
                     <span class="text-danger small"></span>
                 </div>
-
+              @*  decription *@
                 <div class="mb-3">
                     <label class="form-label fw-semibold" style="font-size:13px;">
                         Short Description <span class="text-danger">*</span>
                     </label>
                     <textarea class="form-control" rows="3"
-                              placeholder="What will students learn in this course?"></textarea>
+                              placeholder="What will students learn in this course?" name="description"></textarea>
                     <span class="text-danger small"></span>
                 </div>
-
+             @* category *@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold" style="font-size:13px;">
@@ -40,7 +39,7 @@
                         </label>
 
                         @* categories from DB - in future*@
-                        <select class="form-select">
+                        <select class="form-select" name="category_id">
                             <option value="">Select category</option>
                             <option value="1">Software Development</option>
                             <option value="2">Data Science</option>
@@ -50,11 +49,13 @@
                         </select>
                         <span class="text-danger small"></span>
                     </div>
+
+                    @* Difficulty *@
                     <div class="col-md-6">
                         <label class="form-label fw-semibold" style="font-size:13px;">
                             Difficulty Level <span class="text-danger">*</span>
                         </label>
-                        <select class="form-select">
+                        <select class="form-select" name="Difficulty">
                             <option value="">Select level</option>
                             <option value="Beginner">Beginner</option>
                             <option value="Intermediate">Intermediate</option>
@@ -63,28 +64,32 @@
                     </div>
                 </div>
 
-                @* pricing row *@
+               
                 <div class="row g-3 mb-3">
+                    @* Duration *@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold" style="font-size:13px;">Duration (weeks)</label>
-                        <input type="number" class="form-control" placeholder="e.g. 12" min="1">
+                        <input type="number" class="form-control" name="Duration_Weeks" placeholder="e.g. 12" min="1">
                     </div>
+                    @* Price *@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold" style="font-size:13px;">
                             Price (₹) <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text bg-light">₹</span>
-                            <input type="number" class="form-control"
+                            <input type="number" class="form-control" name="Actual_Price"
                                    id="originalPrice" placeholder="0 = Free" min="0">
                         </div>
                         <span class="text-danger small"></span>
                     </div>
+
+                    @* dicount Percent *@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold" style="font-size:13px;">Discount (%)</label>
                         <div class="input-group">
                             <input type="number" class="form-control"
-                                   id="discountPct" placeholder="0" min="0" max="100">
+                                   id="discountPct" placeholder="0" min="0" max="100" name="Discount_Percent">
                             <span class="input-group-text bg-light">%</span>
                         </div>
                     </div>
@@ -112,9 +117,10 @@
                 </div>
 
                 @* what students will learn *@
+                @* Ouctcomes *@
                 <div class="mb-0">
                     <label class="form-label fw-semibold" style="font-size:13px;">What Students Will Learn</label>
-                    <textarea class="form-control" rows="4"
+                    <textarea class="form-control" rows="4" name="OutcomesRaw"
                               placeholder="One outcome per line…"></textarea>
                     <small class="text-muted">Each line = one bullet on the course page</small>
                 </div>
@@ -146,14 +152,14 @@
 
                 @* youtube panel *@
                 <div id="ytPanel">
-                    <input type="url" class="form-control"
+                    <input type="url" class="form-control" name="intro_video_url"
                            placeholder="https://youtube.com/watch?v=...">
                     <small class="text-muted">Paste YouTube URL — students see this as preview</small>
                 </div>
 
-                @* upload panel (hidden by default) *@
+                @* upload panel *@
                 <div id="uploadPanel" style="display:none;">
-                    <input type="file" class="form-control" accept="video/*">
+                    <input type="file" class="form-control" accept="video/*" name="intro_video_url">
                     <small class="text-muted">MP4 recommended, max 200MB</small>
                 </div>
 
@@ -186,7 +192,7 @@
                     @* replaced by actual img tag via JS *@
                 </div>
 
-                <input type="file" id="thumbInput"
+                <input type="file" id="thumbInput" name="thumbnail_url"
                        class="form-control form-control-sm" accept="image/*" style="display:none;">
                 <small class="text-muted d-block mt-1">16:9 ratio works best</small>
 

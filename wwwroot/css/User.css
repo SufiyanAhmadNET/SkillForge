@@ -21,6 +21,12 @@
     box-shadow: 0 1px 8px rgba(0,0,0,.05);
 }
 
+@media (max-width: 768px) {
+    .sf-header {
+        padding: 10px 12px;
+    }
+}
+
 /* ─── PAGE BODY — replaces old sidebar + content layout ─── */
 .sf-page-body {
     max-width: 1280px; /* comfy reading width */
@@ -258,7 +264,7 @@
             transform: scale(1.12);
         }
 
-/* ─── Avatar / profile dropdown ─── */
+/* ─── profile dropdown ─── */
 .sf-profile {
     position: relative;
     cursor: pointer;
@@ -389,7 +395,7 @@
     color: #c62828;
 }
 
-/* ─── DASHBOARD COMPONENTS (used in Dashboard.cshtml) ─── */
+/* ─── DASHBOARD COMPONENTS  ─── */
 
 /* orange welcome strip */
 .welcome-banner {

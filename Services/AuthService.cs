@@ -3,7 +3,9 @@ using SkillForge.Areas.Instructor.Models;
 using SkillForge.Areas.User.Models;
 using SkillForge.Data;
 using SkillForge.Models;
+using System.Reflection;
 using System.Runtime.Intrinsics.X86;
+
 namespace SkillForge.Services
 {
     public class AuthService
@@ -208,28 +210,38 @@ namespace SkillForge.Services
         {
             try
             {
+                // debug log role
+                Console.WriteLine("ROLE: " + Role);
+
                 // basic safety check, don't allow empty critical values
                 if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(GoogleId))
                     return new AuthResult { Success = false, status = AuthMessage.EmptyFields };
 
                 // normalize email to avoid duplicates like A@gmail vs a@gmail
                 Email = Email.Trim().ToLower();
-                // transaction
+
+                // transaction ensures we don't create partial records
                 using var transaction = _context.Database.BeginTransaction();
+
                 if (Role == "Student")
                 {
-                    // find user by google id
+                    // STUDENT: do all student-only logic here
+
+                    // find user by google id first
                     var student = _context.Students.FirstOrDefault(s => s.GoogleId == GoogleId);
-                    // if not found, the check email
+
+                    // if not found by google id, try matching by email
                     if (student == null)
                     {
                         student = _context.Students.FirstOrDefault(s => s.Email == Email);
-                        // link google id to existing account instead of creating duplicate
                         if (student != null)
                         {
+                            // link google id to existing account
                             student.GoogleId = GoogleId;
+                            student.IsVerified = true;
                             _context.SaveChanges();
                             transaction.Commit();
+
                             return new AuthResult
                             {
                                 Success = true,
@@ -237,12 +249,12 @@ namespace SkillForge.Services
                                 Email = student.Email,
                                 Role = "Student",
                                 Id = student.Id,
-                                PhotoPath = Picture
+                                PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                             };
                         }
                     }
 
-                    // existing user login
+                    // existing user login (found by google id)
                     if (student != null)
                     {
                         transaction.Commit();
@@ -256,78 +268,91 @@ namespace SkillForge.Services
                             PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                         };
                     }
-                    // create new student 
+
+                    // create new student
                     student = new Student
                     {
                         Email = Email,
                         GoogleId = GoogleId,
                         Password = null,
                         VerificationToken = null,
-                        IsVerified = true,
-                        //PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
+                        IsVerified = true
                     };
 
                     _context.Students.Add(student);
                     _context.SaveChanges();
 
-                    // create profile 
-                    var profile = new StudentProfile
+                    // create profile (keep mobile null by default)
+                    var studentProfile = new StudentProfile
                     {
                         StudentId = student.Id,
                         FirstName = FirstName ?? "Guest",
                         LastName = LastName ?? "User",
+                                Mobile = null,
                         PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                     };
 
-                    _context.StudentProfiles.Add(profile);
+                    _context.StudentProfiles.Add(studentProfile);
                     _context.SaveChanges();
 
                     transaction.Commit();
 
-                    return new AuthResult { Success = true, status = AuthMessage.LoginSuccess, Email = student.Email,
-                                            Role = "Student",Id = student.Id};                                                                               
-                }//Student Role
+                    return new AuthResult
+                    {
+                        Success = true,
+                        status = AuthMessage.LoginSuccess,
+                        Email = student.Email,
+                        Role = "Student",
+                        Id = student.Id,
+                        PhotoPath = studentProfile.PhotoPath
+                    };
+                } // end Student block
 
 
                 if (Role == "Instructor")
                 {
-                    // find instructor by google id
-                    var instructor = _context.instructors.FirstOrDefault(i => i.GoogleId == GoogleId);
+                    // INSTRUCTOR: fully separate instructor-only logic
 
-                    // email check
+                    // find instructor by GoogleId first
+                        var instructor = _context.instructors.FirstOrDefault(i => i.GoogleId == GoogleId);
+
+                    // if not found by GoogleId, try match by email
                     if (instructor == null)
                     {
                         instructor = _context.instructors.FirstOrDefault(i => i.Email == Email);
 
-                        // link existing account with google id
                         if (instructor != null)
                         {
+                            // link google id to existing instructor account and mark verified
                             instructor.GoogleId = GoogleId;
+                            instructor.IsVerified = true;
                             _context.SaveChanges();
-
                             transaction.Commit();
 
                             return new AuthResult
                             {
                                 Success = true,
+                                status = AuthMessage.LoginSuccess,
                                 Email = instructor.Email,
                                 Id = instructor.Id,
-                                Role = "Instructor"
+                                Role = "Instructor",
+                                PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                             };
                         }
                     }
 
-                    // existing instructor login
+                    // existing instructor found by GoogleId
                     if (instructor != null)
                     {
                         transaction.Commit();
-
                         return new AuthResult
                         {
                             Success = true,
+                            status = AuthMessage.LoginSuccess,
                             Email = instructor.Email,
                             Id = instructor.Id,
-                            Role = "Instructor"
+                            Role = "Instructor",
+                            PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                         };
                     }
 
@@ -344,15 +369,15 @@ namespace SkillForge.Services
                     _context.SaveChanges();
 
                     // create instructor profile
-                    var profile = new InstructorProfile
+                    var instructorProfile = new InstructorProfile
                     {
                         InstructorId = instructor.Id,
-                        FirstName = FirstName ?? "",
-                        LastName = LastName ?? "",
-                        PhotoPath = Picture
+                        FirstName = FirstName ?? string.Empty,
+                        LastName = LastName ?? string.Empty,
+                        PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                     };
 
-                    _context.instructorProfiles.Add(profile);
+                    _context.instructorProfiles.Add(instructorProfile);
                     _context.SaveChanges();
 
                     transaction.Commit();
@@ -360,23 +385,24 @@ namespace SkillForge.Services
                     return new AuthResult
                     {
                         Success = true,
+                        status = AuthMessage.LoginSuccess,
                         Email = instructor.Email,
                         Id = instructor.Id,
                         Role = "Instructor",
-                         PhotoPath = Picture
+                        PhotoPath = instructorProfile.PhotoPath
                     };
-                }
+                } // end Instructor block
 
-                // if failded
+                // unknown role
                 return new AuthResult { Success = false, status = AuthMessage.LoginFailed };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // any failure 
+                // log to console for debugging
+                Console.WriteLine($"GoogleAuth exception: {ex.Message}");
                 return new AuthResult { Success = false, status = AuthMessage.LoginFailed };
             }
         }
-        
 
 
 

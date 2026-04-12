@@ -85,7 +85,7 @@ namespace SkillForge.Areas.User.Controllers
 
                 // save to wwwroot/images/profiles/
                 var path = Path.Combine("wwwroot", "images", "profiles", fileName);
-
+                //save on server
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
                     PhotoFile.CopyTo(stream); // write file to disk
@@ -97,7 +97,7 @@ namespace SkillForge.Areas.User.Controllers
             else
             {
                 // no new photo uploaded
-                // keep existing photo from DB — dont overwrite with null
+                // keep existing photo from DB 
                 var existing = _context.StudentProfiles.FirstOrDefault(s => s.StudentId == id);
                profile.PhotoPath = existing?.PhotoPath
                                     ?? "/images/DefaultProfilePhoto.jfif";
@@ -105,7 +105,7 @@ namespace SkillForge.Areas.User.Controllers
          
             var existingprofile = _context.StudentProfiles.FirstOrDefault(s => s.StudentId == id);
             if (existingprofile == null)
-            {
+            {     // auto model binding by ef core
                 _context.Add(profile);
                 _context.SaveChanges();
                 return RedirectToAction("Dashboard");
