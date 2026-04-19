@@ -31,7 +31,7 @@ namespace SkillForge.Services
             {
                 // basic check, avoid empty input
                 if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password) || string.IsNullOrWhiteSpace(ConfirmPassword))
-                    return new AuthResult { Success = false, status = AuthMessage.EmptyFields };      
+                    return new AuthResult { Success = false, status = AuthMessage.EmptyFields };
 
                 // normalize email to avoid duplicates
                 Email = Email.Trim().ToLower();
@@ -56,16 +56,17 @@ namespace SkillForge.Services
                     {
                         Email = Email,
                         Password = BCrypt.Net.BCrypt.HashPassword(Password),
-                        IsVerified = false,
-                        //generate Verification Token
-                        VerificationToken = Guid.NewGuid().ToString()
+                        IsEmailVerified = false,
+                        //generate OTP 
+                        EmailOtp = new Random().Next(100000, 999999).ToString(),
+                        OtpExpiry = DateTime.UtcNow.AddMinutes(5)
                     };
-
+                
                     _context.Students.Add(student);
                     _context.SaveChanges();
 
                     //Send Verification email
-                    return SendVerificationEmail(Email, baseUrl, "Student");
+                    return SendEmailOtp(Email, "Student");
                 }
 
                 //Instructor Registration Logic
@@ -76,16 +77,15 @@ namespace SkillForge.Services
                     {
                         Email = Email,
                         Password = BCrypt.Net.BCrypt.HashPassword(Password),
-                        IsVerified = false,
-                        //generate Verification Token
-                        VerificationToken = Guid.NewGuid().ToString()
+                        IsEmailVerified = false,
+                       EmailOtp = null
                     };
 
                     _context.instructors.Add(instructor);
                     _context.SaveChanges();
 
                     //Send Verification email
-                    return SendVerificationEmail(Email, baseUrl, "Instructor");
+                    return SendEmailOtp(Email, "Instructor");
                 }
 
                 return new AuthResult { Success = false, status = AuthMessage.RegisterFailed };
@@ -124,7 +124,7 @@ namespace SkillForge.Services
                         return new AuthResult { Success = false, status = AuthMessage.NewUser };
 
                     // email not verified
-                    if (!student.IsVerified)
+                    if (!student.IsEmailVerified)
                         return new AuthResult { Success = false, status = AuthMessage.VerifyEmail };
 
                     // avoid null password - for google user
@@ -157,7 +157,7 @@ namespace SkillForge.Services
                         return new AuthResult { Success = false, status = AuthMessage.NewUser };
 
                     // email not verified
-                    if (!instructor.IsVerified)
+                    if (!instructor.IsEmailVerified)
                         return new AuthResult { Success = false, status = AuthMessage.VerifyEmail };
 
                     // avoid null password crash (google users)
@@ -238,7 +238,7 @@ namespace SkillForge.Services
                         {
                             // link google id to existing account
                             student.GoogleId = GoogleId;
-                            student.IsVerified = true;
+                            student.IsEmailVerified = true;
                             _context.SaveChanges();
                             transaction.Commit();
 
@@ -275,8 +275,8 @@ namespace SkillForge.Services
                         Email = Email,
                         GoogleId = GoogleId,
                         Password = null,
-                        VerificationToken = null,
-                        IsVerified = true
+                        EmailOtp = null,
+                        IsEmailVerified = true
                     };
 
                     _context.Students.Add(student);
@@ -288,7 +288,7 @@ namespace SkillForge.Services
                         StudentId = student.Id,
                         FirstName = FirstName ?? "Guest",
                         LastName = LastName ?? "User",
-                                Mobile = null,
+                        Mobile = null,
                         PhotoPath = Picture ?? "/images/DefaultProfilePhoto.jfif"
                     };
 
@@ -314,7 +314,7 @@ namespace SkillForge.Services
                     // INSTRUCTOR: fully separate instructor-only logic
 
                     // find instructor by GoogleId first
-                        var instructor = _context.instructors.FirstOrDefault(i => i.GoogleId == GoogleId);
+                    var instructor = _context.instructors.FirstOrDefault(i => i.GoogleId == GoogleId);
 
                     // if not found by GoogleId, try match by email
                     if (instructor == null)
@@ -325,7 +325,7 @@ namespace SkillForge.Services
                         {
                             // link google id to existing instructor account and mark verified
                             instructor.GoogleId = GoogleId;
-                            instructor.IsVerified = true;
+                            instructor.IsEmailVerified = true;
                             _context.SaveChanges();
                             transaction.Commit();
 
@@ -361,8 +361,8 @@ namespace SkillForge.Services
                     {
                         Email = Email,
                         GoogleId = GoogleId,
-                        VerificationToken = null,
-                        IsVerified = true
+                        EmailOtp = null,
+                        IsEmailVerified = true
                     };
 
                     _context.instructors.Add(instructor);
@@ -408,131 +408,129 @@ namespace SkillForge.Services
 
         //#######################
         //#######################
-     //send Email Verification Link 
-public AuthResult SendVerificationEmail(string Email, string baseUrl, string Role)
-{
-    // basic check, avoid empty input
-    if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(baseUrl))
-        return new AuthResult { status = AuthMessage.EmailNotVerified };
-
-    // normalize email to match db
-    Email = Email.Trim().ToLower();
-
-    if (Role == "Student")
-    {
-        // find student by email
-        var student = _context.Students.FirstOrDefault(s => s.Email == Email);
-
-        // check  null 
-        if (student == null)
+        public AuthResult SendEmailOtp(string Email, string Role)
         {
-            return new AuthResult { status = AuthMessage.EmailNotVerified };
-        }
+            if (string.IsNullOrWhiteSpace(Email))
+                return new AuthResult { status = AuthMessage.EmptyFields };
 
-        // generate new token
-        student.VerificationToken = Guid.NewGuid().ToString();
-        _context.SaveChanges();
+            Email = Email.Trim().ToLower();
 
-        //send Email
-        try
-        {
-            _emailService.SendVerificationEmail(Email, student.VerificationToken, baseUrl);
-            return new AuthResult { status = AuthMessage.VerifyEmail };
-        }
-        catch (Exception)
-        {
-            return new AuthResult { status = AuthMessage.EmailNotSent };
-        }
-    }
+            var otp = new Random().Next(100000, 999999).ToString();
 
-    if (Role == "Instructor")
-    {
-        // find instructor by email
-        var instructor = _context.instructors.FirstOrDefault(i => i.Email == Email);
-
-        // check null 
-        if (instructor == null)
-        {
-            return new AuthResult { status = AuthMessage.EmailNotVerified };
-        }
-
-        // generate new token
-        instructor.VerificationToken = Guid.NewGuid().ToString();
-        _context.SaveChanges();
-
-        //send Verification EMail
-        try
-        {
-            _emailService.SendVerificationEmail(Email, instructor.VerificationToken, baseUrl);
-            return new AuthResult { status = AuthMessage.VerifyEmail };
-        }
-        catch (Exception)
-        {
-            return new AuthResult { status = AuthMessage.EmailNotSent };
-        }
-    }
-    return new AuthResult { status = AuthMessage.EmailNotVerified };
-} //Send Email
-
-
-        //#######################
-        //#######################
-        //Method for verify token from email link
-        public AuthResult VerifyEmail(string token)
-        {
-            try
+            // student
+            if (Role == "Student")
             {
-                // check empty token
-                if (string.IsNullOrWhiteSpace(token))
-                    return new AuthResult { status = AuthMessage.EmailNotSent};
+                var student = _context.Students.FirstOrDefault(s => s.Email == Email);
 
-                // find student by token
-                var student = _context.Students.FirstOrDefault(s => s.VerificationToken == token);
+                if (student == null)
+                    return new AuthResult { status = AuthMessage.NewUser };
 
-                // find instructor by token
-                var instructor = _context.instructors.FirstOrDefault(i => i.VerificationToken == token);
+                student.EmailOtp = otp;
+                student.OtpExpiry = DateTime.UtcNow.AddMinutes(5);
 
-                // if token exists in both tables
-                if (student != null && instructor != null)
+                _context.SaveChanges();
+
+                try
+                {
+                    _emailService.SendOtpEmail(Email, otp);
+                    return new AuthResult { status = AuthMessage.VerifyEmail, Email = Email };
+                }
+                catch
+                {
+                    return new AuthResult { status = AuthMessage.EmailNotSent };
+                }
+            }
+
+            // instructor
+            if (Role == "Instructor")
+            {
+                var instructor = _context.instructors.FirstOrDefault(i => i.Email == Email);
+
+                if (instructor == null)
+                    return new AuthResult { status = AuthMessage.NewUser };
+
+                instructor.EmailOtp = otp;
+                instructor.OtpExpiry = DateTime.UtcNow.AddMinutes(5);
+
+                _context.SaveChanges();
+
+                try
+                {
+                    _emailService.SendOtpEmail(Email, otp);
+                    return new AuthResult { status = AuthMessage.VerifyEmail, Email = Email };
+                }
+                catch
+                {
+                    return new AuthResult { status = AuthMessage.EmailNotSent };
+                }
+            }
+
+            return new AuthResult { status = AuthMessage.NewUser };
+        }
+
+
+
+        //#######################
+        //#######################
+        //Method for VERIFY OTP
+        public AuthResult VerifyEmailOtp(string Email, string Otp)
+        {
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Otp))
+                return new AuthResult { status = AuthMessage.EmailNotVerified };
+
+            Email = Email.Trim().ToLower();
+            Otp = Otp.Trim();
+
+           
+            //student check
+            var student = _context.Students.FirstOrDefault(s => s.Email == Email);
+
+            if (student != null)
+            {
+                if (student.IsEmailVerified)
+                    return new AuthResult { status = AuthMessage.EmailVerified };
+
+                if (student.EmailOtp == null || student.EmailOtp.Trim() != Otp)
                     return new AuthResult { status = AuthMessage.EmailNotVerified };
 
-                if (student != null)
-                {
-                    // already verified check
-                    if (student.IsVerified)
-                        return new AuthResult { status = AuthMessage.EmailVerified };
+                if (student.OtpExpiry == null || student.OtpExpiry < DateTime.UtcNow)
+                    return new AuthResult { status = AuthMessage.EmailNotSent };
 
-                    // mark as verified
-                    student.IsVerified = true;
-                    student.VerificationToken = null; // token used
-                    _context.SaveChanges();
+                student.IsEmailVerified = true;
+                student.EmailOtp = null;
+                student.OtpExpiry = null;
 
-                    return new AuthResult { status = AuthMessage.EmailVerified };
-                }
-
-                if (instructor != null)
-                {
-                    // already verified check
-                    if (instructor.IsVerified)
-                        return new AuthResult { status = AuthMessage.EmailVerified };
-
-                    // mark as verified
-                    instructor.IsVerified = true;
-                    instructor.VerificationToken = null; // token used
-                    _context.SaveChanges();
-
-                    return new AuthResult { status = AuthMessage.EmailVerified };
-                }
-
-                // token not found in db
-                return new AuthResult { status = AuthMessage.EmailNotVerified };
+                _context.SaveChanges();
+                return new AuthResult { status = AuthMessage.EmailVerified };
             }
-            catch (Exception)
+
+            //instructor check
+            var instructor = _context.instructors.FirstOrDefault(i => i.Email == Email);
+
+            if (instructor != null)
             {
-                //failure
-                return new AuthResult { status = AuthMessage.EmailNotSent };
+                if (instructor.IsEmailVerified)
+                    return new AuthResult { status = AuthMessage.EmailVerified };
+
+                if (instructor.EmailOtp == null || instructor.EmailOtp.Trim() != Otp)
+                    return new AuthResult { status = AuthMessage.EmailNotVerified };
+
+                if (instructor.OtpExpiry == null || instructor.OtpExpiry < DateTime.UtcNow)
+                    return new AuthResult { status = AuthMessage.EmailNotSent };
+
+                instructor.IsEmailVerified = true;
+                instructor.EmailOtp = null;
+                instructor.OtpExpiry = null;
+
+                _context.SaveChanges();
+                return new AuthResult { status = AuthMessage.EmailVerified };
             }
+
+           
+            // NOT FOUND    
+            return new AuthResult { status = AuthMessage.EmailNotVerified };
         }
+
     }
 }
 

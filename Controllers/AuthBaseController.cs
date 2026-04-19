@@ -37,8 +37,7 @@ namespace SkillForge.Controllers
 
         }
 
-        // Helpers to read current user info. Prefer claims
-        // fall back to session values written during sign-in.
+        // Helpers to read current user info
         protected int? CurrentUserId()
         {
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -46,7 +45,6 @@ namespace SkillForge.Controllers
             {
                 return id;
             }
-
             return HttpContext.Session.GetInt32("UserId");
         }
 
@@ -67,7 +65,9 @@ namespace SkillForge.Controllers
         protected string CurrentUserPhotoPath()
         {
             var photo = User.FindFirst("PhotoPath")?.Value;
-            if (!string.IsNullOrEmpty(photo)) return photo;
+            if (!string.IsNullOrEmpty(photo))
+            return photo;
+
             return HttpContext.Session.GetString("UserPhotoPath") ?? "/images/DefaultProfilePhoto.jfif";
         }
     }

@@ -35,82 +35,65 @@ namespace SkillForge.Areas.Instructor.Controllers
             return View();
         }
 
-        //TEMPORARY DATA FOR TESTING
+        ////Add Course Post
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
-        public IActionResult AddCourse(CourseVM courseVM, string OutcomesRaw)
+        public IActionResult AddCourse(CourseVM courseVM, IFormFile Thumbnail_File, IFormFile Video_File, string YouTubeUrl, string OutcomesRaw)
         {
-            // TEMP TEST DATA - remove after testing
-            courseVM.category_id = 2;
-            courseVM.Difficulty = Course_Difficulty.Beginner;
-            courseVM.outcome = new List<string> { "Learn C#", "Learn MVC" };
-            courseVM.Title = "Test Course";
-            courseVM.Actual_Price = 999;
-            courseVM.Duration_Weeks = 8;
-            courseVM.Discount_Percent = 10;
+            //instructor id from claim
+            var InstructorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var InstructorId = 1; 
+            //split input outcomes into liste by line
+            if (!string.IsNullOrWhiteSpace(OutcomesRaw))
+            {
+                courseVM.outcome = OutcomesRaw
+                    .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(o => o.Trim())
+                    .Where(o => !string.IsNullOrWhiteSpace(o))
+                    .ToList();
+            }
 
-            var course = _courseService.AddCourse(courseVM, InstructorId, null);
-            var msg = course.message;
-            var success = course.Success;
+            //pass to service
 
+            var course = _courseService.AddCourse(courseVM, InstructorId, Thumbnail_File, Video_File, YouTubeUrl);
+
+            if (course.message == CourseMessage.EmptyFields)
+            {
+                TempData["Alert"] = "Please Enter All Details and in Correct Format ";
+                TempData["AlertType"] = "info";
+                return RedirectToAction("AddCourse", "Home");
+            }
+            if (!course.Success)
+            {
+                ViewBag.ErrorMessage = course.message.ToString();
+                return View(courseVM);
+            }
+
+            if (!course.Success)
+            {
+                ViewBag.ErrorMessage = !string.IsNullOrEmpty(course.TechnicalMessage)
+                    ? course.TechnicalMessage
+                    : course.message.ToString();
+
+                TempData["Alert"] = "Course NOT Added";
+                TempData["AlertType"] = "error";
+                return RedirectToAction("AddCourse", "Home");
+            }
+
+            TempData["Alert"] = "Course Added Successfully";
+            TempData["AlertType"] = "success";
             return RedirectToAction("AddCourse", "Home");
         }
 
 
-        //////Add Course Post
-        //[Authorize(Roles = "Instructor")]
-        //[HttpPost]
-        //public IActionResult AddCourse(CourseVM courseVM, IFormFile Thumbnail_File, string OutcomesRaw)
-        //{
-
-
-        //    //instructor id from claim
-        //    var InstructorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-        //    Course_Category category = courseVM.category_id;
-
-        //    //split input comes into liste by line
-        //    if (!string.IsNullOrWhiteSpace(OutcomesRaw))
-        //    {
-        //        courseVM.outcome = OutcomesRaw
-        //            .Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
-        //            .Select(o => o.Trim())
-        //            .Where(o => !string.IsNullOrWhiteSpace(o))
-        //            .ToList();
-        //    }
-
-        //    //pass to service
-
-        //    var course = _courseService.AddCourse(courseVM, InstructorId, Thumbnail_File);
-
-        //    if (course.message == CourseMessage.EmptyFields)
-        //    {
-        //        TempData["EmptyFields"] = "Please Enter All Details and in Correct Format ";
-        //        return RedirectToAction("AddCourse", "Home");
-        //    }
-        //    if (!course.Success)
-        //    {
-        //        ViewBag.ErrorMessage = course.message.ToString();
-        //        return View(courseVM);
-        //    }
-
-        //    if (!course.Success)
-        //    {          
-        //        ViewBag.ErrorMessage = !string.IsNullOrEmpty(course.TechnicalMessage)
-        //            ? course.TechnicalMessage
-        //            : course.message.ToString();
-
-        //        return View(courseVM);
-        //    }
-        //    return RedirectToAction("AddCourse", "Home");
-        //}
-
-
-        //Instructor Courses
+        // Get Courses List - Instructor
+        [Authorize(Roles ="Instructor")]
         public IActionResult MyCourses()
         {
-            return View();
+            var InstructorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var mycourse = _courseService.MyCourses(InstructorId);
+
+            return View(mycourse);
         }
 
         //Course detail -view

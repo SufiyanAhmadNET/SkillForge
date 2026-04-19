@@ -8,9 +8,7 @@ namespace SkillForge.Models
         
         [StringLength(100, ErrorMessage = "Title cannot exceed 100 characters")]
         [Required(ErrorMessage = "Title is required")] public string Title { get; set; }
-        public int category_id { get; set; }
-
-
+       public string CategoryName  {get; set;}
         //enum class type for course status
         public CourseStatus CourseStatus { get; set; } = CourseStatus.Approved;
 
@@ -35,7 +33,7 @@ namespace SkillForge.Models
         public Course_Difficulty? Difficulty { get; set; }
 
         [Required(ErrorMessage = "Add Duration")]
-        public int Duration_Weeks { get; set; }
+        public int? Duration_Weeks { get; set; }
 
         public string? Thumbnail_Url { get; set; }
 

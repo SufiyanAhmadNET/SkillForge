@@ -1,10 +1,10 @@
-﻿using SkillForge.Areas.Instructor.Models;
-using SkillForge.Services;
+﻿using SkillForge.Services;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SkillForge.Models
 {
+    [Table("Courses")]
     public class Course
     {
         [Key]
@@ -24,14 +24,14 @@ namespace SkillForge.Models
         public string? Rejection_Reason { get; set; }
 
         //Navigation Props
-        public Instructor instructor { get; set; }
+       // public Instructor instructor { get; set; }
         public Course_Category courseCategory { get; set; }
 
         //Navigation Prop for multiple outcomes to maap with one course
         public List<CourseOutcomes> CourseOutcomes { get; set; }
 
         //one to one
-        [ForeignKey("course_id")]
+
         public CourseDetails CourseDetails { get; set; }
 
     }

@@ -17,63 +17,41 @@
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Welcome Back</h2>
 
-            @* --- Alert Messages --- *@
-
-
+            @*  Alert Messages *@
             @if (TempData["Alert"] != null)
             {
-                <div class="alert alert-danger d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
-                    <span>@TempData["Alert"]</span>
-                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                </div>
+                <script>
+                    window.addEventListener("load", function () {
+                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
+                    });
+                </script>
             }
 
-            @if (TempData["Email"] != null)
+            @* otp *@
+            @if (TempData["VerifyEmail"] != null)
             {
-                <div class="alert alert-success d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
-                    <div>
-                        @TempData["Email"]
-                        <div class="text-muted" style="font-size:11px;">check inbox or spam folder</div>
-                    </div>
-                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                </div>
+                <script>
+                    window.addEventListener("load", function () {
+                        openOtpModal("@TempData["VerifyEmail"]");
+                    });
+                </script>
             }
 
-            @if (TempData["Verify"] != null)
+            @* VerifyMessage *@
+            @if (TempData["VerifyMessage"] != null)
             {
-                <div class="alert alert-warning d-flex flex-column py-2 px-3 mb-3 rounded-2 small shadow-sm">
-
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            @TempData["Verify"]
-                            <div class="text-muted" style="font-size:11px;">verify email to continue</div>
-                        </div>
-
-                        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                    </div>
-
-                    @* resend verification *@
-                    @if (TempData["UnverifiedEmail"] != null)
-                    {
-                        <form method="post" asp-area="User" asp-controller="Auth" asp-action="SendVerificationEmail" class="mt-2">
-                            <input type="hidden" name="Email" value="@TempData["UnverifiedEmail"]" />
-
-                            <button type="submit" class="btn btn-sm btn-warning w-100">
-                                Resend Verification Email
-                            </button>
-                        </form>
-                    }
-                </div>
+                <script>
+                    window.addEventListener("load", function () {
+                        showAlert("@TempData["VerifyMessage"]", "warning");
+                    });
+                </script>
             }
+            @* ALert Messages *@
 
-            @if (TempData["Sent"] != null)
-            {
-                <div class="alert alert-info d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
-                    <span>@TempData["Sent"]</span>
-                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                </div>
-            } @*  Alert Messages *@ 
 
+
+
+            @*  User input start *@
 
             <!-- Email -->
             <div class="mb-3">
@@ -88,9 +66,8 @@
             </div>
 
             <!-- Submit -->
-            <button class="btn-orange btn-lg w-100 py-2">
-                Login
-            </button>
+            <button type="submit" class="btn-orange btn-lg w-100 py-2">Login</button>
+
 
             <!-- Divider -->
             <div class="d-flex align-items-center my-3">
@@ -145,6 +122,53 @@
             </div>
 
         </form>
+        @await Html.PartialAsync("_OtpModal")
     </div>
-
 </section>
+
+@*  otp trigger js *@
+<script>
+    // Google Identity Services callback
+        async function handleGoogleLogin(response) {
+            try {
+                if (!response || !response.credential) {
+                    alert('Google login failed: no credential.');
+                    return;
+                }
+
+                const token = response.credential;
+
+                const res = await fetch('/User/Auth/GoogleLogin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                // If server redirected, follow that redirection
+                if (res.redirected) {
+                    window.location = res.url;
+                    return;
+                }
+
+                if (res.ok) {
+                    // on success redirect to dashboard
+                    window.location = '/User/Home/Dashboard';
+                    return;
+                }
+
+                // failure: show message and stay on page
+                const text = await res.text();
+                console.error('Google login failed:', text);
+                alert('Google login failed. Check console for details.');
+            } catch (err) {
+                console.error('Google login error:', err);
+                alert('Google login error. See console.');
+            }
+        }
+
+
+
+</script>

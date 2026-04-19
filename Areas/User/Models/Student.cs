@@ -8,10 +8,10 @@ namespace SkillForge.Areas.User.Models
         public int Id { get; set; }
         public required string Email { get; set; } = null!;
         public string? Password { get; set; }
-        public bool IsVerified { get; set; } = false;
-        public string? VerificationToken { get; set; }
-        public DateTime? VerificationTokenExpiry { get; set; }
-
+        public string? EmailOtp { get; set; }
+        public DateTime? OtpExpiry { get; set; }
+        public bool IsEmailVerified { get; set; } 
+ 
         //for Google Login
         public string? GoogleId { get; set; }
         //Navigation Property

@@ -232,76 +232,6 @@ body {
     position: relative;
 }
 
-/* hide native scrollbar but keep scroll working */
-.course-scroll {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding-bottom: 8px;
-    /* hide scrollbar in all browsers */
-    scrollbar-width: none;
-}
-
-    .course-scroll::-webkit-scrollbar {
-        display: none;
-    }
-
-/* each card fixed width so exactly 3 show */
-.course-card {
-    min-width: calc(33.33% - 14px);
-    flex-shrink: 0;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    background: #fff;
-    transition: box-shadow .2s, transform .2s;
-}
-
-    .course-card:hover {
-        box-shadow: 0 8px 30px rgba(0,0,0,.10);
-        transform: translateY(-3px);
-    }
-
-    .course-card img {
-        height: 180px;
-        width: 100%;
-        object-fit: cover;
-    }
-
-/* arrow buttons on the side */
-.scroll-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(0,0,0,.10);
-    transition: background .2s, color .2s;
-}
-
-    .scroll-arrow:hover {
-        background: var(--orange);
-        color: #fff;
-        border-color: var(--orange);
-    }
-
-    .scroll-arrow.left {
-        left: -20px;
-    }
-
-    .scroll-arrow.right {
-        right: -20px;
-    }
 
 /* rating stars */
 .rating-stars {
@@ -328,18 +258,6 @@ body {
     border-radius: 6px;
 }
 
-/* price */
-.price-main {
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: var(--dark);
-}
-
-.price-old {
-    font-size: .82rem;
-    color: var(--muted);
-    text-decoration: line-through;
-}
 
 /* =====================
        WHY US — icon grid
@@ -548,3 +466,9 @@ body {
     font-size: 24px;
     cursor: pointer;
 }
+
+
+/*========================
+Explore COurses 
+===================*/
+

@@ -8,7 +8,7 @@
 <section class="d-flex align-items-center justify-content-center py-4 flex-grow-1">
     <div class="auth-card">
         <form method="post"
-            asp-area="Instructor" asp-controller="Auth" asp-action="InstructorRegistration">
+              asp-area="Instructor" asp-controller="Auth" asp-action="InstructorRegistration">
 
             @Html.AntiForgeryToken()
             <input type="hidden" name="role" value="Instructor" />
@@ -18,9 +18,10 @@
                 </span>
                 <h2 class="fw-bold mt-2 mb-0" style="font-size:1.3rem;">Start Teaching</h2>
                 <p class="text-muted mb-0" style="font-size:12px;">
-                    Contribute in Building SKill Based Nation </p>
+                    Contribute in Building SKill Based Nation
+                </p>
             </div>
-                
+
             <div class="inst-steps-top">
 
                 <div class="inst-step-top active">
@@ -43,73 +44,77 @@
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Create Account</h2>
 
-            @* --- Alert Messages --- *@
+            @*  Alert Messages *@
             @if (TempData["Alert"] != null)
             {
-                <div class="alert alert-danger d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
-                    <span>@TempData["Alert"]</span>
-                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                </div>
+                <script>
+                    window.addEventListener("load", function () {
+                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
+                    });
+                </script>
             }
 
-            @if (TempData["Email"] != null)
+            @* otp *@
+            @if (TempData["VerifyEmail"] != null)
             {
-                <div class="alert alert-success d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
-                    <div>
-                        @TempData["Email"]
-                        <div class="text-muted" style="font-size:11px;">check inbox or spam folder</div>
-                    </div>
-                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                </div>
+                <script>
+                    window.addEventListener("load", function () {
+                        openOtpModal("@TempData["VerifyEmail"]");
+                    });
+                </script>
             }
 
-            @if (TempData["Sent"] != null)
+            @* VerifyMessage *@
+            @if (TempData["VerifyMessage"] != null)
             {
-                <div class="alert alert-info d-flex align-items-center justify-content-between py-2 px-3 mb-3 rounded-2 small shadow-sm">
-                    <span>@TempData["Sent"]</span>
-                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
-                </div>
+                <script>
+                    window.addEventListener("load", function () {
+                        showAlert("@TempData["VerifyMessage"]", "warning");
+                    });
+                </script>
             }
-  @* --- Alert Messages --- *@
-                 
+            @* ALert Messages *@
 
 
-    <!-- Email -->
-    <div class="mb-2">
-        <label class="form-label mb-1" style="font-size:13px;">Email address</label>
-        <input type="email" class="form-control form-control-sm" name="email"
-               placeholder="you@example.com" autocomplete="email">
-    </div>
 
-    <!-- Password -->
-    <div class="mb-2">
-        <label class="form-label mb-1" style="font-size:13px;">Password</label>
-        <div class="input-group input-group-sm">
-            <input type="password" class="form-control" name="password"
-                   id="instrPass" placeholder="Create a password">
-            <button class="btn btn-outline-secondary pass-toggle" type="button"
-                    onclick="togglePass('instrPass','instrEye')">
-                <i class="bi bi-eye" id="instrEye"></i>
+
+
+            <!-- Email -->
+            <div class="mb-2">
+                <label class="form-label mb-1" style="font-size:13px;">Email address</label>
+                <input type="email" class="form-control form-control-sm" name="email"
+                       placeholder="you@example.com" autocomplete="email">
+            </div>
+
+            <!-- Password -->
+            <div class="mb-2">
+                <label class="form-label mb-1" style="font-size:13px;">Password</label>
+                <div class="input-group input-group-sm">
+                    <input type="password" class="form-control" name="password"
+                           id="instrPass" placeholder="Create a password">
+                    <button class="btn btn-outline-secondary pass-toggle" type="button"
+                            onclick="togglePass('instrPass','instrEye')">
+                        <i class="bi bi-eye" id="instrEye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+                <label class="form-label mb-1" style="font-size:13px;">Confirm Password</label>
+                <input type="password" class="form-control form-control-sm" name="confirmpassword"
+                       placeholder="Repeat password">
+            </div>
+
+            <!-- submit -->
+            <button type="submit" class="btn-auth mb-2">
+                <i class="bi bi-arrow-right me-2"></i> Create Account & Continue
             </button>
-        </div>
-    </div>
 
-    <!-- Confirm Password -->
-    <div class="mb-3">
-        <label class="form-label mb-1" style="font-size:13px;">Confirm Password</label>
-        <input type="password" class="form-control form-control-sm" name="confirmpassword"
-               placeholder="Repeat password">
-    </div>
-
-    <!-- submit -->
-    <button type="submit" class="btn-auth mb-2">
-        <i class="bi bi-arrow-right me-2"></i> Create Account & Continue
-    </button>
-
-    <!-- OR divider -->
-    <div class="d-flex align-items-center my-2">
-        <hr class="flex-grow-1 m-0"><span class="text-muted small px-2">OR</span><hr class="flex-grow-1 m-0">
-    </div>
+            <!-- OR divider -->
+            <div class="d-flex align-items-center my-2">
+                <hr class="flex-grow-1 m-0"><span class="text-muted small px-2">OR</span><hr class="flex-grow-1 m-0">
+            </div>
 
             <!-- Google Sign In -->
             <div id="g_id_onload"
@@ -128,41 +133,86 @@
                  data-width="100%">
             </div>
 
-    <!-- already registered -->
-    <p class="text-center text-muted mb-2" style="font-size:12px;">
-        Already registered?
-        <a asp-area="Instructor" asp-controller="Auth" asp-action="InstructorLogin"
-        class="text-decoration-none fw-semibold" style="color:var(--role-color);">Log in</a>
-    </p>
+            <!-- already registered -->
+            <p class="text-center text-muted mb-2" style="font-size:12px;">
+                Already registered?
+                <a asp-area="Instructor" asp-controller="Auth" asp-action="InstructorLogin"
+                   class="text-decoration-none fw-semibold" style="color:var(--role-color);">Log in</a>
+            </p>
 
-    <!-- role switcher — Student / Instructor (current) / Admin Login -->
-    <div class="role-switcher">
-        <div class="role-switcher-label">REGISTER AS</div>
-        <div class="role-switcher-links">
-            <a href="/Student/Register" class="role-link">
-                <i class="bi bi-mortarboard"></i> Student
-            </a>
-            <a href="/Instructor/Register" class="role-link current">
-                <i class="bi bi-person-video3"></i> Instructor
-            </a>
-            <!-- admin has no self-register -->
-            <a href="/Admin/Login" class="role-link">
-                <i class="bi bi-shield-lock"></i> Admin Login
-            </a>
-        </div>
-    </div>
+            <!-- role switcher — Student / Instructor (current) / Admin Login -->
+            <div class="role-switcher">
+                <div class="role-switcher-label">REGISTER AS</div>
+                <div class="role-switcher-links">
+                    <a href="/Student/Register" class="role-link">
+                        <i class="bi bi-mortarboard"></i> Student
+                    </a>
+                    <a href="/Instructor/Register" class="role-link current">
+                        <i class="bi bi-person-video3"></i> Instructor
+                    </a>
+                    <!-- admin login -->
+                    <a href="/Admin/Login" class="role-link">
+                        <i class="bi bi-shield-lock"></i> Admin Login
+                    </a>
+                </div>
+            </div>
 
-    </form>
+        </form>
+        @await Html.PartialAsync("_OtpModal")
     </div>
 </section>
 
 <script>
+    // Google Identity Services callback
+        async function handleGoogleLogin(response) {
+            try {
+                if (!response || !response.credential) {
+                    alert('Google login failed: no credential.');
+                    return;
+                }
+
+                const token = response.credential;
+
+                const res = await fetch('/Instructor/Auth/GoogleLogin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                // If server redirected, follow that redirection
+                if (res.redirected) {
+                    window.location = res.url;
+                    return;
+                }
+
+                if (res.ok) {
+                    // on success redirect to dashboard
+                    window.location = '/Instructor/Home/Dashboard';
+                    return;
+                }
+
+                // failure: show message and stay on page
+                const text = await res.text();
+                console.error('Google login failed:', text);
+                alert('Google login failed. Check console for details.');
+            } catch (err) {
+                console.error('Google login error:', err);
+                alert('Google login error. See console.');
+            }
+        }
+
+
     function togglePass(inputId, iconId) {
       const input = document.getElementById(inputId);
       const icon  = document.getElementById(iconId);
       input.type  = input.type === 'password' ? 'text' : 'password';
       icon.className = input.type === 'text' ? 'bi bi-eye-slash' : 'bi bi-eye';
     }
+
+
 </script>
 
 
@@ -233,3 +283,6 @@
         padding-top: 1.6rem;
     }
 </style>
+
+
+

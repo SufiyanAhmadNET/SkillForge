@@ -7,8 +7,7 @@ namespace SkillForge.Models
     {
         public int Id { get; set; }
 
-        [ForeignKey("Course")]
-        public int course_id { get; set; }
+        public int CourseId { get; set; }
         public string Outcome { get; set; } 
 
         //Navigation Prop

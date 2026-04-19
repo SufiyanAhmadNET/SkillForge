@@ -36,47 +36,66 @@ namespace SkillForge.Areas.User.Controllers
             //pass paramters to Auth Service CLass
             var result = _authService.Register(Email, Password, ConfirmPassword, "Student", baseUrl);
 
-            //empty fields
+            // empty fields
             if (result.status == AuthMessage.EmptyFields)
             {
                 TempData["Alert"] = "Enter All Required Details";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentRegistration");
             }
 
-            //Old User
+            // old user
             if (result.status == AuthMessage.EmailExist)
             {
                 TempData["Alert"] = "This Email Already Registered, You can Login";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentRegistration");
             }
 
-            //Password Not Match
+            // password mismatch
             if (result.status == AuthMessage.PassNotMatch)
             {
                 TempData["Alert"] = "Password and Confirm Password doesn't Match!";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentRegistration");
             }
 
-            //email sent
+            // email sent
             if (result.status == AuthMessage.VerifyEmail)
             {
-                TempData["Email"] = "Registered! Please check your email to verify.";
+                TempData["Alert"] = "Registered! \"OTP sent to your email.\"";
+                TempData["AlertType"] = "success";
+
+                TempData["VerifyMessage"] = "We’ve sent a OTP on  email.";
+                TempData["VerifyEmail"] = result.Email;
+
                 return RedirectToAction("StudentRegistration");
             }
-            //verification failded
+
+            // email failed
             if (result.status == AuthMessage.EmailNotSent)
             {
-                TempData["Email"] = "Registered! Email sending failed: ";
-                return RedirectToAction("StudentRegistration");
+                TempData["Alert"] = "Registered! Email sending failed";
+                TempData["AlertType"] = "danger";
 
+                TempData["VerifyMessage"] = "Email not sent. Try again.";
+                TempData["VerifyEmail"] = result.Email;
+
+                return RedirectToAction("StudentRegistration");
             }
-            //Email Verified
+
+            // email verified
             if (result.status == AuthMessage.EmailVerified)
             {
-                TempData["Email"] = "Email verified! You can now login.";
+                TempData["Alert"] = "Email verified! You can now login.";
+                TempData["AlertType"] = "success";
+
                 return RedirectToAction("StudentLogin");
             }
 
+            TempData["Alert"] = "Registration successful." +
+              " Login and Start Shaping Your Career in Riht Path";
+            TempData["AlertType"] = "success";
             return RedirectToAction("StudentLogin");
         }
 
@@ -95,37 +114,51 @@ namespace SkillForge.Areas.User.Controllers
         {
             var result = _authService.Login(Email, Password, "Student");
 
-            //check Empty Fields
+            // empty fields
             if (result.status == AuthMessage.EmptyFields)
             {
                 TempData["Alert"] = "Enter All Required Details";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentLogin");
             }
 
-            //Email Not Exist
+            // new user
             if (result.status == AuthMessage.NewUser)
             {
-                TempData["Alert"] = "This Email Doesn't Registered, Pleas Create Account";
+                TempData["Alert"] = "This Email Doesn't Registered, Please Create Account";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentLogin");
             }
 
-            //store email if login Failed
+            // email not verified
             if (result.status == AuthMessage.VerifyEmail)
             {
-                TempData["Verify"] = "Please verify your email first.";
-                TempData["UnverifiedEmail"] = Email;
+                _authService.SendEmailOtp(Email, "Student");
+
+                TempData["VerifyEmail"] = Email;
+                TempData["Alert"] = "OTP sent. Please verify your email.";
+                TempData["AlertType"] = "warning";
+
                 return RedirectToAction("StudentLogin");
             }
-            //wrong Password
-            if (result.status == AuthMessage.WrongPassword)
+                // wrong password
+                if (result.status == AuthMessage.WrongPassword)
             {
                 TempData["Alert"] = "Incorrect Password";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentLogin");
             }
 
-            //Login
-            await SigninUser(result.Id, result.Email, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-            return RedirectToAction("Dashboard", "Home", new { area = "User" });
+          
+            //successful login
+            if (result.status == AuthMessage.LoginSuccess)
+            {
+                await SigninUser(result.Id, result.Email, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
+                return RedirectToAction("Dashboard", "Home", new { area = "User" });
+            }
+
+            TempData["Alert"] = "Something went wrong";
+            return RedirectToAction("StudentLogin");
         }//Login Method
 
 
@@ -134,13 +167,14 @@ namespace SkillForge.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
         {
-            Console.WriteLine("Hit Instructor.GoogleLogin");
+          
 
             try
             {
-                    if (request == null || string.IsNullOrEmpty(request.Token))
+                if (request == null || string.IsNullOrEmpty(request.Token))
                 {
                     TempData["Alert"] = "Google login failed: missing token.";
+                    TempData["AlertType"] = "danger";
                     return RedirectToAction("StudentLogin");
                 }
 
@@ -148,6 +182,7 @@ namespace SkillForge.Areas.User.Controllers
                 if (verify == null || string.IsNullOrEmpty(verify.Email))
                 {
                     TempData["Alert"] = "Google verification failed or email missing.";
+                    TempData["AlertType"] = "danger";
                     return RedirectToAction("StudentLogin");
                 }
 
@@ -160,10 +195,11 @@ namespace SkillForge.Areas.User.Controllers
                     "Student"
                 );
 
-                // Inspect result and fail gracefully
+                //  fail 
                 if (result == null || !result.Success || string.IsNullOrEmpty(result.Email) || result.Id <= 0)
                 {
                     TempData["Alert"] = "Google login failed: account creation or lookup failed.";
+                    TempData["AlertType"] = "danger";
                     return RedirectToAction("StudentLogin");
                 }
 
@@ -173,58 +209,49 @@ namespace SkillForge.Areas.User.Controllers
             catch (InvalidJwtException)
             {
                 TempData["Alert"] = "Invalid Google token.";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentLogin");
             }
             catch (Exception)
             {
                 TempData["Alert"] = "Something went wrong during Google login.";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentLogin");
-            }   
+            }
         }
 
         //Send Verification Email
         [HttpPost]
-        public IActionResult SendVerificationEmail(string Email)
+        public IActionResult SendEmailOtp(string Email)
         {
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-
-            var result = _authService.SendVerificationEmail(Email, baseUrl, "Student");
+            var result = _authService.SendEmailOtp(Email, "Student");
 
             if (result.status == AuthMessage.VerifyEmail)
             {
-                TempData["Email"] = "Verification email sent successfully";
-                return RedirectToAction("StudentLogin");
+                return Json(new { success = true });
             }
 
-            if (result.status == AuthMessage.EmailNotSent)
-            {
-                TempData["Alert"] = "Failed to send email. Try again.";
-                return RedirectToAction("StudentLogin");
-            }
-
-            TempData["Alert"] = "Something went wrong";
-            return RedirectToAction("StudentLogin");
+            return Json(new { success = false });
         }
 
 
 
         //########################
         //Verify EMail  
-        public IActionResult EmailVerifivation(string token)
+        [HttpPost]
+        public IActionResult VerifyEmailOtp(string Email, string Otp)
         {
-            //passes to authservice
-            var result = _authService.VerifyEmail(token);
+            var result = _authService.VerifyEmailOtp(Email, Otp);
 
-            // if auth service returen verified message then email verified
             if (result.status == AuthMessage.EmailVerified)
             {
-                return RedirectToAction("StudentLogin");
+                return Json(new { success = true });
             }
-            TempData["Alert"] = "Invalid or expired link.";
-            return RedirectToAction("StudentLogin");
-        } //EMail Verification Method
 
-      
+            return Json(new { success = false, message = "Invalid or expired OTP" });
+        }
+
+
         //########################
         //Logout
         public async Task<IActionResult> Logout()

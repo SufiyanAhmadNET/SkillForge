@@ -37,48 +37,66 @@ namespace SkillForge.Areas.Instructor.Controllers
             var result = _authService.Register(Email, Password, ConfirmPassword, "Instructor", baseUrl);
 
             //Check Invalid or Valid
-            //empty fields
+            // empty fields
             if (result.status == AuthMessage.EmptyFields)
             {
                 TempData["Alert"] = "Enter All Required Details";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorRegistration");
             }
 
-            //Old User
+            // old user
             if (result.status == AuthMessage.EmailExist)
             {
                 TempData["Alert"] = "This Email Already Registered, You can Login";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorRegistration");
             }
 
-            //Password Not Match
+            // password mismatch
             if (result.status == AuthMessage.PassNotMatch)
             {
                 TempData["Alert"] = "Password and Confirm Password doesn't Match!";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorRegistration");
             }
 
-            //email sent
+            // email sent
             if (result.status == AuthMessage.VerifyEmail)
             {
-                TempData["Email"] = "Registered! Please check your email to verify.";
+                TempData["Alert"] = "Registered! Please check your email to verify.";
+                TempData["AlertType"] = "success";
+
+                TempData["VerifyMessage"] = "We’ve sent a verification OTP on Email .";
+                TempData["VerifyEmail"] = result.Email;
+
                 return RedirectToAction("InstructorRegistration");
             }
-            //verification failded
+
+            // email failed
             if (result.status == AuthMessage.EmailNotSent)
             {
-                TempData["Email"] = "Registered! Email sending failed: ";
-                return RedirectToAction("InstructorRegistration");
+                TempData["Alert"] = "Registered! Email sending failed";
+                TempData["AlertType"] = "danger";
 
+                TempData["VerifyMessage"] = "Email not sent. Try again.";
+                TempData["VerifyEmail"] = result.Email;
+
+                return RedirectToAction("InstructorRegistration");
             }
-            //Email Verified
+
+            // email verified
             if (result.status == AuthMessage.EmailVerified)
             {
-                TempData["Email"] = "Email verified! You can now login.";
+                TempData["Alert"] = "Email verified! You can now login.";
+                TempData["AlertType"] = "success";
+
                 return RedirectToAction("InstructorLogin");
             }
 
-
+            TempData["Alert"] = "Registration successful." +
+                " Login and Start Your Journey as Mentor";
+            TempData["AlertType"] = "success";
             return RedirectToAction("InstructorLogin");
         }//Registration Method
 
@@ -98,40 +116,53 @@ namespace SkillForge.Areas.Instructor.Controllers
         {
             var result = _authService.Login(Email, Password, "Instructor");
 
-            //check Empty Fields
+            // empty fields
             if (result.status == AuthMessage.EmptyFields)
             {
                 TempData["Alert"] = "Enter All Required Details";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorLogin");
             }
 
-            //Email Not Exist
+            // new user
             if (result.status == AuthMessage.NewUser)
             {
-                TempData["Alert"] = "This Email Doesn't Registered, Pleas Create Account";
+                TempData["Alert"] = "This Email Doesn't Registered, Please Create Account";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorLogin");
             }
 
-            //if Email Not Verified  and store email             
+            // email not verified
             if (result.status == AuthMessage.VerifyEmail)
             {
-                TempData["Verify"] = "Please verify your email first.";
-                TempData["UnverifiedEmail"] = Email;
+                TempData["Alert"] = "Email not verified";
+                TempData["AlertType"] = "danger";
+
+                TempData["VerifyMessage"] = "Please verify your email first.";
+                TempData["VerifyEmail"] = Email;
+
                 return RedirectToAction("InstructorLogin");
             }
 
-          //wrong Password
+            // wrong password
             if (result.status == AuthMessage.WrongPassword)
             {
                 TempData["Alert"] = "Incorrect Password";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorLogin");
             }
 
-            //Login
-            await SigninUser(result.Id, result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-            return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
-        
-        
+            //successful login
+            if (result.status == AuthMessage.LoginSuccess)
+            {
+                await SigninUser(result.Id, result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
+                return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
+            }
+
+            TempData["Alert"] = "Something went wrong"; 
+            return RedirectToAction("InstructorLogin");
+
+
         }//Login Method
 
             
@@ -169,6 +200,7 @@ namespace SkillForge.Areas.Instructor.Controllers
                 if (result == null || !result.Success)
                 {
                     TempData["Alert"] = "Google login failed";
+                    TempData["AlertType"] = "danger";
                     return RedirectToAction("InstructorLogin");
                 }
 
@@ -196,41 +228,34 @@ namespace SkillForge.Areas.Instructor.Controllers
 
         //########################
         //SEnd Verification Method
-        public IActionResult SendVerificationEmail(string Email)
+        [HttpPost]
+        public IActionResult SendEmailOtp(string Email)
         {
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            var email = _authService.SendVerificationEmail(Email, baseUrl, "Instructor");
-            if (email.status == AuthMessage.VerifyEmail)
-            {
-                TempData["Email"] = "Verification email sent successfully";
-                return RedirectToAction("InstructorLogin");
-            }
+            var result = _authService.SendEmailOtp(Email, "Instructor");
 
-            if (email.status == AuthMessage.EmailNotSent)
+            if (result.status == AuthMessage.VerifyEmail)
             {
-                TempData["Alert"] = "Failed to send email. Try again.";
-                return RedirectToAction("InstructorLogin");
+                return Json(new { success = true });
             }
-
-            TempData["Alert"] = "Something went wrong";
-            return RedirectToAction("InstructorLogin");
+            return Json(new { success = false });
         }
+
 
         //########################
         //Verify EMail  
-        public IActionResult EmailVerifivation(string token)
+        [HttpPost]
+        public IActionResult VerifyEmailOtp(string Email, string Otp)
         {
-            //passes to authservice
-            var result = _authService.VerifyEmail(token);
+            var result = _authService.VerifyEmailOtp(Email, Otp);
 
-            // if auth service returen verified message then email verified
             if (result.status == AuthMessage.EmailVerified)
             {
-                return RedirectToAction("InstructorLogin");
+                return Json(new { success = true });
             }
-            TempData["Alert"] = "Invalid or expired link.";
-            return RedirectToAction("InstructorLogin");
-        } //EMail Verification Method
+
+            return Json(new { success = false, message = "Invalid or expired OTP" });
+        }
+        //eMail Verification Method
 
 
         //########################
@@ -243,7 +268,7 @@ namespace SkillForge.Areas.Instructor.Controllers
         }
 
 
-        // Use SigninUser from AuthBaseController (inherited)
+        
     }
 }
 

@@ -24,22 +24,14 @@
         @Html.AntiForgeryToken()
 
          @* Validation Messages *@
-        @if ( TempData["EmptyFields"] != null)
+        @if (TempData["Alert"] != null)
         {
-            <div>@TempData["EmptyFields"]</div>
+            <script>
+                showMessage
+            </script>
+
         }
-       
-            @if ( TempData["CourseAdded"] != null)
-        {
-            <div>@TempData["CourseAdded"]</div>
-        }  
-        @if (ViewBag.ErrorMessage != null)
-        {
-            <div class="alert alert-danger">
-                <strong>Error:</strong> @ViewBag.ErrorMessage
-            </div>
-        }
-        
+
 
         @*  partial View *@
       @await Html.PartialAsync("_CourseForm", Model)

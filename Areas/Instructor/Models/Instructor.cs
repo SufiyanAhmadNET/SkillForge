@@ -9,9 +9,10 @@ namespace SkillForge.Areas.Instructor.Models
         public string Email { get; set; } = string.Empty;
 
         public string? Password { get; set; }
+        public string? EmailOtp { get; set; }
+        public DateTime? OtpExpiry { get; set; }
 
-        public bool IsVerified { get; set; }
-        public string? VerificationToken { get; set; }
+        public bool IsEmailVerified { get; set; }
 
         //for Google Login
         public string? GoogleId { get; set; }

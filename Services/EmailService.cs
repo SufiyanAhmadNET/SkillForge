@@ -11,30 +11,37 @@ public class EmailService
         _config = config;
     }
 
-    public void SendVerificationEmail(string toEmail, string token, string baseUrl)
+    public void SendOtpEmail(string toEmail, string otp)
     {
-        var link = $"{baseUrl}/User/Auth/VerifyEmail?token={token}";
-
         var message = new MimeMessage();
+
         var senderName = _config["EmailSettings:SenderName"] ?? string.Empty;
         var senderEmail = _config["EmailSettings:SenderEmail"] ?? string.Empty;
         var senderPassword = _config["EmailSettings:SenderPassword"] ?? string.Empty;
 
         message.From.Add(new MailboxAddress(senderName, senderEmail));
         message.To.Add(MailboxAddress.Parse(toEmail));
-        message.Subject = "Verify your SkillForge account";
+        message.Subject = "Your SkillForge OTP Code";
+
         message.Body = new TextPart("html")
         {
-            Text = $"<h3>Welcome to SkillForge!</h3><p>Click below to verify your email:</p><a href='{link}'>Verify Email</a>"
+            Text = $@"
+            <div style='font-family:Arial;padding:20px;text-align:center;'>
+                <h2>Email Verification</h2>
+                <p>Your OTP is:</p>
+                <div style='font-size:28px;font-weight:bold;letter-spacing:8px;
+                            padding:10px;background:#f1f1f1;border-radius:8px;'>
+                    {otp}
+                </div>
+                <p>This OTP is valid for 5 minutes.</p>
+            </div>"
         };
 
         using var smtp = new SmtpClient();
-        // force IPv4 so MailKit doesn't pick IPv6
+
         smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
-        // force IPv4 — IPv6 blocks SMTP on most Indian ISPs
-        smtp.ProxyClient = null;
         System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
-        // connect using IP directly to force IPv4
+
         smtp.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
         smtp.Authenticate(senderEmail, senderPassword);
         smtp.Send(message);

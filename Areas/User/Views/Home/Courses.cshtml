@@ -1,5 +1,195 @@
-﻿@{
+﻿@model SkillForge.Models.CoursePageVM
+
+
+@{
     Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "Courses";
 }
 
-Courses
+<main>
+@* hero at top *@
+
+<div class="course-hero">
+    <h1>Upgrade Your Skills with Industry-Ready Courses</h1>
+    <p>Learn faster. Build real projects. Get job-ready.</p>
+</div>
+
+
+    @* Category Selector *@
+    @{
+        var fixedCategories = new List<string>
+        {
+        "Software Development",
+        "Data Science",
+        "AI / ML",
+        "DevOps & Cloud",
+        "Cybersecurity"
+        };
+
+        var dynamicCategories = Model.CategorySections
+        .Where(c => c.Courses != null && c.Courses.Any())
+        .Select(c => c.CategoryName)
+        .ToList();
+    }
+
+    <div class="cat-scroll">
+
+        @* already existing category *@
+        @foreach (var cat in fixedCategories)
+        {
+            <button class="cat-pill" onclick="moveCategory('@cat', this)">
+                @cat
+            </button>
+        }
+
+        @* new category *@
+        @foreach (var cat in dynamicCategories)
+        {
+            if (!fixedCategories.Contains(cat))
+            {
+                <button class="cat-pill" onclick="moveCategory('@cat', this)">
+                    @cat
+                </button>
+            }
+        }
+    </div>
+
+
+    @* Popular Course Row *@
+
+    <div class="category-section">
+
+        <!-- HEADER -->
+        <div class="sec-head">
+            <div class="cat-left">
+                <span class="cat-bar"></span>
+                <h2>Popular Courses</h2>
+            </div>
+        </div>
+
+        <!-- ROW + ARROWS -->
+        <div class="position-relative course-section-inner">
+
+            <!-- LEFT ARROW -->
+            <span class="arr left" onclick="scrollRow(this, -1)">‹</span>
+
+            <!-- COURSE ROW -->
+            <div class="course-row">
+
+                @foreach (var course in Model.PopularCourses)
+                {
+                    <div class="c-card">
+                        <div class="c-thumb">
+                            <img src="@(course.Thumbnail_Url ?? "https://via.placeholder.com/300")">
+                            <span class="diff-tag">@course.Difficulty</span>
+                            <button class="wish-btn">♡</button>
+                        </div>
+
+                        <div class="c-body">
+                            <div class="c-cat">@course.CategoryName</div>
+                            <div class="c-title">@course.Title</div>
+                            <div class="c-sub">@course.SubTitle</div>CourseId
+
+                            <div class="c-price-row">
+                                <div>
+                                    <span class="c-price">₹@course.Total_Price</span>
+                                    <span class="c-original">₹@course.Actual_Price</span>
+                                </div>
+                                <span class="c-off">@course.Discount_Percent% OFF</span>
+                            </div>
+
+                            <button class="c-btn">Check Course →</button>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <!-- RIGHT ARROW -->
+            <span class="arr right" onclick="scrollRow(this, 1)">›</span>
+
+        </div>
+
+    </div>
+
+
+
+@* Category wise course rows *@
+@foreach (var category in Model.CategorySections)
+{
+    if (category.Courses != null && category.Courses.Any())
+    {
+        <div class="category-section">
+
+            <div class="sec-head">
+                <div class="cat-left">
+                    <span class="cat-bar"></span>
+                    <h2>@category.CategoryName</h2>
+                </div>
+            </div>
+
+            <div class="position-relative course-section-inner">
+
+                <!-- LEFT ARROW -->
+                <span class="arr left" onclick="scrollRow(this, -1)">‹</span>
+
+                <!-- COURSE ROW -->
+                <div class="course-row">
+
+                    @foreach (var course in category.Courses)
+                    {
+                        <div class="c-card">
+                            <div class="c-thumb">                            
+                                <img src="@(course.Thumbnail_Url ?? "https://via.placeholder.com/300")">
+                                <span class="diff-tag">@course.Difficulty</span>
+                                <button class="wish-btn">♡</button>
+                            </div>
+
+                            <div class="c-body">
+                                <div class="c-cat">@course.CategoryName</div>
+                                <div class="c-title">@course.Title</div>
+                                <div class="c-sub">@course?.SubTitle</div>
+                             
+
+                                <div class="c-price-row">
+                                    <div>
+                                        <span class="c-price">₹@course.Total_Price</span>
+                                        <span class="c-original">₹@course.Actual_Price</span>
+                                    </div>
+                                    <span class="c-off">@course.Discount_Percent% OFF</span>
+                                </div>
+
+                                <button class="c-btn">Check Course →</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                  <!-- RIGHT ARROW -->
+    <span class="arr right" onclick="scrollRow(this, 1)">›</span>
+            </div>
+        </div>
+    }
+}
+
+</main>
+
+ @* Move Clicked Cateory row to first row *@
+ <script>
+         function scrollRow(el, dir) {
+
+        const container = el.closest('.course-section-inner');
+        const row = container.querySelector('.course-row');
+        const card = row.querySelector('.c-card');
+
+        if (!card) return;
+
+        const cardWidth = card.offsetWidth;
+        const gap = 16; // must match CSS gap
+        const scrollAmount = (cardWidth + gap) * 3;
+
+        row.scrollBy({
+            left: scrollAmount * dir,
+            behavior: 'smooth'
+        });
+    }
+ </script>

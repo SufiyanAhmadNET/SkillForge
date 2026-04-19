@@ -18,8 +18,6 @@ namespace SkillForge.Data
         //STudent Profile 
         public virtual DbSet<StudentProfile> StudentProfiles { get; set; }
 
-
-
         //==============
         //Instructor DBcontext
         //==============
@@ -32,11 +30,11 @@ namespace SkillForge.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseOutcomes> CourseOutcomes { get; set; }
         public DbSet<CourseDetails> CourseDetails { get; set; }
-       public DbSet<Course_Category> course_Categories { get; set; }
+        public DbSet<Course_Category> course_Categories { get; set; }
 
 
 
-        //enum to string
+   
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // convert enum to string
@@ -48,6 +46,11 @@ namespace SkillForge.Data
             modelBuilder.Entity<CourseDetails>()
                 .Property(cd => cd.Difficulty)
                 .HasConversion<string>();
+
+        modelBuilder.Entity<Course>()
+              .HasOne(c => c.CourseDetails)
+               .WithOne(cd => cd.Course)
+                .HasForeignKey<CourseDetails>(cd => cd.CourseId);
         }
     }
 }

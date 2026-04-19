@@ -1,0 +1,81 @@
+.alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.alert {
+    min-width: 240px;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    border-left: 4px solid;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    opacity: 0;
+    transform: translateX(30px);
+    animation: slideIn 0.3s forwards;
+}
+
+
+.alert-success {
+    color: #198754;
+    border-color: #198754;
+    background: #19875415;
+}
+
+.alert-error {
+    color: #dc3545;
+    border-color: #dc3545;
+    background: #dc354515;
+}
+
+.alert-info {
+    color: #0d6efd;
+    border-color: #0d6efd;
+    background: #0d6efd15;
+}
+
+.alert button {
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    color: inherit;
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: 0.3s;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+/* Bright RED */
+.alert-danger {
+    background-color: #ffe5e5;
+    color: #dc0000;
+    border-left: 4px solid #dc0000;
+}
+
+/* Bright BLUE  */
+.alert-info {
+    background-color: #e6f0ff;
+    color: #0d6efd;
+    border-left: 4px solid #0d6efd;
+}
+
+/* Bright GREEN*/
+.alert-success {
+    background-color: #e6fff0;
+    color: #198754;
+    border-left: 4px solid #198754;
+}

@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SkillForge.Models
 {
+    [Table("course_category")]
     public class Course_Category
     {
         [Key]

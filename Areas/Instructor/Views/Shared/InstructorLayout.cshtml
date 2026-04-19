@@ -6,7 +6,8 @@
     <title>SkillForge – Instructor Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="/css/Instructor.css" rel="stylesheet">
+    <link href="/css/Instructor.css" rel="stylesheet" asp-append-version="true">
+    <link href="~/css/alert.css" rel="stylesheet" asp-append-version="true"/>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
@@ -69,7 +70,7 @@
             </nav>
 
             <div class="px-3 pb-3">
-                <a asp-area="User" asp-controller="Account" asp-action="StudentRegistration" class="nav-link sidebar-link text-danger">
+                <a asp-area="Instructor" asp-controller="Auth" asp-action="Logout" class="nav-link sidebar-link text-danger">
                     <i class="bi bi-box-arrow-left me-2"></i>Logout
                 </a>
             </div>
@@ -103,6 +104,10 @@
             </header>
             <!-- /HEADER -->
 
+
+            <partial name="_Alert_Message_Partial" />
+
+          
             @* display error message *@
             <div id="validationSummary" asp-validation-summary="All" class="alert alert-danger validation-summary"></div>
 
@@ -115,7 +120,7 @@
 
            @* CSS and JS for error message display *@
            
-            <style>
+           @*  <style>
                 .validation-summary {
                     position: relative;
                     padding-right: 35px !important;
@@ -196,8 +201,8 @@
                         });
                     }
                 })();
-            </script>
+            </script> *@
 
-
+            <script src="~/js/Alert.js" asp-append-version="true"></script>
 </body>
 </html>

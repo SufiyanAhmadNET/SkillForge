@@ -1,0 +1,201 @@
+﻿<style>
+    .otp-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .otp-box {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        width: 320px;
+        position: relative;
+    }
+
+    .otp-close {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        font-size: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #888;
+    }
+
+    .otp-inputs {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+
+    .otp-input {
+        width: 40px;
+        height: 45px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .otp-error {
+        color: red;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+
+    #resendBtn {
+        margin-top: 10px;
+        padding: 8px 14px;
+        font-size: 13px;
+        border-radius: 6px;
+        border: none;
+        background: #f1f3f5;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        #resendBtn:disabled {
+            background: #e0e0e0;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        #resendBtn:not(:disabled):hover {
+            background: #dee2e6;
+        }
+</style>
+
+<div id="otpModal" class="otp-overlay" style="display:none;">
+    <div class="otp-box">
+
+        <button class="otp-close" onclick="closeOtpModal()">✕</button>
+
+        <h4>Email Verification</h4>
+        <p>Enter 6-digit OTP</p>
+
+        <input type="hidden" id="otpEmail" />
+
+        <div class="otp-inputs">
+            <input type="text" maxlength="1" class="otp-input" />
+            <input type="text" maxlength="1" class="otp-input" />
+            <input type="text" maxlength="1" class="otp-input" />
+            <input type="text" maxlength="1" class="otp-input" />
+            <input type="text" maxlength="1" class="otp-input" />
+            <input type="text" maxlength="1" class="otp-input" />
+        </div>
+
+        <button onclick="verifyOtp()" class="btn btn-success mt-3">Verify</button>
+
+        <div id="otpError" class="otp-error"></div>
+
+        <button id="resendBtn" disabled>Resend OTP (60s)</button>
+
+    </div>
+</div>
+
+<script>
+    const inputs=document.querySelectorAll(".otp-input");
+    const resendBtn=document.getElementById("resendBtn");
+
+    // auto focus
+    inputs.forEach((input,i)=>{
+    input.addEventListener("input",()=>{
+    if(input.value && i<5)inputs[i+1].focus();
+    });
+    input.addEventListener("keydown",(e)=>{
+    if(e.key==="Backspace"&&!input.value&&i>0)inputs[i-1].focus();
+    });
+    });
+
+    function getOtp(){
+    return [...inputs].map(i=>i.value).join("").trim();
+    }
+
+    function clearOtp(){
+    inputs.forEach(i=>i.value="");
+    inputs[0].focus();
+    }
+
+    function openOtpModal(email){
+    document.getElementById("otpModal").style.display="flex";
+    document.getElementById("otpEmail").value=email;
+    document.getElementById("otpError").innerText="";
+    clearOtp();
+    startTimer();
+    }
+
+    function closeOtpModal(){
+    document.getElementById("otpModal").style.display="none";
+    }
+
+    // 🔥 VERIFY (NO RELOAD)
+    function verifyOtp(){
+    const email=document.getElementById("otpEmail").value;
+    const otp=getOtp();
+
+    if(otp.length!==6){
+    document.getElementById("otpError").innerText="Enter complete OTP";
+    return;
+    }
+
+    fetch('/User/Auth/VerifyEmailOtp',{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:`Email=${email}&Otp=${otp}`
+    })
+    .then(r=>r.json())
+    .then(d=>{
+    if(d.success){
+    closeOtpModal();
+    showAlert("Email verified","success");
+    setTimeout(()=>{
+    window.location.href="/User/Auth/StudentLogin";
+    },1000);
+    }else{
+    document.getElementById("otpError").innerText=d.message;
+    clearOtp();
+    }
+    });
+    }
+
+    // IMER
+    let time=60;
+    function startTimer(){
+    resendBtn.disabled=true;
+    time=60;
+
+    let t=setInterval(()=>{
+    resendBtn.innerText=`Resend OTP (${time}s)`;
+    time--;
+
+    if(time<0){
+    clearInterval(t);
+    resendBtn.disabled=false;
+    resendBtn.innerText="Resend OTP";
+    }
+    },1000);
+    }
+
+    //RESEND
+    resendBtn.onclick=()=>{
+    const email=document.getElementById("otpEmail").value;
+
+    fetch('/User/Auth/SendEmailOtp',{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:`Email=${email}`
+    });
+
+    showAlert("OTP resent","info");
+    startTimer();
+    };
+</script>

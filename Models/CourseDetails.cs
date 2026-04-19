@@ -7,8 +7,7 @@ namespace SkillForge.Models
     {
         public int Id { get; set; }
 
-        [Column("course_id")]
-        public int course_id { get; set; }
+        public int CourseId { get; set; }
 
         public string Description { get; set; }
         public decimal Actual_Price { get; set; }
@@ -22,7 +21,6 @@ namespace SkillForge.Models
         public string? Intro_Video_Url { get; set; }
 
         //Navigation Prop
-        [ForeignKey("course_id")]
         public Course Course { get; set; }
 
     }

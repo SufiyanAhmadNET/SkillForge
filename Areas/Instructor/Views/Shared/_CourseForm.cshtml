@@ -1,6 +1,7 @@
 
 @model CourseVM
 
+
 <div class="row g-3">
     @*  LEFT COLUMN ─ *@
     <div class="col-lg-8">
@@ -152,14 +153,14 @@
 
                 @* youtube panel *@
                 <div id="ytPanel">
-                    <input type="url" class="form-control" name="intro_video_url"
+                    <input type="url" class="form-control" name="YouTubeUrl"
                            placeholder="https://youtube.com/watch?v=...">
                     <small class="text-muted">Paste YouTube URL — students see this as preview</small>
                 </div>
 
                 @* upload panel *@
                 <div id="uploadPanel" style="display:none;">
-                    <input type="file" class="form-control" accept="video/*" name="intro_video_url">
+                    <input type="file" class="form-control" accept="video/*" name="Video_File">
                     <small class="text-muted">MP4 recommended, max 200MB</small>
                 </div>
 
