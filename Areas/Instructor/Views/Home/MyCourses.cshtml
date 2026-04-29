@@ -98,9 +98,18 @@
                                 </button>
 
                                 <ul class="dropdown-menu dropdown-menu-end" style="font-size:13px;">
-                                    <li><a class="dropdown-item" href="#">Update</a></li>
-                                    <li><a class="dropdown-item" href="#">View</a></li>
-                                    <li><a class="dropdown-item text-warning" href="#">Delete</a></li>
+                                    <li><a class="dropdown-item"                                                                                     asp-area="Instructor" asp-controller="Home" asp-action="EditCourse" asp-route-id="@course.CourseId">
+                                        <i class="bi bi-pencil me-2"></i>Edit
+                                    </a></li>
+                                    <li><a class="dropdown-item"
+                                               asp-area="Instructor" asp-controller="Home" asp-action="CourseDetails" asp-route-id="@course.CourseId">
+                                        <i class="bi bi-eye me-2"></i>View Details
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger delete-course"                                                  
+                                        asp-area="Instructor" asp-controller="Home" asp-action="DeleteCourse" asp-route-id="@course.CourseId" data-course-id="@course.CourseId">
+                                        <i class="bi bi-trash me-2"></i>Delete
+                                    </a></li>
                                 </ul>
                             </div>
                         </div>
@@ -128,7 +137,7 @@
                                 </span>
 
                                 <!-- Manage -->
-                                <a href="#" class="btn btn-sm btn-outline-secondary"
+                                <a asp-action="CourseDetails" asp-route-id="@course.CourseId" class="btn btn-sm btn-outline-secondary"
                                    style="font-size:11px; padding:2px 8px;">
                                     Manage →
                                 </a>
@@ -142,12 +151,13 @@
 </main>
 
 
-@* client-side filter *@
+@* client-side filter & delete confirmation *@
 <script>
-@*      wire up all three filters to same fn
- *@    ['searchInput','catFilter','statusFilter'].forEach(id => {
+    // Filter courses
+    ['searchInput','catFilter','statusFilter'].forEach(id => {
         document.getElementById(id)?.addEventListener('input', filterCourses);
     });
+
     function filterCourses() {
         const search = document.getElementById('searchInput').value.toLowerCase();
         const cat    = document.getElementById('catFilter').value;
@@ -159,4 +169,21 @@
             el.style.display  = matchTitle && matchCat && matchStatus ? '' : 'none';
         });
     }
+
+    // Delete confirmation
+    document.querySelectorAll('.delete-course').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const courseId = this.dataset.courseId;
+
+            if (confirm('Are you sure? This action cannot be undone.')) {
+                // Create and submit hidden form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/Instructor/Home/DeleteCourse?id=${courseId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    });
 </script>

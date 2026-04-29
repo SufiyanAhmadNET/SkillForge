@@ -20,6 +20,9 @@
         width: 320px;
         position: relative;
     }
+    .otp-alert-wrap {
+        margin-top: 10px;
+    }
 
     .otp-close {
         position: absolute;
@@ -81,6 +84,9 @@
 
         <h4>Email Verification</h4>
         <p>Enter 6-digit OTP</p>
+        <div class="otp-alert-wrap">
+            <div id="otp-alert-container" class="alert-container alert-inline"></div>
+        </div>
 
         <input type="hidden" id="otpEmail" />
 
@@ -105,6 +111,8 @@
 <script>
     const inputs=document.querySelectorAll(".otp-input");
     const resendBtn=document.getElementById("resendBtn");
+    const authAreaPrefix = window.location.pathname.toLowerCase().startsWith("/instructor") ? "/Instructor/Auth" : "/User/Auth";
+    const loginRedirectUrl = window.location.pathname.toLowerCase().startsWith("/instructor") ? "/Instructor/Auth/InstructorLogin" : "/User/Auth/StudentLogin";
 
     // auto focus
     inputs.forEach((input,i)=>{
@@ -147,7 +155,7 @@
     return;
     }
 
-    fetch('/User/Auth/VerifyEmailOtp',{
+    fetch(`${authAreaPrefix}/VerifyEmailOtp`,{
     method:'POST',
     headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:`Email=${email}&Otp=${otp}`
@@ -156,9 +164,9 @@
     .then(d=>{
     if(d.success){
     closeOtpModal();
-    showAlert("Email verified","success");
+    showAlert("Email verified","success",3800,"otp-alert-container");
     setTimeout(()=>{
-    window.location.href="/User/Auth/StudentLogin";
+    window.location.href=loginRedirectUrl;
     },1000);
     }else{
     document.getElementById("otpError").innerText=d.message;
@@ -189,13 +197,13 @@
     resendBtn.onclick=()=>{
     const email=document.getElementById("otpEmail").value;
 
-    fetch('/User/Auth/SendEmailOtp',{
+    fetch(`${authAreaPrefix}/SendEmailOtp`,{
     method:'POST',
     headers:{'Content-Type':'application/x-www-form-urlencoded'},
     body:`Email=${email}`
     });
 
-    showAlert("OTP resent","info");
+    showAlert("OTP resent","info",3800,"otp-alert-container");
     startTimer();
     };
 </script>

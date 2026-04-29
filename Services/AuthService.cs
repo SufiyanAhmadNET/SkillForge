@@ -40,10 +40,6 @@ namespace SkillForge.Services
                 bool EmailExistinStudent = _context.Students.Any(s => s.Email == Email);
                 bool EmailExistinInstrutor = _context.instructors.Any(i => i.Email == Email);
 
-                // if email exist user should login
-                if (EmailExistinStudent || EmailExistinInstrutor)
-                    return new AuthResult { Success = false, status = AuthMessage.EmailExist };
-
                 // password match check
                 if (Password != ConfirmPassword)
                     return new AuthResult { Success = false, status = AuthMessage.PassNotMatch };
@@ -51,6 +47,13 @@ namespace SkillForge.Services
                 //Student Registration 
                 if (Role == "Student")
                 {
+                    // don't allow same email in both roles
+                    if (EmailExistinStudent)
+                        return new AuthResult { Success = false, status = AuthMessage.EmailExist };
+
+                    if (EmailExistinInstrutor)
+                        return new AuthResult { Success = false, status = AuthMessage.EmailRegisteredAsInstructor };
+
                     // create new student
                     var student = new Student
                     {
@@ -72,6 +75,13 @@ namespace SkillForge.Services
                 //Instructor Registration Logic
                 if (Role == "Instructor")
                 {
+                    // don't allow same email in both roles
+                    if (EmailExistinInstrutor)
+                        return new AuthResult { Success = false, status = AuthMessage.EmailExist };
+
+                    if (EmailExistinStudent)
+                        return new AuthResult { Success = false, status = AuthMessage.EmailRegisteredAsStudent };
+
                     // create new instructor
                     var instructor = new Instructor
                     {
@@ -121,7 +131,13 @@ namespace SkillForge.Services
 
                     // user not found
                     if (student == null)
+                    {
+                        bool existsAsInstructor = _context.instructors.Any(i => i.Email == Email);
+                        if (existsAsInstructor)
+                            return new AuthResult { Success = false, status = AuthMessage.EmailRegisteredAsInstructor };
+
                         return new AuthResult { Success = false, status = AuthMessage.NewUser };
+                    }
 
                     // email not verified
                     if (!student.IsEmailVerified)
@@ -154,7 +170,13 @@ namespace SkillForge.Services
 
                     // user not found
                     if (instructor == null)
+                    {
+                        bool existsAsStudent = _context.Students.Any(s => s.Email == Email);
+                        if (existsAsStudent)
+                            return new AuthResult { Success = false, status = AuthMessage.EmailRegisteredAsStudent };
+
                         return new AuthResult { Success = false, status = AuthMessage.NewUser };
+                    }
 
                     // email not verified
                     if (!instructor.IsEmailVerified)
@@ -210,9 +232,7 @@ namespace SkillForge.Services
         {
             try
             {
-                // debug log role
-                Console.WriteLine("ROLE: " + Role);
-
+              
                 // basic safety check, don't allow empty critical values
                 if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(GoogleId))
                     return new AuthResult { Success = false, status = AuthMessage.EmptyFields };
@@ -225,6 +245,11 @@ namespace SkillForge.Services
 
                 if (Role == "Student")
                 {
+                    // don't allow Google auth with email of another role
+                    bool existsAsInstructor = _context.instructors.Any(i => i.Email == Email);
+                    if (existsAsInstructor)
+                        return new AuthResult { Success = false, status = AuthMessage.EmailRegisteredAsInstructor };
+
                     // STUDENT: do all student-only logic here
 
                     // find user by google id first
@@ -311,6 +336,11 @@ namespace SkillForge.Services
 
                 if (Role == "Instructor")
                 {
+                    // don't allow Google auth with email of another role
+                    bool existsAsStudent = _context.Students.Any(s => s.Email == Email);
+                    if (existsAsStudent)
+                        return new AuthResult { Success = false, status = AuthMessage.EmailRegisteredAsStudent };
+
                     // INSTRUCTOR: fully separate instructor-only logic
 
                     // find instructor by GoogleId first

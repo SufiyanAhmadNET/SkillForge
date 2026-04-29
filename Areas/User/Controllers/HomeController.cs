@@ -14,12 +14,17 @@ namespace SkillForge.Areas.User.Controllers
     [Area("User")]
     public class HomeController : UserBaseController
     {
-       // private readonly StudentService _studentService;
-        
-        //public HomeController (StudentService studentService)
-        //{
-        //    _studentService = studentService;
-        //}
+        private readonly CourseService _courseService;
+        private readonly EnrollmentService _enrollmentService;
+        private IConfiguration _config;
+        public HomeController(CourseService courseService, EnrollmentService enrollmentService,
+                              IConfiguration config)
+        {
+            _courseService = courseService;
+            _enrollmentService = enrollmentService;
+            _config = config;
+        }
+
 
         //Dashboard
         [Authorize(Roles = "Student")]
@@ -140,89 +145,108 @@ namespace SkillForge.Areas.User.Controllers
         [Authorize(Roles = "Student")]
         public IActionResult Courses()
         {
-            //var studentid = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-            //var course = _studentService.GetCoursePage(studentid);
-
-
-            var vm = new CoursePageVM
-            {
-                PopularCourses = new List<CourseCardVM>
-        {
-            new CourseCardVM
-            {
-                Title = "C# Basics",
-                SubTitle = "Learn fundamentals",
-                CategoryName = "Programming",
-                Difficulty = "Beginner",
-                Total_Price = 499,
-                Actual_Price = 999,
-                Discount_Percent = 50,
-                Thumbnail_Url = "https://via.placeholder.com/300"
-                
-            }
-        },
-
-                CategorySections = new List<CategorySectionVM>
-        {
-            new CategorySectionVM
-            {
-                CategoryName = "A.I",
-                Courses = new List<CourseCardVM>
-                {
-                    new CourseCardVM
-                    {
-                        Title = "Machine Learning",
-                        SubTitle = "Deep dive into Concepts of Machine Learning , Build Real Projects",
-                        CategoryName = "A.I",
-                        Difficulty = "Advanced",
-                        Total_Price = 799,
-                        Actual_Price = 1499,
-                        Discount_Percent = 47,
-                        Thumbnail_Url = "https://images.unsplash.com/photo-1619314383191-3d75d5e26a7f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHlvdXR1YmUlMjB0aHVtYm5haWx8ZW58MHx8MHx8fDA%3D"
-                    },
-                    new CourseCardVM
-                    {
-                        Title = "ASP.NET Core",
-                        SubTitle = "Build web apps",
-                        CategoryName = "Programming",
-                        Difficulty = "Intermediate",
-                        Total_Price = 699,
-                        Actual_Price = 1299,
-                        Discount_Percent = 46,
-                        Thumbnail_Url = "https://www.google.com/imgres?q=youtube%20thumbnail%20for%20educational%20video&imgurl=https%3A%2F%2Fimg.freepik.com%2Fpremium-psd%2Fschool-education-admission-youtube-thumbnail-web-banner-template_475351-436.jpg&imgrefurl=https%3A%2F%2Fwww.freepik.com%2Fpremium-psd%2Fschool-education-admission-youtube-thumbnail-web-banner-template_45155853.htm&docid=uUi9UMPQ_bI7eM&tbnid=WaHpIDmWfPH05M&vet=12ahUKEwj854at8u-TAxX1c_UHHbd3M64QnPAOegQIHhAB..i&w=626&h=352&hcb=2&ved=2ahUKEwj854at8u-TAxX1c_UHHbd3M64QnPAOegQIHhAB"
-                    }
-                }
-            },
-
-            new CategorySectionVM
-            {
-                CategoryName = "Design",
-                Courses = new List<CourseCardVM>() // empty 
-            }
-        }
-            };
-
+            var vm = _courseService.GetPublishedCoursePage();
             return View(vm);
         }
 
-         
-        
-
-
-
-
-        public IActionResult CourseDetails()
+        //Course Details Page
+        public IActionResult CourseDetails(int id)
         {
-            return View();
+            if (id <= 0)
+                return RedirectToAction("Courses");
+
+            var vm = _courseService.GetCourseDetails(id);
+
+            if (vm == null)
+                return NotFound();
+            return View(vm);
         }
+
+
         //Enrolled Courses
         [Authorize(Roles = "Student")]
-
         public IActionResult EnrolledCourses()
         {
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
+
+            // fetch enrolled courses from service
+            var enrolledCourses = _courseService.GetEnrolledCourses(studentId);
+            
+            return View(enrolledCourses);
+        }
+
+        //enroll in course
+        public IActionResult Checkout(int courseId)
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
+
+            // already enrolled? skip to success
+            if (_enrollmentService.IsEnrolled(studentId, courseId))
+            {
+                TempData["Alert"] = "You are already enrolled in this course!";
+                TempData["AlertType"] = "info";
+                return RedirectToAction("EnrolledCourses", "Home");
+            }
+
+            // create razorpay order
+            var result = _enrollmentService.CreateOrder(studentId, courseId);
+
+            if (!result.Success)
+            {
+                TempData["Alert"] = result.Message;
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("CourseDetails", "Home", new { id = courseId });
+            }
+
+            // pass data to checkout page
+            ViewBag.RazorpayOrderId = result.RazorpayOrderId;
+            ViewBag.Amount = result.Amount;          // paise
+            ViewBag.AmountDisplay = result.Amount / 100m;   // INR for display
+            ViewBag.CourseTitle = result.CourseTitle;
+            ViewBag.CourseId = courseId;
+            ViewBag.RazorpayKeyId = _config["Razorpay:KeyId"];
+
             return View();
         }
+
+
+        // ── POST: /User/Enrollment/VerifyPayment ──
+        // razorpay JS calls this after payment
+        [HttpPost]
+        public IActionResult VerifyPayment(string razorpay_order_id, string razorpay_payment_id, string razorpay_signature, int courseId)
+        {
+            var result = _enrollmentService.VerifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+
+            if (!result.Success)
+            {
+                TempData["Alert"] = result.Message ?? "Payment failed.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("CourseDetails", "Home", new { id = courseId });
+            }
+
+            TempData["Alert"] = " Enrollment successful! Start learning now.";
+            TempData["AlertType"] = "success";
+            return RedirectToAction("EnrollmentSuccess", new { enrollmentId = result.EnrollmentId });
+        }
+
+
+        // ── GET: /User/Enrollment/EnrollmentSuccess ──
+        public IActionResult EnrollmentSuccess(int enrollmentId)
+        {
+            ViewBag.EnrollmentId = enrollmentId;
+            return View();
+        }
+
+
+        // ── helper: get student id from cookie claim ──
+        private int GetStudentId()
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(claim, out var id) ? id : 0;
+        }
+
 
         //Wishlist
         [Authorize(Roles = "Student")]

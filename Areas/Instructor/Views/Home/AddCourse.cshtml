@@ -18,6 +18,8 @@
         </a>
     </div>
 
+    <div id="add-course-alert" class="alert-container alert-inline"></div>
+
     @* form *@
     <form asp-area="Instructor" asp-controller="Home" asp-action="AddCourse" method="post" enctype="multipart/form-data">
           
@@ -27,7 +29,9 @@
         @if (TempData["Alert"] != null)
         {
             <script>
-                showMessage
+                window.addEventListener("load", function () {
+                    showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "add-course-alert");
+                });
             </script>
 
         }

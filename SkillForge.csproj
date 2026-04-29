@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>0a0bc92f-b544-4cab-9d1b-6235e4876094</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,6 +42,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
+    <PackageReference Include="Razorpay" Version="3.3.2" />
   </ItemGroup>
 
 </Project>

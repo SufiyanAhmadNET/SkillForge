@@ -107,9 +107,11 @@
 
             <partial name="_Alert_Message_Partial" />
 
-          
-            @* display error message *@
-            <div id="validationSummary" asp-validation-summary="All" class="alert alert-danger validation-summary"></div>
+            @* display validation summary only when model has errors *@
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div id="validationSummary" asp-validation-summary="All" class="alert alert-danger validation-summary"></div>
+            }
 
 
 

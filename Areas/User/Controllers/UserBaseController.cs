@@ -7,21 +7,22 @@ namespace SkillForge.Areas.User.Controllers
 {
     public class UserBaseController : AuthBaseController
     {
-
         [FromServices]
         public required SkillForgeDbContext _context { get; set; }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            // claims 
-            var id = CurrentUserId();
-            if (id.HasValue)
-            {
-                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == id.Value);
+            var id = CurrentUserId(); // string (Identity GUID)
 
-                ViewBag.Email = CurrentUserEmail(); //helper method
+            if (!string.IsNullOrEmpty(id))
+            {
+                // query profile using string Id
+                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId.ToString() == id);
+
+                ViewBag.Email = CurrentUserEmail();
                 ViewBag.FirstName = profile?.FirstName;
                 ViewBag.LastName = profile?.LastName;
-                ViewBag.PhotoPath = CurrentUserPhotoPath(); //helper method
+                ViewBag.PhotoPath = profile?.PhotoPath ?? CurrentUserPhotoPath();
             }
 
             base.OnActionExecuting(context);

@@ -16,13 +16,14 @@
             <input type="hidden" name="role" value="Student" />
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Welcome Back</h2>
+            <div id="student-login-alert" class="alert-container alert-inline"></div>
 
             @*  Alert Messages *@
             @if (TempData["Alert"] != null)
             {
                 <script>
                     window.addEventListener("load", function () {
-                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
+                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "student-login-alert");
                     });
                 </script>
             }
@@ -42,7 +43,7 @@
             {
                 <script>
                     window.addEventListener("load", function () {
-                        showAlert("@TempData["VerifyMessage"]", "warning");
+                        showAlert("@TempData["VerifyMessage"]", "warning", 4000, "otp-alert-container");
                     });
                 </script>
             }

@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillForge</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
-  
-    <link href="/css/index.css" rel="stylesheet" asp-append-version="true"/>
-   <link href="~/css/courses.css" rel="stylesheet" asp-append-version="true"/>
+
+    <link href="/css/index.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/courses.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/User.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/alert.css" rel="stylesheet" asp-append-version="true" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -21,20 +21,20 @@
     <!-- ── HEADER ── -->
     <header class="sf-header">
 
-        <!-- Left: brand + explore -->
-     <div>
+        <!-- Left: brand + explore inline -->
+        <div class="d-flex align-items-center gap-3">
             <a class="sf-brand" asp-area="User" asp-controller="Home" asp-action="Dashboard">
                 <i class="bi bi-mortarboard-fill"></i> SkillForge
             </a>
             <a asp-area="User" asp-controller="Home" asp-action="Courses" class="sf-explore">
                 Explore
-            </a>    
+            </a>
         </div>
 
-        <!-- Center: search -->
-        <div class="sf-search">
-            <i class="bi bi-search"></i>
-            <input type="text" placeholder="Search courses..." />
+        <!-- Center: search — slightly smaller -->
+        <div class="sf-search" style="max-width:380px; width:100%;">
+            <i class="bi bi-search" style="font-size:13px;"></i>
+            <input type="text" placeholder="Search courses..." style="font-size:13px;" />
         </div>
 
         <!-- Right: links + bell + apps + avatar -->
@@ -89,7 +89,8 @@
                     <img class="sf-avatar-img" src="@(ViewBag.PhotoPath + "?t=" + DateTime.Now.Ticks)" alt="Profile" />
                 </button>
 
-                <div class="sf-profile-menu" id="profileMenu">`
+                <div class="sf-profile-menu" id="profileMenu">
+                    `
                     <!-- user info block -->
                     <div class="sf-profile-head">
                         <img src="@ViewBag.PhotoPath" class="sf-profile-thumb" alt="Profile" />
@@ -172,6 +173,6 @@
         });
 
     </script>
-       <script src="~/js/Alert.js" asp-append-version="true"></script>
+    <script src="~/js/Alert.js" asp-append-version="true"></script>
 </body>
 </html>

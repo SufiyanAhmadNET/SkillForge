@@ -53,6 +53,13 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorRegistration");
             }
 
+            if (result.status == AuthMessage.EmailRegisteredAsStudent)
+            {
+                TempData["Alert"] = "This email is registered as Student. Please login as Student.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("InstructorRegistration");
+            }
+
             // password mismatch
             if (result.status == AuthMessage.PassNotMatch)
             {
@@ -132,6 +139,13 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin");
             }
 
+            if (result.status == AuthMessage.EmailRegisteredAsStudent)
+            {
+                TempData["Alert"] = "This email is registered as Student. Please login from Student panel.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("InstructorLogin");
+            }
+
             // email not verified
             if (result.status == AuthMessage.VerifyEmail)
             {
@@ -155,7 +169,7 @@ namespace SkillForge.Areas.Instructor.Controllers
             //successful login
             if (result.status == AuthMessage.LoginSuccess)
             {
-                await SigninUser(result.Id, result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
+                await SigninUser(result.Id.ToString(), result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
                 return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
             }
 
@@ -170,21 +184,24 @@ namespace SkillForge.Areas.Instructor.Controllers
         [HttpPost]
      public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
         {
-            Console.WriteLine("Hit Instructor.GoogleLogin");
+            
             try
             {
                 // validation 
                 if (request == null || string.IsNullOrEmpty(request.Token))
                 {
-                    return BadRequest("Invalid Google login request.");
+                    TempData["Alert"] = "Google login failed: missing token.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("InstructorLogin");
                 }
 
                 //Verify token with Google
                 var verify = await GoogleJsonWebSignature.ValidateAsync(request.Token);
-
-                if (verify == null)
+                if (verify == null || string.IsNullOrEmpty(verify.Email))
                 {
-                    return Unauthorized("Google verification failed.");
+                    TempData["Alert"] = "Google verification failed or email missing.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("InstructorLogin");
                 }
 
                 // Call Auth Service
@@ -195,7 +212,15 @@ namespace SkillForge.Areas.Instructor.Controllers
                     verify.Subject,
                     verify.Picture,
                     "Instructor"
-                );      
+                );
+
+                //  fail
+                if (result != null && result.status == AuthMessage.EmailRegisteredAsStudent)
+                {
+                    TempData["Alert"] = "This email is registered as Student. Please continue as Student.";
+                    TempData["AlertType"] = "warning";
+                    return RedirectToAction("InstructorLogin");
+                }
 
                 if (result == null || !result.Success)
                 {
@@ -206,7 +231,7 @@ namespace SkillForge.Areas.Instructor.Controllers
 
                 // Sign in user
                 await SigninUser(
-                    result.Id,
+                    result.Id.ToString(),
                     result.Email ?? string.Empty,
                     "Instructor",
                     result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif"
@@ -217,11 +242,15 @@ namespace SkillForge.Areas.Instructor.Controllers
             catch (InvalidJwtException )
             {
                 // Token invalid
-                return Unauthorized("Invalid Google token.");
+                TempData["Alert"] = "Invalid Google token.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("InstructorLogin");
             }
             catch (Exception )
             {
-               return StatusCode(500, "Something went wrong during login.");
+                TempData["Alert"] = "Something went wrong during Google login.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("StudentLogin");
             }
         }
 

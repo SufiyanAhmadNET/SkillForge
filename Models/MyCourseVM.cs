@@ -4,7 +4,7 @@ namespace SkillForge.Models
 {
     public class MyCourseVM
     {
-        public int Id { get; set; }
+        public int CourseId { get; set; }
         public string Title { get; set; }
         public string CategoryName { get; set; }
         public string? Thumbnail_Url { get; set; }

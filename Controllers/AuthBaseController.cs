@@ -7,45 +7,35 @@ namespace SkillForge.Controllers
 {
     public class AuthBaseController : Controller
     {
-        // shared SigninUser - can call in any area
-        protected async Task SigninUser(int Id, string Email, string Role, string PhotoPath)
+        // string Id — Identity uses GUID string, not int
+        protected async Task SigninUser(string Id, string Email, string Role, string PhotoPath)
         {
-            //Claims to Manage Account
-
             var claims = new List<Claim>
             {
-                new Claim (ClaimTypes.Email, Email ?? string.Empty),
-                new Claim (ClaimTypes.Role, Role ?? string.Empty),
-                new Claim (ClaimTypes.NameIdentifier, Id.ToString()),
+                new Claim(ClaimTypes.Email, Email ?? string.Empty),
+                new Claim(ClaimTypes.Role, Role ?? string.Empty),
+                new Claim(ClaimTypes.NameIdentifier, Id ?? string.Empty),
                 new Claim("PhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif")
             };
 
-            //Claim Identity
             var identity = new ClaimsIdentity(claims, "Cookies");
-
-            //Wrap Identity in Principle
             var principal = new ClaimsPrincipal(identity);
 
-            //Sign in Request 
             await HttpContext.SignInAsync("Cookies", principal);
 
-            //Session
+            // session backup
             HttpContext.Session.SetString("UserRole", Role ?? string.Empty);
-            HttpContext.Session.SetInt32("UserId", Id);
+            HttpContext.Session.SetString("UserId", Id ?? string.Empty);
             HttpContext.Session.SetString("UserEmail", Email ?? string.Empty);
             HttpContext.Session.SetString("UserPhotoPath", PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-
         }
 
-        // Helpers to read current user info
-        protected int? CurrentUserId()
+        // Id is string (Identity GUID)
+        protected string? CurrentUserId()
         {
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrEmpty(idClaim) && int.TryParse(idClaim, out var id))
-            {
-                return id;
-            }
-            return HttpContext.Session.GetInt32("UserId");
+            if (!string.IsNullOrEmpty(idClaim)) return idClaim;
+            return HttpContext.Session.GetString("UserId");
         }
 
         protected string CurrentUserEmail()
@@ -65,9 +55,7 @@ namespace SkillForge.Controllers
         protected string CurrentUserPhotoPath()
         {
             var photo = User.FindFirst("PhotoPath")?.Value;
-            if (!string.IsNullOrEmpty(photo))
-            return photo;
-
+            if (!string.IsNullOrEmpty(photo)) return photo;
             return HttpContext.Session.GetString("UserPhotoPath") ?? "/images/DefaultProfilePhoto.jfif";
         }
     }

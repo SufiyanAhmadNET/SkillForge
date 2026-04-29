@@ -3,12 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SkillForge.Models
 {
-    public class CourseVM   //with model validation
+    public class CourseVM   
     {
         
         [StringLength(100, ErrorMessage = "Title cannot exceed 100 characters")]
         [Required(ErrorMessage = "Title is required")] public string Title { get; set; }
-       public string CategoryName  {get; set;}
+        public int Id { get; set; }
+        public string? Category_Id { get; set;}
+
         //enum class type for course status
         public CourseStatus CourseStatus { get; set; } = CourseStatus.Approved;
 

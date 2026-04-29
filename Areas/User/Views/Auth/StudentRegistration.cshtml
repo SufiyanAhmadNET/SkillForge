@@ -19,13 +19,14 @@
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Create Account</h2>
 
+            <div id="student-register-alert" class="alert-container alert-inline"></div>
 
             @*  Alert Messages *@
             @if (TempData["Alert"] != null)
             {
                 <script>
                     window.addEventListener("load", function () {
-                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
+                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "student-register-alert");
                     });
                 </script>
             }
@@ -45,7 +46,7 @@
             {
                 <script>
                     window.addEventListener("load", function () {
-                        showAlert("@TempData["VerifyMessage"]", "warning");
+                        showAlert("@TempData["VerifyMessage"]", "warning", 4000, "otp-alert-container");
                     });
                 </script>
             }

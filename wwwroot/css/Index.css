@@ -25,8 +25,8 @@ body {
 }
 
 /* =====================
-       BUTTONS — reuse these in all 3 modules
-    ===================== */
+   BUTTONS
+===================== */
 .btn-orange {
     background: var(--orange);
     color: #fff;
@@ -65,8 +65,8 @@ body {
 }
 
 /* =====================
-       NAVBAR
-    ===================== */
+   NAVBAR
+===================== */
 .navbar-brand i {
     color: var(--orange);
 }
@@ -103,7 +103,6 @@ body {
     font-size: .75rem;
 }
 
-/* card */
 .program-card {
     display: flex;
     align-items: center;
@@ -119,10 +118,10 @@ body {
 }
 
     .program-card:hover {
-        background: #fff8f0; 
+        background: #fff8f0;
         border-color: rgba(255,255,255,.9);
         color: var(--dark);
-        transform: translateY(-2px); 
+        transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,.10);
     }
 
@@ -138,7 +137,6 @@ body {
         color: var(--muted);
     }
 
-/* icon box  */
 .program-icon {
     width: 48px;
     height: 48px;
@@ -150,7 +148,6 @@ body {
     flex-shrink: 0;
 }
 
-/* popular badge inside card */
 .badge-popular {
     background: #c57d00;
     color: #fff;
@@ -161,10 +158,9 @@ body {
     margin-bottom: 4px;
 }
 
-
 /* =====================
-       HERO
-    ===================== */
+   HERO
+===================== */
 .section-padding {
     padding: 50px 0;
 }
@@ -179,7 +175,6 @@ body {
     border-radius: 18px;
 }
 
-/* small trust badge row */
 .trust-badge {
     display: inline-flex;
     align-items: center;
@@ -194,16 +189,16 @@ body {
 }
 
 /* =====================
-       STATS
-    ===================== */
+   STATS
+===================== */
 .stat-box i {
     font-size: 30px;
     color: var(--orange);
 }
 
 /* =====================
-       CATEGORY PILLS — filter bar above course rows
-    ===================== */
+   CATEGORY PILLS
+===================== */
 .category-pill {
     background: #fff;
     border: 1.5px solid var(--border);
@@ -225,13 +220,99 @@ body {
     }
 
 /* =====================
-       COURSE ROWS — horizontal scroll with arrows
-       3 visible at a time, arrow swipes left
-    ===================== */
+   COURSE ROWS — 3 cards visible, horizontal scroll
+===================== */
 .course-row-wrap {
     position: relative;
+    padding: 0 40px; /* space for arrows */
 }
 
+/* scrollable track — hides scrollbar, shows 3 cards */
+.course-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE */
+    padding-bottom: 8px;
+}
+
+    .course-scroll::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+
+/* each card — fixed width so exactly 3 fit */
+.course-card {
+    min-width: calc(33.333% - 14px); /* 3 per row with gap */
+    max-width: calc(33.333% - 14px);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: #fff;
+    flex-shrink: 0;
+    transition: box-shadow .2s, transform .2s;
+}
+
+    .course-card:hover {
+        box-shadow: 0 8px 28px rgba(0,0,0,.09);
+        transform: translateY(-3px);
+    }
+
+    .course-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        display: block;
+    }
+
+/* price text */
+.price-main {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dark);
+}
+
+.price-old {
+    font-size: .82rem;
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+/* left/right scroll arrows */
+.scroll-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    transition: .2s;
+    font-size: .85rem;
+    color: var(--dark);
+}
+
+    .scroll-arrow:hover {
+        background: var(--orange);
+        color: #fff;
+        border-color: var(--orange);
+    }
+
+    .scroll-arrow.left {
+        left: 0;
+    }
+
+    .scroll-arrow.right {
+        right: 0;
+    }
 
 /* rating stars */
 .rating-stars {
@@ -239,7 +320,6 @@ body {
     font-size: .8rem;
 }
 
-/* course badge */
 .badge-level {
     background: var(--orange-soft);
     color: var(--orange);
@@ -258,10 +338,9 @@ body {
     border-radius: 6px;
 }
 
-
 /* =====================
-       WHY US — icon grid
-    ===================== */
+   WHY US
+===================== */
 .why-card {
     padding: 28px;
     border-radius: 14px;
@@ -287,8 +366,8 @@ body {
 }
 
 /* =====================
-       TESTIMONIALS
-    ===================== */
+   TESTIMONIALS
+===================== */
 .testimonial-card {
     padding: 28px;
     border-radius: 14px;
@@ -304,8 +383,8 @@ body {
 }
 
 /* =====================
-       INSTRUCTORS
-    ===================== */
+   INSTRUCTORS
+===================== */
 .instructor-card {
     text-align: center;
     padding: 24px 16px;
@@ -329,8 +408,8 @@ body {
 }
 
 /* =====================
-       FOOTER
-    ===================== */
+   FOOTER
+===================== */
 .footer a {
     text-decoration: none;
     color: var(--muted);
@@ -342,8 +421,8 @@ body {
     }
 
 /* =====================
-       SEARCH BAR in hero
-    ===================== */
+   HERO SEARCH BAR
+===================== */
 .hero-search {
     background: #fff;
     border-radius: 12px;
@@ -365,8 +444,8 @@ body {
     }
 
 /* =====================
-       SECTION HEADER pattern
-    ===================== */
+   SECTION LABEL
+===================== */
 .section-label {
     display: inline-block;
     background: var(--orange-soft);
@@ -379,64 +458,15 @@ body {
     margin-bottom: 8px;
 }
 
-
-/*Restric Actions if EMail is not verified*/
+/* restricted link */
 .disabled-link {
     pointer-events: none;
     opacity: 0.5;
 }
 
-/* DESKTOP DEFAULT */
-.sf-home-header {
-    display: none !important;
-}
-
-.navbar {
-    display: flex !important;
-}
-
-
 /* =====================
-   MOBILE RESPONSIVE 
+   MOBILE MENU
 ===================== */
-@media (max-width: 768px) {
-
-    .navbar {
-        padding: 10px 12px;
-    }
-
-    .navbar-brand {
-        font-size: 18px;
-    }
-
-    .nav-link {
-        font-size: 14px;
-    }
-
-    .course-card {
-        min-width: 85%;
-    }
-
-    .scroll-arrow {
-        display: none;
-    }
-
-    .sf-home-header {
-        display: flex !important;
-    }
-
-    .navbar {
-        display: none !important;
-    }
-      
-    
-}
-
-/* MOBILE MENU (OUTSIDE media query) */
-.sf-home-header{
-    display: none;
-}
-
 .sf-mobile-menu {
     position: fixed;
     top: 0;
@@ -452,12 +482,12 @@ body {
     z-index: 9999;
 }
 
-.sf-mobile-menu a {
-    color: #fff;
-    font-size: 20px;
-    margin: 12px 0;
-    text-decoration: none;
-}
+    .sf-mobile-menu a {
+        color: #fff;
+        font-size: 20px;
+        margin: 12px 0;
+        text-decoration: none;
+    }
 
 .sf-close {
     position: absolute;
@@ -467,8 +497,58 @@ body {
     cursor: pointer;
 }
 
+/* =====================
+   MOBILE RESPONSIVE
+===================== */
+@media (max-width: 768px) {
 
-/*========================
-Explore COurses 
-===================*/
+    .navbar {
+        padding: 10px 12px;
+    }
 
+    .navbar-brand {
+        font-size: 18px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+    }
+
+    /* 1 card visible on mobile */
+    /* fixed width — 3 cards fit in standard container */
+    .course-card {
+        min-width: 300px;
+        max-width: 300px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        background: #fff;
+        flex-shrink: 0;
+        transition: box-shadow .2s, transform .2s;
+    }
+
+        .course-card:hover {
+            box-shadow: 0 8px 28px rgba(0,0,0,.09);
+            transform: translateY(-3px);
+        }
+
+        .course-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+    .course-scroll {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 8px;
+    }
+
+        .course-scroll::-webkit-scrollbar {
+            display: none;
+        }

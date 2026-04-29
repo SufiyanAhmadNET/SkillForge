@@ -52,6 +52,13 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("StudentRegistration");
             }
 
+            if (result.status == AuthMessage.EmailRegisteredAsInstructor)
+            {
+                TempData["Alert"] = "This email is registered as Instructor. Please login as Instructor.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("StudentRegistration");
+            }
+
             // password mismatch
             if (result.status == AuthMessage.PassNotMatch)
             {
@@ -130,6 +137,13 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("StudentLogin");
             }
 
+            if (result.status == AuthMessage.EmailRegisteredAsInstructor)
+            {
+                TempData["Alert"] = "This email is registered as Instructor. Please login from Instructor panel.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("StudentLogin");
+            }
+
             // email not verified
             if (result.status == AuthMessage.VerifyEmail)
             {
@@ -153,7 +167,7 @@ namespace SkillForge.Areas.User.Controllers
             //successful login
             if (result.status == AuthMessage.LoginSuccess)
             {
-                await SigninUser(result.Id, result.Email, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
+                await SigninUser(result.Id.ToString(), result.Email, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
                 return RedirectToAction("Dashboard", "Home", new { area = "User" });
             }
 
@@ -171,6 +185,7 @@ namespace SkillForge.Areas.User.Controllers
 
             try
             {
+                // validation 
                 if (request == null || string.IsNullOrEmpty(request.Token))
                 {
                     TempData["Alert"] = "Google login failed: missing token.";
@@ -178,6 +193,7 @@ namespace SkillForge.Areas.User.Controllers
                     return RedirectToAction("StudentLogin");
                 }
 
+                //Verify token with Google
                 var verify = await GoogleJsonWebSignature.ValidateAsync(request.Token);
                 if (verify == null || string.IsNullOrEmpty(verify.Email))
                 {
@@ -185,7 +201,7 @@ namespace SkillForge.Areas.User.Controllers
                     TempData["AlertType"] = "danger";
                     return RedirectToAction("StudentLogin");
                 }
-
+                // Call Auth Service
                 var result = _authService.GoogleAuth(
                     verify.Email,
                     verify.GivenName,
@@ -196,6 +212,13 @@ namespace SkillForge.Areas.User.Controllers
                 );
 
                 //  fail 
+                if (result != null && result.status == AuthMessage.EmailRegisteredAsInstructor)
+                {
+                    TempData["Alert"] = "This email is registered as Instructor. Please continue as Instructor.";
+                    TempData["AlertType"] = "warning";
+                    return RedirectToAction("StudentLogin");
+                }
+
                 if (result == null || !result.Success || string.IsNullOrEmpty(result.Email) || result.Id <= 0)
                 {
                     TempData["Alert"] = "Google login failed: account creation or lookup failed.";
@@ -203,7 +226,7 @@ namespace SkillForge.Areas.User.Controllers
                     return RedirectToAction("StudentLogin");
                 }
 
-                await SigninUser(result.Id, result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
+                await SigninUser(result.Id.ToString(), result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
                 return RedirectToAction("Dashboard", "Home", new { area = "User" });
             }
             catch (InvalidJwtException)

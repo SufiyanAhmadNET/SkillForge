@@ -38,10 +38,16 @@ namespace SkillForge.Areas.Instructor.Controllers
         ////Add Course Post
         [Authorize(Roles = "Instructor")]
         [HttpPost]
-        public IActionResult AddCourse(CourseVM courseVM, IFormFile Thumbnail_File, IFormFile Video_File, string YouTubeUrl, string OutcomesRaw)
+        public IActionResult AddCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string action)
         {
             //instructor id from claim
-            var InstructorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var InstructorId))
+            {
+                TempData["Alert"] = "Session expired. Please login again.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("InstructorLogin", "Auth");
+            }
 
             //split input outcomes into liste by line
             if (!string.IsNullOrWhiteSpace(OutcomesRaw))
@@ -54,35 +60,31 @@ namespace SkillForge.Areas.Instructor.Controllers
             }
 
             //pass to service
-
-            var course = _courseService.AddCourse(courseVM, InstructorId, Thumbnail_File, Video_File, YouTubeUrl);
+            var course = _courseService.AddCourse(courseVM, InstructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
 
             if (course.message == CourseMessage.EmptyFields)
             {
-                TempData["Alert"] = "Please Enter All Details and in Correct Format ";
-                TempData["AlertType"] = "info";
-                return RedirectToAction("AddCourse", "Home");
-            }
-            if (!course.Success)
-            {
-                ViewBag.ErrorMessage = course.message.ToString();
-                return View(courseVM);
-            }
-
-            if (!course.Success)
-            {
-                ViewBag.ErrorMessage = !string.IsNullOrEmpty(course.TechnicalMessage)
+                TempData["Alert"] = !string.IsNullOrWhiteSpace(course.TechnicalMessage)
                     ? course.TechnicalMessage
-                    : course.message.ToString();
-
-                TempData["Alert"] = "Course NOT Added";
-                TempData["AlertType"] = "error";
+                    : "Please enter all required course details in the correct format.";
+                TempData["AlertType"] = "danger";
                 return RedirectToAction("AddCourse", "Home");
             }
 
-            TempData["Alert"] = "Course Added Successfully";
+            if (!course.Success)
+            {
+                TempData["Alert"] = !string.IsNullOrWhiteSpace(course.TechnicalMessage)
+                    ? course.TechnicalMessage
+                    : "Course could not be added. Please check your input and try again.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("AddCourse", "Home");
+            }
+
+            TempData["Alert"] = action?.ToLower() == "submit"
+                ? "Course submitted successfully for review."
+                : "Course saved to draft successfully.";
             TempData["AlertType"] = "success";
-            return RedirectToAction("AddCourse", "Home");
+            return RedirectToAction("MyCourses", "Home");
         }
 
 
@@ -90,22 +92,72 @@ namespace SkillForge.Areas.Instructor.Controllers
         [Authorize(Roles ="Instructor")]
         public IActionResult MyCourses()
         {
-            var InstructorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var InstructorId))
+            {
+                TempData["Alert"] = "Session expired. Please login again.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("InstructorLogin", "Auth");
+            }
             var mycourse = _courseService.MyCourses(InstructorId);
 
             return View(mycourse);
         }
 
-        //Course detail -view
-        public IActionResult CourseDetails()
+        // Course details - instructor view with students
+        [Authorize(Roles = "Instructor")]
+        public IActionResult CourseDetails(int id)
         {
-            return View();
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+                return RedirectToAction("InstructorLogin", "Auth");
+
+            var courseDetails = _courseService.GetInstructorCourseDetails(id, instructorId);
+            if (courseDetails == null)
+                return NotFound();
+
+            return View(courseDetails);
         }
 
-
-        public IActionResult EditCourses()
+        //edit course  
+        [Authorize(Roles = "Instructor")]
+        public IActionResult EditCourse(int CourseId)
         {
-            return View();
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+                return RedirectToAction("InstructorLogin", "Auth");
+
+            var courseDetails = _courseService.GetInstructorCourseDetails(CourseId, instructorId);
+            if (courseDetails == null)
+                return NotFound();
+
+            return View(courseDetails);
+        }
+
+        // Delete course 
+        [Authorize(Roles = "Instructor")]
+        [HttpPost]
+        public IActionResult DeleteCourse(int id)
+        {
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+                return RedirectToAction("InstructorLogin", "Auth");
+
+            // Delete course
+            bool deleted = _courseService.DeleteCourse(id, instructorId);
+
+            if (deleted)
+            {
+                TempData["Alert"] = "Course deleted successfully.";
+                TempData["AlertType"] = "success";
+            }
+            else
+            {
+                TempData["Alert"] = "Failed to delete course. Check permissions.";
+                TempData["AlertType"] = "danger";
+            }
+
+            return RedirectToAction("MyCourses");
         }
 
         //My Earning

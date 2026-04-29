@@ -24,6 +24,9 @@ builder.Services.AddScoped<AuthService>();
 //Register Course service
 builder.Services.AddScoped<CourseService>();
 
+////Register Enrollment service
+builder.Services.AddScoped<EnrollmentService>();
+
 //Register Database
 builder.Services.AddDbContext<SkillForgeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

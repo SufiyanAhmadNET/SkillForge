@@ -22,6 +22,7 @@
                 </div>
                 <h2 class="text-center fw-bold mb-1" style="font-size:1.5rem">Welcome back</h2>
                 <p class="text-center text-muted small mb-4">Log in to manage your courses</p>
+                <div id="instructor-login-alert" class="alert-container alert-inline"></div>
 
 
                 @*  Alert Messages *@
@@ -29,7 +30,7 @@
                 {
                     <script>
                         window.addEventListener("load", function () {
-                            showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
+                            showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "instructor-login-alert");
                         });
                     </script>
                 }
@@ -49,7 +50,7 @@
                 {
                     <script>
                         window.addEventListener("load", function () {
-                            showAlert("@TempData["VerifyMessage"]", "warning");
+                            showAlert("@TempData["VerifyMessage"]", "warning", 4000, "otp-alert-container");
                         });
                     </script>
                 }

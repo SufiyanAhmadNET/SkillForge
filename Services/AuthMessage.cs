@@ -7,6 +7,8 @@
         EmptyFields,
         PassNotMatch,
         EmailExist,
+        EmailRegisteredAsStudent,
+        EmailRegisteredAsInstructor,
         VerifyEmail,
         EmailVerified,
         EmailNotVerified,

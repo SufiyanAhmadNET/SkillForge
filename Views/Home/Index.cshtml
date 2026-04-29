@@ -766,3 +766,11 @@
         </div>
     </section>
 
+    <script>
+            // scrolls the course row by roughly one card width
+    function scroll(rowId, direction) {
+        const el = document.getElementById(rowId);
+        if (!el) return;
+        el.scrollBy({ left: direction * 320, behavior: 'smooth' });
+    }
+    </script>
