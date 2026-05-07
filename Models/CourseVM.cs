@@ -40,5 +40,20 @@ namespace SkillForge.Models
         public string? Thumbnail_Url { get; set; }
 
         public string? Intro_Video_Url { get; set; }
+
+        // Syllabus for Model Binding
+        public List<ModuleVM> Syllabus { get; set; } = new List<ModuleVM>();
+    }
+
+    public class ModuleVM
+    {
+        public string ModuleName { get; set; }
+        public List<LessonVM> Lessons { get; set; } = new List<LessonVM>();
+    }
+
+    public class LessonVM
+    {
+        public string Title { get; set; }
+        public string? VideoUrl { get; set; }
     }
 }

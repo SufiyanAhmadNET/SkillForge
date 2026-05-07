@@ -28,8 +28,10 @@ namespace SkillForge.Services
         //  Create Razorpay Order   
         public EnrollResult CreateOrder(int studentId, int courseId)
         {
+            if (courseId == 0) return CreateCartOrder(studentId);
             try
             {
+// ... existing logic ...
                 // already enrolled 
                 var existing = _context.Enrollments
                     .FirstOrDefault(e => e.StudentId == studentId && e.CourseId == courseId);
@@ -108,13 +110,111 @@ namespace SkillForge.Services
 
                 _context.SaveChanges();
 
+                var student = _context.Students.Find(studentId);
+                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == studentId);
+
                 return new EnrollResult
                 {
                     Success        = true,
                     RazorpayOrderId = razorpayOrderId,
                     Amount         = amountInPaise,
                     CourseTitle    = course.Title,
-                    EnrollmentId   = enrollment.Id
+                    EnrollmentId   = enrollment.Id,
+                    StudentEmail   = student?.Email,
+                    StudentMobile  = profile?.Mobile,
+                    StudentName    = profile != null ? $"{profile.FirstName} {profile.LastName}" : "Student"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new EnrollResult { Success = false, Message = ex.Message };
+            }
+        }
+
+        public EnrollResult CreateCartOrder(int studentId)
+        {
+            try
+            {
+                var cartItems = _context.Carts
+                    .Where(c => c.StudentId == studentId)
+                    .Include(c => c.Course)
+                        .ThenInclude(co => co.CourseDetails)
+                    .ToList();
+
+                if (!cartItems.Any())
+                    return new EnrollResult { Success = false, Message = "Cart is empty." };
+
+                var totalAmount = cartItems.Sum(c => c.Course.CourseDetails?.Total_Price ?? 0);
+                var amountInPaise = (int)(totalAmount * 100);
+
+                var client = new RazorpayClient(_keyId, _keySecret);
+                var options = new Dictionary<string, object>
+                {
+                    { "amount",   amountInPaise },
+                    { "currency", "INR" },
+                    { "receipt",  $"cart_{studentId}_{DateTime.UtcNow.Ticks}" },
+                    { "payment_capture", 1 }
+                };
+
+                var order = client.Order.Create(options);
+                string razorpayOrderId = order["id"].ToString();
+
+                foreach (var item in cartItems)
+                {
+                    var existing = _context.Enrollments
+                        .FirstOrDefault(e => e.StudentId == studentId && e.CourseId == item.CourseId);
+
+                    Enrollment enrollment;
+                    if (existing != null)
+                    {
+                        enrollment = existing;
+                        if (enrollment.Status != EnrollmentStatus.Active)
+                            enrollment.Status = EnrollmentStatus.Pending;
+                    }
+                    else
+                    {
+                        enrollment = new Enrollment
+                        {
+                            StudentId = studentId,
+                            CourseId = item.CourseId,
+                            Status = EnrollmentStatus.Pending
+                        };
+                        _context.Enrollments.Add(enrollment);
+                    }
+                    _context.SaveChanges();
+
+                    var payment = _context.Payments.FirstOrDefault(p => p.EnrollmentId == enrollment.Id);
+                    if (payment == null)
+                    {
+                        payment = new Models.Payment
+                        {
+                            EnrollmentId = enrollment.Id,
+                            RazorpayOrderId = razorpayOrderId,
+                            Amount = item.Course.CourseDetails?.Total_Price ?? 0,
+                            Status = PaymentStatus.Pending
+                        };
+                        _context.Payments.Add(payment);
+                    }
+                    else
+                    {
+                        payment.RazorpayOrderId = razorpayOrderId;
+                        payment.Status = PaymentStatus.Pending;
+                    }
+                }
+                _context.SaveChanges();
+
+                var student = _context.Students.Find(studentId);
+                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == studentId);
+
+                return new EnrollResult
+                {
+                    Success = true,
+                    RazorpayOrderId = razorpayOrderId,
+                    Amount = amountInPaise,
+                    CourseTitle = $"{cartItems.Count} Courses",
+                    StudentEmail = student?.Email,
+                    StudentMobile = profile?.Mobile,
+                    StudentName = profile != null ? $"{profile.FirstName} {profile.LastName}" : "Student"
                 };
             }
             catch (Exception ex)
@@ -138,22 +238,34 @@ namespace SkillForge.Services
                     return new EnrollResult { Success = false, Message = "Payment verification failed. Possible fraud." };
                 }
 
-                // signature matched — find payment in DB
-                var payment = _context.Payments
+                // signature matched — find payments in DB
+                var payments = _context.Payments
                     .Include(p => p.Enrollment)
-                    .FirstOrDefault(p => p.RazorpayOrderId == razorpayOrderId);
+                    .Where(p => p.RazorpayOrderId == razorpayOrderId)
+                    .ToList();
 
-                if (payment == null)
+                if (!payments.Any())
                     return new EnrollResult { Success = false, Message = "Payment record not found." };
 
-                // update payment
-                payment.RazorpayPaymentId = razorpayPaymentId;
-                payment.RazorpaySignature = razorpaySignature;
-                payment.Status            = PaymentStatus.Success;
-                payment.PaidAt            = DateTime.UtcNow;
+                foreach (var payment in payments)
+                {
+                    payment.RazorpayPaymentId = razorpayPaymentId;
+                    payment.RazorpaySignature = razorpaySignature;
+                    payment.Status            = PaymentStatus.Success;
+                    payment.PaidAt            = DateTime.UtcNow;
 
-                // activate enrollment
-                payment.Enrollment.Status = EnrollmentStatus.Active;
+                    // activate enrollment
+                    payment.Enrollment.Status = EnrollmentStatus.Active;
+                }
+
+                // Clear cart for these courses
+                var studentId = payments.First().Enrollment.StudentId;
+                var courseIds = payments.Select(p => p.Enrollment.CourseId).ToList();
+                var cartItems = _context.Carts.Where(c => c.StudentId == studentId && courseIds.Contains(c.CourseId)).ToList();
+                if (cartItems.Any())
+                {
+                    _context.Carts.RemoveRange(cartItems);
+                }
 
                 _context.SaveChanges();
 
@@ -161,7 +273,7 @@ namespace SkillForge.Services
                 {
                     Success      = true,
                     Message      = "Payment verified. Enrollment active!",
-                    EnrollmentId = payment.EnrollmentId
+                    EnrollmentId = payments.First().EnrollmentId
                 };
             }
             catch (Exception ex)
@@ -187,14 +299,16 @@ namespace SkillForge.Services
         // payment failed 
         private void MarkPaymentFailed(string razorpayOrderId)
         {
-            var payment = _context.Payments
+            var payments = _context.Payments
                 .Include(p => p.Enrollment)
-                .FirstOrDefault(p => p.RazorpayOrderId == razorpayOrderId);
+                .Where(p => p.RazorpayOrderId == razorpayOrderId)
+                .ToList();
 
-            if (payment == null) return;
-
-            payment.Status            = PaymentStatus.Failed;
-            payment.Enrollment.Status = EnrollmentStatus.Failed;
+            foreach (var payment in payments)
+            {
+                payment.Status            = PaymentStatus.Failed;
+                payment.Enrollment.Status = EnrollmentStatus.Failed;
+            }
             _context.SaveChanges();
         }
 
@@ -219,5 +333,8 @@ namespace SkillForge.Services
         public int     Amount          { get; set; }   // paise
         public string? CourseTitle     { get; set; }
         public int     EnrollmentId    { get; set; }
+        public string? StudentEmail    { get; set; }
+        public string? StudentMobile   { get; set; }
+        public string? StudentName     { get; set; }
     }
 }

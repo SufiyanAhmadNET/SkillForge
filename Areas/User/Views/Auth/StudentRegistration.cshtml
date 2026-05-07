@@ -19,19 +19,7 @@
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Create Account</h2>
 
-            <div id="student-register-alert" class="alert-container alert-inline"></div>
-
-            @*  Alert Messages *@
-            @if (TempData["Alert"] != null)
-            {
-                <script>
-                    window.addEventListener("load", function () {
-                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "student-register-alert");
-                    });
-                </script>
-            }
-
-            @* otp *@
+            @* otp trigger *@
             @if (TempData["VerifyEmail"] != null)
             {
                 <script>

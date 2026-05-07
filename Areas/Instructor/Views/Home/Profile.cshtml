@@ -1,144 +1,295 @@
-﻿
+@model SkillForge.Areas.Instructor.Models.InstructorDashboardVM
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
 }
 
-<body>
-<main class="p-4 flex-grow-1 inst-bg">
-
-    <div class="mb-4 page-title-bar">
-        <h5 class="fw-bold mb-0">My Profile</h5>
-        <p class="text-muted mb-0" style="font-size:14px;">Update your public profile and account settings.</p>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">My Profile</h4>
+        <span class="text-muted small">Update your public profile and professional settings</span>
     </div>
+</div>
 
-    <div class="row g-3">
+<div class="row g-4">
 
-        <!-- Left: avatar + quick info -->
-        <div class="col-lg-3">
-            <div class="card border-0 inst-card text-center p-4">
-                <div class="profile-avatar-lg mx-auto mb-3" style="background:var(--purple-soft);color:var(--purple);">S</div>
-                <h6 class="fw-bold mb-0">Suresh Kumar</h6>
-                <p class="text-muted small mb-2">Full Stack Developer</p>
-                <span class="badge bg-success mb-3">Active</span>
-                <input type="file" class="form-control form-control-sm" accept="image/*">
-                <small class="text-muted d-block mt-1">Change profile photo</small>
-            </div>
-        </div>
+    <!-- LEFT SIDE: Profile Summary & Section Toggles -->
+    <div class="col-lg-3">
+        <div class="section-card text-center p-3 shadow-sm" style="background:#fff; border-radius:12px;">
 
-        <!-- Right: edit forms -->
-        <div class="col-lg-9">
+            <!-- PROFILE PHOTO -->
+            <img src="@((Model?.PhotoPath ?? "/images/DefaultProfilePhoto.jfif") + "?t=" + DateTime.Now.Ticks)"
+                 id="avatarPreview"
+                 class="rounded-circle mb-2"
+                 style="width:100px;height:100px;object-fit:cover; border: 3px solid #f8f9fa;">
 
-            <!-- Personal info -->
-            <div class="card border-0 inst-card mb-3">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0 fw-bold">Personal Information</h6>
-                </div>
-                <div class="card-body">
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;">First Name</label>
-                            <input type="text" class="form-control" value="Suresh">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;">Last Name</label>
-                            <input type="text" class="form-control" value="Kumar">
-                        </div>
-                    </div>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;">Email</label>
-                            <!-- email usually not editable without verification — disabled -->
-                            <input type="email" class="form-control" value="suresh.k@email.com" disabled>
-                            <small class="text-muted">Contact support to change email</small>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;">Phone</label>
-                            <input type="tel" class="form-control" value="+91 98765 43210">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" style="font-size:13px;">Location</label>
-                        <input type="text" class="form-control" value="Mumbai, India">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" style="font-size:13px;">Bio</label>
-                        <textarea class="form-control" rows="3">Senior full stack developer with 8 years of industry experience. Worked at Infosys and TCS. Passionate about teaching practical, job-ready skills.</textarea>
-                    </div>
-
-                    <!-- Skills tags — comma separated, in .NET store as a string or list -->
-                    <div class="mb-3">
-                        <label class="form-label" style="font-size:13px;">Skills / Expertise</label>
-                        <input type="text" class="form-control" value="React, Node.js, JavaScript, AWS, MongoDB">
-                        <small class="text-muted">Comma separated</small>
-                    </div>
-
-                    <button class="btn fw-semibold px-4" style="background:var(--orange);color:#fff;border:none;">
-                        Save Changes
-                    </button>
-
-                </div>
+            <label for="PhotoFile" style="cursor:pointer;" class="d-block">
+                <i class="bi bi-camera-fill text-muted"></i>
+                <span class="small text-muted ms-1">Change Photo</span>
+            </label>
+            
+            @* Photo Save Button *@
+            <div id="photoSaveContainer" style="display:none;" class="mt-2">
+                <button type="submit" class="btn btn-sm btn-orange w-100 py-2 shadow-sm rounded-pill" style="font-size:12px; font-weight:600;">
+                    <i class="bi bi-check-circle me-1"></i>Save Photo
+                </button>
             </div>
 
-            <!-- Social links -->
-            <div class="card border-0 inst-card mb-3">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0 fw-bold">Social Links</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;"><i class="bi bi-linkedin me-1 text-primary"></i>LinkedIn</label>
-                            <input type="url" class="form-control" placeholder="https://linkedin.com/in/…">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;"><i class="bi bi-github me-1"></i>GitHub</label>
-                            <input type="url" class="form-control" placeholder="https://github.com/…">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" style="font-size:13px;"><i class="bi bi-globe me-1"></i>Personal Website</label>
-                            <input type="url" class="form-control" placeholder="https://…">
-                        </div>
-                    </div>
-                    <button class="btn btn-outline-secondary btn-sm mt-3 px-4">Save Links</button>
-                </div>
+            <h6 class="fw-bold mt-2 mb-0">@(string.IsNullOrEmpty(Model?.FirstName) ? "Guest" : Model.FirstName) @Model?.LastName</h6>
+            <p class="text-muted small mb-2">@Model?.Email</p>
+            <span class="badge bg-success bg-opacity-10 text-success px-3 mb-3" style="font-size:11px;">Active Instructor</span>
+
+            <!-- SECTION TOGGLE BUTTONS — Multi-colored scheme -->
+            <div class="d-flex flex-column gap-2 mt-2">
+                <button type="button" class="btn btn-sm w-100 py-2 btn-section btn-sidebar-nav active" id="btn-basic" onclick="showSection('basicSection', 'btn-basic')">
+                    <i class="bi bi-person me-2"></i>Personal Info
+                </button>
+
+                <button type="button" class="btn btn-sm w-100 py-2 btn-section btn-sidebar-nav" id="btn-professional" onclick="showSection('professionalSection', 'btn-professional')">
+                    <i class="bi bi-briefcase me-2"></i>Professional
+                </button>
+
+                <button type="button" class="btn btn-sm w-100 py-2 btn-section btn-sidebar-nav" id="btn-social" onclick="showSection('socialSection', 'btn-social')">
+                    <i class="bi bi-link-45deg me-2"></i>Social Links
+                </button>
+
+                <button type="button" class="btn btn-sm w-100 py-2 btn-section btn-sidebar-nav" id="btn-password" onclick="showSection('passwordSection', 'btn-password')">
+                    <i class="bi bi-lock me-2"></i>Security
+                </button>
             </div>
 
-            <!-- Change password -->
-            <div class="card border-0 inst-card">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0 fw-bold">Change Password</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px;">Current Password</label>
-                            <input type="password" class="form-control" placeholder="Current password">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px;">New Password</label>
-                            <input type="password" class="form-control" placeholder="New password">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" style="font-size:13px;">Confirm New Password</label>
-                            <input type="password" class="form-control" placeholder="Confirm password">
+            <!-- STATS PREVIEW -->
+            <div class="mt-4 pt-3 border-top">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="stat-mini">
+                            <div class="fw-bold">@Model.TotalCourses</div>
+                            <div class="text-muted" style="font-size:10px;">Courses</div>
                         </div>
                     </div>
-                    <button class="btn btn-outline-secondary btn-sm mt-3 px-4">Update Password</button>
+                    <div class="col-6">
+                        <div class="stat-mini">
+                            <div class="fw-bold">@Model.TotalStudents</div>
+                            <div class="text-muted" style="font-size:10px;">Students</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
-
     </div>
 
-</main>
+    <!-- RIGHT SIDE: Dynamic Sections -->
+    <div class="col-lg-9">
+        <form asp-action="Profile" method="post" enctype="multipart/form-data" id="profileForm">
+            @Html.AntiForgeryToken()
+            <input type="file" id="PhotoFile" name="PhotoFile" accept="image/*" class="d-none" onchange="previewAvatar(this)">
 
-</div>
+            <!-- BASIC INFO SECTION -->
+            <div id="basicSection" class="section-card shadow-sm p-4" style="background:#fff; border-radius:12px;">
+                <div class="form-section-title">Personal Information</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium">First Name</label>
+                        <input type="text" name="FirstName" class="form-control" value="@Model.FirstName">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium">Last Name</label>
+                        <input type="text" name="LastName" class="form-control" value="@Model.LastName">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium">Email (Primary)</label>
+                        <input type="email" class="form-control bg-light" value="@Model.Email" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium">Phone Number</label>
+                        <input type="tel" name="Mobile" class="form-control" value="@Model.Mobile">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-medium">Location</label>
+                        <input type="text" name="Location" class="form-control" value="@Model.Location" placeholder="City, Country">
+                    </div>
+                    <div class="col-12 text-end mt-4">
+                        <button type="submit" class="btn btn-orange-save px-5 py-2 shadow-sm">
+                            <i class="bi bi-save me-2"></i>Save Personal Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFESSIONAL SECTION -->
+            <div id="professionalSection" class="section-card shadow-sm p-4" style="display:none; background:#fff; border-radius:12px;">
+                <div class="form-section-title">Professional Details</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium">Current Profession</label>
+                        <input type="text" name="Profession" class="form-control" value="@Model.Profession" placeholder="e.g. Senior Software Engineer">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium">Headline</label>
+                        <input type="text" name="Headline" class="form-control" value="@Model.Headline" placeholder="e.g. Expert Java Developer & Technical Lead">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-medium">Bio / About Me</label>
+                        <textarea name="Bio" class="form-control" rows="5" placeholder="Share your experience and teaching style...">@Model.Bio</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small fw-medium">Skills (Comma separated)</label>
+                        <input type="text" name="Skills" class="form-control" value="@Model.Skills" placeholder="React, Node.js, C#, System Design">
+                    </div>
+                    <div class="col-12 text-end mt-4">
+                        <button type="submit" class="btn btn-orange-save px-5 py-2 shadow-sm">
+                            <i class="bi bi-save me-2"></i>Save Professional Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOCIAL LINKS SECTION -->
+            <div id="socialSection" class="section-card shadow-sm p-4" style="display:none; background:#fff; border-radius:12px;">
+                <div class="form-section-title">Social & Professional Presence</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium"><i class="bi bi-linkedin me-2 text-primary"></i>LinkedIn URL</label>
+                        <input type="url" name="LinkedinUrl" class="form-control" value="@Model.LinkedinUrl" placeholder="https://linkedin.com/in/...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium"><i class="bi bi-github me-2 text-dark"></i>GitHub URL</label>
+                        <input type="url" name="GithubUrl" class="form-control" value="@Model.GithubUrl" placeholder="https://github.com/...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium"><i class="bi bi-globe me-2 text-info"></i>Personal Website</label>
+                        <input type="url" name="WebsiteUrl" class="form-control" value="@Model.WebsiteUrl" placeholder="https://yourportfolio.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-medium"><i class="bi bi-twitter-x me-2 text-dark"></i>Twitter / X</label>
+                        <input type="url" name="TwitterUrl" class="form-control" value="@Model.TwitterUrl" placeholder="https://twitter.com/...">
+                    </div>
+                    <div class="col-12 text-end mt-4">
+                        <button type="submit" class="btn btn-orange-save px-5 py-2 shadow-sm">
+                            <i class="bi bi-save me-2"></i>Update Social Links
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECURITY SECTION -->
+            <div id="passwordSection" class="section-card shadow-sm p-4" style="display:none; background:#fff; border-radius:12px;">
+                <div class="form-section-title">Account Security</div>
+                <div class="alert alert-warning py-2 small" style="font-size:12px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Password management is currently handled via the main authentication system.
+                </div>
+                <div class="row g-3 opacity-50">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-medium">Current Password</label>
+                        <input type="password" class="form-control form-control-sm" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-medium">New Password</label>
+                        <input type="password" class="form-control form-control-sm" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-medium">Confirm Password</label>
+                        <input type="password" class="form-control form-control-sm" disabled>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-3 px-4" disabled>Update Password</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-</body>
+<style>
+    .section-card {
+        padding: 20px;
+        background: #fff;
+        border-radius: 12px;
+    }
+
+    .form-section-title {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #adb5bd;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .btn-section {
+        border: 1px solid #e9ecef;
+        background: #fff;
+        color: #495057;
+        text-align: left;
+        font-weight: 500;
+        transition: all 0.2s;
+        border-radius: 8px;
+    }
+
+    .btn-section:hover {
+        background: #f8f9fa;
+        color: #1f7a63;
+    }
+
+    .btn-sidebar-nav.active {
+        background-color: #1f7a63 !important; /* deep muted green */
+        color: #fff !important;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(31, 122, 99, 0.2);
+    }
+
+    .btn-orange-save {
+        background-color: var(--orange);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-orange-save:hover {
+        background-color: #e66e00;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 122, 0, 0.2);
+    }
+
+    .stat-mini {
+        background: #f8f9fa;
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .text-orange { color: var(--orange); }
+</style>
+
+<script>
+    function showSection(sectionId, btnId) {
+        // hide all sections
+        ['basicSection', 'professionalSection', 'socialSection', 'passwordSection'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+        
+        // show target section
+        document.getElementById(sectionId).style.display = 'block';
+        
+        // update button active states
+        document.querySelectorAll('.btn-section').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(btnId).classList.add('active');
+    }
+
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+                // show save button when file picked
+                document.getElementById('photoSaveContainer').style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

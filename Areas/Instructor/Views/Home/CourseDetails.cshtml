@@ -10,12 +10,13 @@
         <a asp-action="MyCourses" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i>My Courses
         </a>
+        @* navigation and course actions *@
         <div class="d-flex gap-2 flex-wrap">
             <a asp-action="EditCourse" asp-route-id="@Model.CourseId" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-pencil me-1"></i>Edit
             </a>
-            @* preview as student *@
-            <a asp-action="Courses" asp-area="User" asp-controller="Home" asp-route-id="@Model.CourseId" target="_blank" class="btn btn-sm btn-outline-secondary">
+            @* preview as student with flag *@
+            <a asp-action="CourseDetails" asp-area="User" asp-controller="Home" asp-route-id="@Model.CourseId" asp-route-preview="true" target="_blank" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-eye me-1"></i>Preview
             </a>
             @* submit for review *@
@@ -61,18 +62,26 @@
                             <span class="fw-semibold">@Model.Duration weeks</span>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <span class="text-muted">Price</span>
-                            <span class="fw-bold" style="color:var(--orange);">₹@Model.TotalPrice</span>
+                            <span class="text-muted">Actual Price</span>
+                            <span class="fw-semibold text-decoration-line-through text-muted">₹@Model.ActualPrice</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Discount</span>
+                            <span class="fw-semibold text-success">@Model.DiscountPercent% OFF</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Selling Price</span>
+                            <span class="fw-bold fs-5" style="color:var(--orange);">₹@Model.TotalPrice</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            @* Mini stats *@
+            @* Mini stats — real data *@
             <div class="row g-2">
                 <div class="col-6">
                     <div class="card border-0 inst-card text-center py-3">
-                        <div class="fw-bold fs-5" style="color:var(--orange);">0</div>
+                        <div class="fw-bold fs-5" style="color:var(--orange);">@Model.EnrolledStudents.Count</div>
                         <small class="text-muted">Students</small>
                     </div>
                 </div>
@@ -84,8 +93,8 @@
                 </div>
                 <div class="col-12">
                     <div class="card border-0 inst-card text-center py-3">
-                        <div class="fw-bold fs-5 text-success">₹7,79,844</div>
-                        <small class="text-muted">Total Earned</small>
+                        <div class="fw-bold fs-5 text-success">₹@Model.TotalPrice</div>
+                        <small class="text-muted">Total Price</small>
                     </div>
                 </div>
             </div>
@@ -102,9 +111,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            @* content tab — locked until published *@
-                            <a class="nav-link text-muted" data-bs-toggle="tab" href="#tabContent">
-                                Content <span class="badge bg-light text-muted border ms-1" style="font-size:10px;">Soon</span>
+                            <a class="nav-link" data-bs-toggle="tab" href="#tabContent">
+                                Content
                             </a>
                         </li>
                         <li class="nav-item">
@@ -120,27 +128,114 @@
                     </ul>
                 </div>
                 <div class="tab-content card-body">
-                    @* OVERVIEW tab - dummy data *@
+                    @* OVERVIEW tab — real course info *@
                     <div class="tab-pane fade show active" id="tabOverview">
                         <h6 class="fw-semibold mb-2">About this Course</h6>
-                        <p class="text-muted" style="font-size:14px;">Master full-stack development with React, Node.js, and MongoDB. Build real-world projects and become a job-ready developer.</p>
+                        <p class="text-muted" style="font-size:14px;">@Model.Desciption</p>
                         <h6 class="fw-semibold mt-3 mb-2">What Students Will Learn</h6>
                         <ul class="text-muted ps-3" style="font-size:14px;">
-                            <li class="mb-1">Build complete web applications from scratch</li>
-                            <li class="mb-1">Master React hooks and state management</li>
-                            <li class="mb-1">Create RESTful APIs with Node.js and Express</li>
-                            <li class="mb-1">Deploy applications to production</li>
+                            @if (Model.outcomes != null)
+                            {
+                                @foreach (var outcome in Model.outcomes)
+                                {
+                                    <li class="mb-1">@outcome.Outcome</li>
+                                }
+                            }
                         </ul>
                         <h6 class="fw-semibold mt-3 mb-2">Intro Video</h6>
-                        <a href="https://youtube.com/watch?v=dummy" target="_blank"
-                           class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-play-circle me-1 text-danger"></i>Watch on YouTube
-                        </a>
+                        @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                        {
+                            <a href="@Model.VideoUrl" target="_blank"
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-play-circle me-1 text-danger"></i>Watch Intro Video
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">No video uploaded.</span>
+                        }
                     </div>
-                    @* STUDENTS tab - dummy data *@
+
+                    @* CONTENT tab — dynamic module management *@
+                    <div class="tab-pane fade" id="tabContent">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="fw-bold mb-0">Course Content / Syllabus</h6>
+                            <button class="btn btn-sm" style="background:var(--orange);color:#fff;" data-bs-toggle="modal" data-bs-target="#addModuleModal">
+                                <i class="bi bi-plus-lg me-1"></i>Add Module
+                            </button>
+                        </div>
+
+                        <div class="accordion accordion-flush" id="syllabusAccordion">
+                            @if (Model.modules != null && Model.modules.Any())
+                            {
+                                @for (int i = 0; i < Model.modules.Count; i++)
+                                {
+                                    var module = Model.modules[i];
+                                    <div class="accordion-item border mb-3 rounded shadow-sm overflow-hidden">
+                                        <h2 class="accordion-header">
+                                            <div class="accordion-button d-flex justify-content-between align-items-center py-3 bg-light shadow-none">
+                                                <div class="flex-grow-1 fw-bold text-dark" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#module-@module.Id">
+                                                    <i class="bi bi-grid-3x3-gap me-2 text-muted"></i>Module @(i + 1): @module.ModuleName
+                                                </div>
+                                                <div class="d-flex gap-2 pe-3" style="z-index: 5;">
+                                                    <button class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size:11px;"
+                                                            data-bs-toggle="modal" data-bs-target="#addLessonModal" data-module-id="@module.Id">
+                                                        <i class="bi bi-plus"></i> Add Lesson
+                                                    </button>
+                                                    <form asp-action="DeleteModule" method="post" class="d-inline" onsubmit="return confirm('Delete this module and all its lessons?')">
+                                                        <input type="hidden" name="moduleId" value="@module.Id" />
+                                                        <input type="hidden" name="courseId" value="@Model.CourseId" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" style="font-size:11px;">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </h2>
+                                        <div id="module-@module.Id" class="accordion-collapse collapse show">
+                                            <div class="accordion-body p-0 bg-white">
+                                                <div class="list-group list-group-flush">
+                                                    @foreach (var lesson in module.Lessons)
+                                                    {
+                                                        <div class="list-group-item d-flex justify-content-between align-items-center py-2 border-0 border-bottom ps-4">
+                                                            <div class="d-flex align-items-center gap-2 min-w-0">
+                                                                <i class="bi bi-play-circle text-muted flex-shrink-0"></i>
+                                                                <div class="small fw-medium text-dark text-truncate">@lesson.Title</div>
+                                                                <div class="text-muted text-truncate d-none d-sm-block" style="font-size: 10px; max-width: 200px;">(@lesson.VideoUrl)</div>
+                                                            </div>
+                                                            <form asp-action="DeleteLesson" method="post" onsubmit="return confirm('Delete this lesson?')">
+                                                                <input type="hidden" name="lessonId" value="@lesson.Id" />
+                                                                <input type="hidden" name="courseId" value="@Model.CourseId" />
+                                                                <button type="submit" class="btn btn-link text-danger p-0 border-0 shadow-none">
+                                                                    <i class="bi bi-x-circle"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    }
+                                                    @if (!module.Lessons.Any())
+                                                    {
+                                                        <div class="p-3 text-center text-muted small">No lessons in this module.</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-5 border rounded bg-light">
+                                    <i class="bi bi-journal-text display-4 text-muted mb-3 d-block opacity-50"></i>
+                                    <p class="text-muted small mb-0">No modules added yet. Start by adding your first module.</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @* STUDENTS tab — dynamic enrollment list *@
                     <div class="tab-pane fade" id="tabStudents">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-semibold mb-0">Enrolled Students</h6>
+                            <h6 class="fw-semibold mb-0">Enrolled Students (@Model.EnrolledStudents.Count)</h6>
                             <button class="btn btn-sm btn-outline-secondary">
                                 <i class="bi bi-download me-1"></i>Export List
                             </button>
@@ -156,103 +251,111 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @* dummy student 1 *@
-                                <tr>
-                                    <td class="text-muted">1</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                                                 style="width:28px;height:28px;font-size:12px;background:var(--orange-soft);color:var(--orange);">
-                                                R
+                                @{ int studentCount = 1; }
+                                @foreach (var student in Model.EnrolledStudents)
+                                {
+                                    <tr>
+                                        <td class="text-muted">@studentCount</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                                     style="width:28px;height:28px;font-size:12px;background:var(--orange-soft);color:var(--orange);">
+                                                    @student.Initial
+                                                </div>
+                                                @student.Name
                                             </div>
-                                            Rahul Sharma
-                                        </div>
-                                    </td>
-                                    <td class="text-muted">rahul.sharma@example.com</td>
-                                    <td class="text-muted">Jan 15, 2026</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height:5px; min-width:60px;">
-                                                <div class="progress-bar bg-success" style="width:75%"></div>
+                                        </td>
+                                        <td class="text-muted">@student.Email</td>
+                                        <td class="text-muted">@student.EnrolledAt</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height:5px; min-width:60px;">
+                                                    <div class="progress-bar bg-success" style="width:@student.Progress%"></div>
+                                                </div>
+                                                <small class="text-muted">@student.Progress%</small>
                                             </div>
-                                            <small class="text-muted">75%</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @* dummy student 2 *@
-                                <tr>
-                                    <td class="text-muted">2</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                                                 style="width:28px;height:28px;font-size:12px;background:var(--orange-soft);color:var(--orange);">
-                                                P
-                                            </div>
-                                            Priya Patel
-                                        </div>
-                                    </td>
-                                    <td class="text-muted">priya.patel@example.com</td>
-                                    <td class="text-muted">Jan 20, 2026</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height:5px; min-width:60px;">
-                                                <div class="progress-bar bg-success" style="width:45%"></div>
-                                            </div>
-                                            <small class="text-muted">45%</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @* dummy student 3 *@
-                                <tr>
-                                    <td class="text-muted">3</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                                                 style="width:28px;height:28px;font-size:12px;background:var(--orange-soft);color:var(--orange);">
-                                                A
-                                            </div>
-                                            Amit Kumar
-                                        </div>
-                                    </td>
-                                    <td class="text-muted">amit.kumar@example.com</td>
-                                    <td class="text-muted">Feb 1, 2026</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height:5px; min-width:60px;">
-                                                <div class="progress-bar bg-success" style="width:20%"></div>
-                                            </div>
-                                            <small class="text-muted">20%</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @* dummy student 4 *@
-                                <tr>
-                                    <td class="text-muted">4</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
-                                                 style="width:28px;height:28px;font-size:12px;background:var(--orange-soft);color:var(--orange);">
-                                                N
-                                            </div>
-                                            Neha Gupta
-                                        </div>
-                                    </td>
-                                    <td class="text-muted">neha.gupta@example.com</td>
-                                    <td class="text-muted">Feb 10, 2026</td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1" style="height:5px; min-width:60px;">
-                                                <div class="progress-bar bg-success" style="width:60%"></div>
-                                            </div>
-                                            <small class="text-muted">60%</small>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                    studentCount++;
+                                }
                             </tbody>
                         </table>
+                        @if (!Model.EnrolledStudents.Any())
+                        {
+                            <div class="text-center py-5">
+                                <p class="text-muted mb-0">No students enrolled in this course yet.</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
+
+<!-- Add Module Modal -->
+<div class="modal fade" id="addModuleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Add New Module</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddModule" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="courseId" value="@Model.CourseId" />
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Module Name</label>
+                        <input type="text" name="moduleName" class="form-control shadow-none" placeholder="e.g. Introduction to ASP.NET" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-sm btn-light px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm px-3" style="background:var(--orange);color:#fff;">Create Module</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Lesson Modal -->
+<div class="modal fade" id="addLessonModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Add New Lesson</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="AddLesson" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="courseId" value="@Model.CourseId" />
+                    <input type="hidden" name="moduleId" id="lessonModuleId" />
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Lesson Title</label>
+                        <input type="text" name="title" class="form-control shadow-none" placeholder="e.g. Getting Started" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">YouTube Video URL</label>
+                        <input type="url" name="videoUrl" class="form-control shadow-none" placeholder="https://www.youtube.com/watch?v=..." required>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-sm btn-light px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm px-3" style="background:var(--orange);color:#fff;">Add Lesson</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set module ID in lesson modal when opened
+    const addLessonModal = document.getElementById('addLessonModal');
+    if (addLessonModal) {
+        addLessonModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const moduleId = button.getAttribute('data-module-id');
+            document.getElementById('lessonModuleId').value = moduleId;
+        });
+    }
+</script>

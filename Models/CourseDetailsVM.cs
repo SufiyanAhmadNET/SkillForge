@@ -20,8 +20,23 @@
         public string? Difficulty { get; set; }
         public string? CategoryName { get; set; }
         public string? ThumbnailUrl { get; set; }
+        public bool IsWishlisted { get; set; }
 
         // Syllabus
-        public List<CourseModules>? modules { get; set; }   
+        public List<CourseModules>? modules { get; set; }
+
+        // enrolled students list
+        public List<StudentEnrollmentVM> EnrolledStudents { get; set; } = new();
+    }
+
+    public class StudentEnrollmentVM
+    {
+        public int StudentId { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string EnrolledAt { get; set; }
+        public string PhotoPath { get; set; }
+        public string Initial { get; set; }
+        public int Progress { get; set; }
     }
 }

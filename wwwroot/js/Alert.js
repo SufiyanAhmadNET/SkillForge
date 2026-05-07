@@ -1,60 +1,84 @@
+/**
+ * Modern Alert System
+ * Handles floating toast notifications with auto-dismiss
+ */
 
-//max 3 alert message at a time
 const MAX_ALERTS = 3;
+const DEFAULT_DURATION = 4000; // 4 seconds
 
-function showAlert(message, type = "info", duration = 3800, containerId = "alert-container") {
+/**
+ * Main function to show an alert
+ * @param {string} message - The text to display
+ * @param {string} type - success, danger, warning, info
+ * @param {number} duration - ms to show before auto-dismiss
+ * @param {string} containerId - Target container ID
+ */
+function showAlert(message, type = "info", duration = DEFAULT_DURATION, containerId = "alert-container") {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    // Normalize type to match CSS classes
     const normalizedType = normalizeAlertType(type);
 
+    // Maintain max alerts count
     if (container.children.length >= MAX_ALERTS) {
-        container.firstChild.remove();
+        const oldest = container.querySelector('.alert:not(.fade-out)');
+        if (oldest) removeAlert(oldest);
     }
 
+    // Create alert element
     const alert = document.createElement("div");
     alert.className = `alert alert-${normalizedType}`;
+    alert.setAttribute("role", "alert");
 
     alert.innerHTML = `
-    <span class="alert-message">${message}</span>
-    <button type="button" class="alert-close-btn" aria-label="Close alert"></button>
-`;
+        <div class="alert-message">${message}</div>
+        <button type="button" class="alert-close-btn" title="Close"></button>
+    `;
 
+    // Add close button functionality
     const closeBtn = alert.querySelector(".alert-close-btn");
     if (closeBtn) {
-        closeBtn.addEventListener("click", function () {
-            removeAlert(alert);
-        });
+        closeBtn.addEventListener("click", () => removeAlert(alert));
     }
 
+    // Append to container
     container.appendChild(alert);
 
-    setTimeout(() => removeAlert(alert), duration);
+    // Auto-dismiss logic
+    if (duration > 0) {
+        setTimeout(() => {
+            if (alert.parentElement) removeAlert(alert);
+        }, duration);
+    }
 }
 
+/**
+ * Maps various input types to standard bootstrap/CSS types
+ */
 function normalizeAlertType(type) {
-    const input = (type || "").toString().trim().toLowerCase();
-
-    if (input === "success" || input === "ok") {
-        return "success";
-    }
-
-    if (input === "error" || input === "danger" || input === "warning" || input === "warn" || input === "failed" || input === "fail") {
-        return "danger";
-    }
-
-    if (input === "step" || input === "steps" || input === "process" || input === "note" || input === "message") {
-        return "info";
-    }
-
+    const t = (type || "").toString().toLowerCase().trim();
+    
+    if (["success", "ok", "saved", "verified"].includes(t)) return "success";
+    if (["error", "danger", "failed", "fail"].includes(t)) return "danger";
+    if (["warning", "warn", "alert"].includes(t)) return "warning";
+    if (["info", "note", "message"].includes(t)) return "info";
+    
     return "info";
 }
 
-function removeAlert(element) {
-    const alert = element.closest ? element.closest('.alert') : element;
-    if (!alert) return;
+/**
+ * Removes an alert with a fade-out animation
+ */
+function removeAlert(alertElement) {
+    if (!alertElement || alertElement.classList.contains("fade-out")) return;
 
-    alert.classList.add("fade-out");
-
-    setTimeout(() => alert.remove(), 300);
+    alertElement.classList.add("fade-out");
+    
+    // Wait for animation to finish before removing from DOM
+    setTimeout(() => {
+        if (alertElement.parentElement) {
+            alertElement.remove();
+        }
+    }, 300);
 }

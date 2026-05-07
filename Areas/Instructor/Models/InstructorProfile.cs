@@ -18,6 +18,14 @@ namespace SkillForge.Areas.Instructor.Models
         public string? Bio { get; set; }
         public string? Profession { get; set; }
 
+        // professional and social presence
+        public string? Headline { get; set; }
+        public string? WebsiteUrl { get; set; }
+        public string? GithubUrl { get; set; }
+        public string? LinkedinUrl { get; set; }
+        public string? TwitterUrl { get; set; }
+        public string? Skills { get; set; }
+
         //Navigation Property
         public Instructor? Instructor { get; set; }
     }

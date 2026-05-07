@@ -1,24 +1,38 @@
-﻿<script>
-                    
-                        function calcPrice() {
-                          const price    = parseFloat(document.getElementById('originalPrice').value) || 0;
-                          const pct      = parseFloat(document.getElementById('discountPct').value)  || 0;
-                          const preview  = document.getElementById('pricePreview');
+document.addEventListener('DOMContentLoaded', function () {
+    const originalPriceInput = document.getElementById('originalPrice');
+    const discountPctInput = document.getElementById('discountPct');
+    const pricePreview = document.getElementById('pricePreview');
 
-                          if (price <= 0) { preview.style.display = 'none'; return; }
+    if (!originalPriceInput || !discountPctInput || !pricePreview) return;
 
-                          const discRs = Math.round(price * pct / 100);
-                          const final  = price - discRs;
+    function calcPrice() {
+        const price = parseFloat(originalPriceInput.value) || 0;
+        const pct = parseFloat(discountPctInput.value) || 0;
 
-                          document.getElementById('displayOriginal').textContent = '₹' + price.toLocaleString('en-IN');
-                          document.getElementById('displayDiscount').textContent  = '₹' + discRs.toLocaleString('en-IN');
-                          document.getElementById('displayFinal').textContent     = '₹' + final.toLocaleString('en-IN');
-                          document.getElementById('displayBadge').textContent     = pct > 0 ? pct + '% OFF' : 'No discount';
-                          document.getElementById('displayBadge').className       = pct > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        if (price <= 0) {
+            pricePreview.style.display = 'none';
+            return;
+        }
 
-                          preview.style.display = 'block';
-                        }
+        const discRs = Math.round(price * pct / 100);
+        const final = price - discRs;
 
-                        document.getElementById('originalPrice').addEventListener('input', calcPrice);
-                        document.getElementById('discountPct').addEventListener('input', calcPrice);
-                    </script>
+        document.getElementById('displayOriginal').textContent = '₹' + price.toLocaleString('en-IN');
+        document.getElementById('displayDiscount').textContent = '₹' + discRs.toLocaleString('en-IN');
+        document.getElementById('displayFinal').textContent = '₹' + final.toLocaleString('en-IN');
+        
+        const badge = document.getElementById('displayBadge');
+        if (badge) {
+            badge.textContent = pct > 0 ? pct + '% OFF' : 'No discount';
+            badge.className = pct > 0 ? 'badge bg-success' : 'badge bg-secondary';
+        }
+
+        pricePreview.style.display = 'block';
+    }
+
+    originalPriceInput.addEventListener('input', calcPrice);
+    discountPctInput.addEventListener('input', calcPrice);
+
+    // Run immediately in case values are pre-filled
+    calcPrice();
+});

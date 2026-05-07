@@ -31,13 +31,31 @@ namespace SkillForge.Data
         public DbSet<CourseOutcomes> CourseOutcomes { get; set; }
         public DbSet<CourseDetails> CourseDetails { get; set; }
         public DbSet<Course_Category> course_Categories { get; set; }
+        public DbSet<CourseModules> CourseModules { get; set; }
+        public DbSet<CourseLesson> CourseLessons { get; set; }
+        public DbSet<UserLessonProgress> UserProgress { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Course -> Modules -> Lessons relationship
+            modelBuilder.Entity<CourseModules>()
+                .HasOne(m => m.Course)
+                .WithMany()
+                .HasForeignKey(m => m.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CourseLesson>()
+                .HasOne(l => l.Module)
+                .WithMany(m => m.Lessons)
+                .HasForeignKey(l => l.ModuleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // convert enum to string
             modelBuilder.Entity<Course>()
                 .Property(c => c.Status)

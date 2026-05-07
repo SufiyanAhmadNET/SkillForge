@@ -1,170 +1,154 @@
-﻿@{
+@model List<SkillForge.Models.CourseCardVM>
+@{
     Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "My Wishlist";
 }
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h4 class="fw-bold mb-0">Wishlist</h4>
-        <span class="text-muted small">3 saved courses</span>
+        <span class="text-muted small">Courses you saved for later</span>
     </div>
-    <a href="/Courses" class="btn btn-light btn-sm px-3 fw-medium">Browse More</a>
+    <a asp-action="Courses" class="btn btn-sm btn-orange-outline">Browse More Courses</a>
 </div>
 
-<div class="row g-3" id="wishlistGrid">
+<div class="wishlist-container">
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var course in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-sm-6 wishlist-item" id="wish-item-@course.courseId">
+                    <div class="c-card h-100 shadow-sm">
+                        <div class="c-thumb">
+                            <img src="@(course.Thumbnail_Url ?? "/uploads/thumbnails/Default_Thumbnail.avif")" alt="@course.Title">
+                            <span class="diff-tag">@course.Difficulty</span>
+                            
+                            <button class="remove-wish" onclick="removeFromWishlist(@course.courseId)" title="Remove">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
 
-    <!-- wish card 1 -->
-    <div class="col-md-6 col-xl-4" id="wish-1">
-        <div class="wish-card">
-            <img src="https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?w=600" alt="">
-            <button class="wish-remove" onclick="removeWish('wish-1')" title="Remove">
-                <i class="bi bi-x"></i>
-            </button>
-            <div class="p-3">
-                <div class="d-flex gap-1 mb-2">
-                    <span class="badge-level">Intermediate</span>
-                    <span class="badge-tag">10 weeks</span>
-                </div>
-                <h6 class="fw-bold mb-1">React & Next.js Masterclass</h6>
-                <p class="text-muted small mb-2">By Arjun Mehta</p>
-                <div class="d-flex align-items-center gap-1 mb-3">
-                    <span class="rating-stars">★★★★★</span>
-                    <span class="small text-muted">(4.9) · 2,100 students</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="price-main">₹5,499</span>
-                        <span class="price-old ms-1">₹10,999</span>
+                        <div class="c-body">
+                            <div class="c-cat">@course.CategoryName</div>
+                            <div class="c-title">@course.Title</div>
+                            
+                            <div class="c-price-row mt-2">
+                                <div>
+                                    <span class="c-price">₹@course.Total_Price</span>
+                                </div>
+                                <span class="c-off">@course.Discount_Percent% OFF</span>
+                            </div>
+
+                            <a href="/User/Home/CourseDetails?id=@course.courseId" class="c-btn d-block text-center text-decoration-none mt-3">
+                                View Details
+                            </a>
+                        </div>
                     </div>
-                    <a href="/Course/Detail/4" class="btn-orange" style="padding:6px 16px;font-size:.82rem;text-decoration:none">Enroll</a>
                 </div>
-            </div>
+            }
         </div>
-    </div>
-
-    <!-- wish card 2 -->
-    <div class="col-md-6 col-xl-4" id="wish-2">
-        <div class="wish-card">
-            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600" alt="">
-            <button class="wish-remove" onclick="removeWish('wish-2')" title="Remove">
-                <i class="bi bi-x"></i>
-            </button>
-            <div class="p-3">
-                <div class="d-flex gap-1 mb-2">
-                    <span class="badge-level">Intermediate</span>
-                    <span class="badge-tag">10 weeks</span>
-                </div>
-                <h6 class="fw-bold mb-1">Docker & Kubernetes</h6>
-                <p class="text-muted small mb-2">By Ravi Kumar</p>
-                <div class="d-flex align-items-center gap-1 mb-3">
-                    <span class="rating-stars">★★★★★</span>
-                    <span class="small text-muted">(4.8) · 2,450 students</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="price-main">₹5,999</span>
-                        <span class="price-old ms-1">₹11,999</span>
-                    </div>
-                    <a href="/Course/Detail/5" class="btn-orange" style="padding:6px 16px;font-size:.82rem;text-decoration:none">Enroll</a>
-                </div>
-            </div>
+    }
+    else
+    {
+        <div class="empty-wishlist">
+            <i class="bi bi-heart"></i>
+            <h5>Your wishlist is empty</h5>
+            <p class="text-muted small">Explore courses and save your favorites here.</p>
+            <a asp-action="Courses" class="btn btn-orange btn-sm px-4 mt-2">Explore Courses</a>
         </div>
-    </div>
-
-    <!-- wish card 3 -->
-    <div class="col-md-6 col-xl-4" id="wish-3">
-        <div class="wish-card">
-            <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=600" alt="">
-            <button class="wish-remove" onclick="removeWish('wish-3')" title="Remove">
-                <i class="bi bi-x"></i>
-            </button>
-            <div class="p-3">
-                <div class="d-flex gap-1 mb-2">
-                    <span class="badge-level">Beginner</span>
-                    <span class="badge-tag">6 weeks</span>
-                </div>
-                <h6 class="fw-bold mb-1">Prompt Engineering for LLMs</h6>
-                <p class="text-muted small mb-2">By Priya Sharma</p>
-                <div class="d-flex align-items-center gap-1 mb-3">
-                    <span class="rating-stars">★★★★☆</span>
-                    <span class="small text-muted">(4.7) · 3,200 students</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="price-main">₹2,499</span>
-                        <span class="price-old ms-1">₹4,999</span>
-                    </div>
-                    <a href="/Course/Detail/6" class="btn-orange" style="padding:6px 16px;font-size:.82rem;text-decoration:none">Enroll</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div><!-- /grid -->
-<!-- empty state — shown when all removed -->
-<div class="empty-wishlist" id="emptyWishlist" style="display:none">
-    <div><i class="bi bi-heart"></i></div>
-    <h5 class="fw-bold">Your wishlist is empty</h5>
-    <p class="text-muted small mb-3">Save courses you're interested in for later</p>
-    <a href="/Courses" class="btn-orange px-4" style="text-decoration:none">Browse Courses</a>
+    }
 </div>
 
-
-
-@* Wishlist CSS *@
 <style>
-    /* wishlist card — grid layout */
-    .wish-card {
-        background: #fff;
-        border: 1px solid #eee;
-        border-radius: 14px;
-        overflow: hidden;
-        transition: box-shadow .2s, transform .2s;
-        position: relative;
+    /* wishlist item container */
+    .wishlist-container {
+        min-height: 400px;
     }
 
-        .wish-card:hover {
-            box-shadow: 0 6px 24px rgba(0,0,0,.09);
-            transform: translateY(-3px);
-        }
-
-        .wish-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-
-    /* remove from wishlist — X button top-right of card */
-    .wish-remove {
+    /* removal button overlay */
+    .remove-wish {
         position: absolute;
         top: 10px;
         right: 10px;
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
-        background: rgba(0,0,0,.5);
-        color: #fff;
+        background: rgba(255,255,255,0.9);
         border: none;
+        color: #e53935;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: .75rem;
-        transition: background .2s;
+        transition: 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .remove-wish:hover {
+        background: #e53935;
+        color: #fff;
+        transform: scale(1.1);
     }
 
-        .wish-remove:hover {
-            background: #dc3545;
-        }
+    /* course card styling tweaks for wishlist */
+    .c-card {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        transition: 0.3s;
+    }
+    .c-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
 
     /* empty state */
     .empty-wishlist {
         text-align: center;
         padding: 80px 20px;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px dashed #ddd;
+    }
+    .empty-wishlist i {
+        font-size: 3rem;
+        color: #ddd;
+        margin-bottom: 1rem;
     }
 
-        .empty-wishlist i {
-            font-size: 3.5rem;
-            color: #eee;
-            margin-bottom: 16px;
-        }
+    .btn-orange {
+        background: var(--orange);
+        color: #fff;
+        border: none;
+    }
+    .btn-orange:hover {
+        background: #e66e00;
+        color: #fff;
+    }
+
+    .btn-orange-outline {
+        border: 1.5px solid var(--orange);
+        color: var(--orange);
+        font-weight: 600;
+    }
+    .btn-orange-outline:hover {
+        background: var(--orange);
+        color: #fff;
+    }
 </style>
+
+<script>
+    function removeFromWishlist(courseId) {
+        if(confirm("Remove this course from your wishlist?")) {
+            $.post('/User/Home/ToggleWishlist', { courseId: courseId }, function (res) {
+                if (res.success && !res.added) {
+                    $(`#wish-item-${courseId}`).fadeOut(300, function() {
+                        $(this).remove();
+                        if ($('.wishlist-item').length == 0) {
+                            location.reload(); // Show empty state
+                        }
+                    });
+                }
+            });
+        }
+    }
+</script>

@@ -94,9 +94,16 @@
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;">2</span>
                     </button>
                     <div class="d-flex align-items-center gap-2">
-                        <div class="inst-avatar">S</div>
+                        @if (!string.IsNullOrEmpty(ViewBag.PhotoPath) && ViewBag.PhotoPath != "/images/DefaultProfilePhoto.jfif")
+                        {
+                            <img src="@ViewBag.PhotoPath" class="rounded-circle" style="width:32px;height:32px;object-fit:cover;" alt="Avatar" />
+                        }
+                        else
+                        {
+                            <div class="inst-avatar">@(string.IsNullOrEmpty(ViewBag.FirstName) ? "G" : ViewBag.FirstName[0].ToString().ToUpper())</div>
+                        }
                         <div>
-                            <div class="fw-semibold" style="font-size:13px;">Suresh Kumar</div>
+                            <div class="fw-semibold" style="font-size:13px;">@(string.IsNullOrEmpty(ViewBag.FirstName) ? "Guest User" : $"{ViewBag.FirstName} {ViewBag.LastName}")</div>
                             <div class="text-muted" style="font-size:11px;">Instructor</div>
                         </div>
                     </div>

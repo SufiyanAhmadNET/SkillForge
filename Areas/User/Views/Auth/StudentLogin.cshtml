@@ -16,19 +16,8 @@
             <input type="hidden" name="role" value="Student" />
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Welcome Back</h2>
-            <div id="student-login-alert" class="alert-container alert-inline"></div>
 
-            @*  Alert Messages *@
-            @if (TempData["Alert"] != null)
-            {
-                <script>
-                    window.addEventListener("load", function () {
-                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "student-login-alert");
-                    });
-                </script>
-            }
-
-            @* otp *@
+            @* otp trigger *@
             @if (TempData["VerifyEmail"] != null)
             {
                 <script>

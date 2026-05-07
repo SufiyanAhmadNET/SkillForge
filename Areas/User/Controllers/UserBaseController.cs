@@ -23,6 +23,9 @@ namespace SkillForge.Areas.User.Controllers
                 ViewBag.FirstName = profile?.FirstName;
                 ViewBag.LastName = profile?.LastName;
                 ViewBag.PhotoPath = profile?.PhotoPath ?? CurrentUserPhotoPath();
+                
+                // Add Cart Count
+                ViewBag.CartCount = _context.Carts.Count(c => c.StudentId.ToString() == id);
             }
 
             base.OnActionExecuting(context);

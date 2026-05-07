@@ -2,6 +2,7 @@
 
 @{
     Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
 }
 
 @* email not verified *@
@@ -14,11 +15,14 @@
 }
  
     <!-- welcome banner -->
-    <div class="welcome-banner">
+    <div class="welcome-banner" id="welcomeBanner" style="display: none;">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" 
+                onclick="closeWelcomeBanner()" 
+                aria-label="Close"></button>
         <div class="row align-items-center">
             <div class="col">
-            <h4 class="fw-bold mb-1">Welcome back,<span>@ViewBag.FirstName</span> 👋</h4>
-                <p class="mb-3 opacity-75">You're on a 5-day learning streak. Keep it up!</p>
+            <h4 class="fw-bold mb-1">Welcome back, <span>@Model.FirstName</span> 👋</h4>
+                <p class="mb-3 opacity-75">Ready to continue your learning journey today?</p>
                 <a asp-area="User" asp-controller="Home" asp-action="EnrolledCourses"
                 class="btn btn-light btn-sm px-4 fw-semibold">
                     Continue Learning
@@ -30,6 +34,21 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // check if banner was closed in this session
+            if (!sessionStorage.getItem('welcomeBannerClosed')) {
+                document.getElementById('welcomeBanner').style.display = 'block';
+            }
+        });
+
+        function closeWelcomeBanner() {
+            document.getElementById('welcomeBanner').style.display = 'none';
+            // set flag to hide for the rest of the session
+            sessionStorage.setItem('welcomeBannerClosed', 'true');
+        }
+    </script>
+
     <!-- stat cards -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-xl-3">
@@ -37,15 +56,15 @@
                 <div class="stat-icon" style="background:#fff3e0">
                     <i class="bi bi-play-btn-fill" style="color:var(--orange)"></i>
                 </div>
-                <div><h4>4</h4><p>Enrolled Courses</p></div>
+                <div><h4>@Model.EnrolledCount</h4><p>Enrolled Courses</p></div>
             </div>
         </div>
         <div class="col-6 col-xl-3">
             <div class="stat-card">
                 <div class="stat-icon" style="background:#e8f5e9">
-                    <i class="bi bi-check-circle-fill" style="color:#2e7d32"></i>
+                    <i class="bi bi-heart-fill" style="color:#e53935"></i>
                 </div>
-                <div><h4>1</h4><p>Completed</p></div>
+                <div><h4>@Model.WishlistCount</h4><p>Wishlist</p></div>
             </div>
         </div>
         <div class="col-6 col-xl-3">
@@ -53,7 +72,7 @@
                 <div class="stat-icon" style="background:#e3f2fd">
                     <i class="bi bi-award-fill" style="color:#1565c0"></i>
                 </div>
-                <div><h4>1</h4><p>Certificates</p></div>
+                <div><h4>@Model.CertificateCount</h4><p>Certificates</p></div>
             </div>
         </div>
         <div class="col-6 col-xl-3">
@@ -61,7 +80,7 @@
                 <div class="stat-icon" style="background:#fce4ec">
                     <i class="bi bi-clock-fill" style="color:#c62828"></i>
                 </div>
-                <div><h4>42h</h4><p>Hours Learned</p></div>
+                <div><h4>0h</h4><p>Hours Learned</p></div>
             </div>
         </div>
     </div>
@@ -73,84 +92,40 @@
 
             <div class="section-card">
                 <div class="section-card-title">
-                    Continue Learning <a >View all →</a>
+                    Continue Learning <a asp-action="EnrolledCourses">View all →</a>
                 </div>
                 <div class="row g-3">
-
-                    <div class="col-md-6">
-                        <div class="enrolled-card">
-                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600" alt="">
-                            <div class="p-3">
-                                <h6 class="fw-bold mb-1 small">Full Stack Web Development</h6>
-                                <p class="text-muted mb-2" style="font-size:.75rem">Section 5 of 8 · Lecture 32</p>
-                                <span style="font-size:.75rem;color:var(--orange);font-weight:600">65% complete</span>
-                                <div class="progress my-2"><div class="progress-bar" style="width:65%"></div></div>
-                                <a href="/Student/CoursePlayer/1" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="enrolled-card">
-                            <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600" alt="">
-                            <div class="p-3">
-                                <h6 class="fw-bold mb-1 small">Machine Learning A–Z</h6>
-                                <p class="text-muted mb-2" style="font-size:.75rem">Section 3 of 10 · Lecture 18</p>
-                                <span style="font-size:.75rem;color:var(--orange);font-weight:600">30% complete</span>
-                                <div class="progress my-2"><div class="progress-bar" style="width:30%"></div></div>
-                                <a href="/Student/CoursePlayer/2" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="enrolled-card">
-                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600" alt="">
-                            <div class="p-3">
-                                <h6 class="fw-bold mb-1 small">AWS Cloud Practitioner</h6>
-                                <p class="text-muted mb-2" style="font-size:.75rem">Section 1 of 6 · Lecture 4</p>
-                                <span style="font-size:.75rem;color:var(--orange);font-weight:600">10% complete</span>
-                                <div class="progress my-2"><div class="progress-bar" style="width:10%"></div></div>
-                                <a href="/Student/CoursePlayer/3" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="enrolled-card">
-                            <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600" alt="">
-                            <div class="p-3">
-                                <h6 class="fw-bold mb-1 small">UI/UX Design Fundamentals</h6>
-                                <p class="text-muted mb-2" style="font-size:.75rem">Completed · All 6 sections</p>
-                                <span style="font-size:.75rem;color:#2e7d32;font-weight:600">
-                                    <i class="bi bi-check-circle-fill me-1"></i>Completed
-                                </span>
-                                <div class="progress my-2">
-                                    <div class="progress-bar" style="width:100%;background:#2e7d32"></div>
+                    @if (Model.EnrolledCourses != null && Model.EnrolledCourses.Any())
+                    {
+                        @foreach (var course in Model.EnrolledCourses)
+                        {
+                            <div class="col-md-6">
+                                <div class="enrolled-card h-100">
+                                    <img src="@(course.Thumbnail_Url ?? "https://via.placeholder.com/300")" alt="@course.Title">
+                                    <div class="p-3">
+                                        <h6 class="fw-bold mb-1 small text-truncate">@course.Title</h6>
+                                        <p class="text-muted mb-2 text-truncate" style="font-size:.75rem">@course.SubTitle</p>
+                                        <span style="font-size:.75rem;color:var(--orange);font-weight:600">Active Course</span>
+                                        <div class="progress my-2"><div class="progress-bar" style="width:0%"></div></div>
+                                        <a href="/User/Home/CourseDetails?id=@course.courseId" class="btn-resume"><i class="bi bi-play-fill me-1"></i>Resume</a>
+                                    </div>
                                 </div>
-                                <a asp-area="User" asp-controller="Home" asp-action="Certificates"
-                                class="btn-resume" style="background:#2e7d32">
-                                    <i class="bi bi-award me-1"></i>Get Certificate
-                                </a>
                             </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted">You haven't enrolled in any courses yet.</p>
+                            <a asp-action="Courses" class="btn btn-orange btn-sm">Explore Courses</a>
                         </div>
-                    </div>
-
+                    }
                 </div>
             </div>
 
             <div class="section-card">
-                <div class="section-card-title">Certificates Earned <a href="/Student/Certificates">View all →</a></div>
-                <div class="cert-card">
-                    <div class="cert-icon"><i class="bi bi-patch-check-fill"></i></div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold small">UI/UX Design Fundamentals</div>
-                        <div class="text-muted" style="font-size:.78rem">Issued Jan 15, 2026 · SkillForge</div>
-                    </div>
-                    <a href="#" class="btn-resume" style="padding:6px 14px">
-                        <i class="bi bi-download me-1"></i>Download
-                    </a>
-                </div>
+                <div class="section-card-title">Certificates Earned <a asp-action="Certificates">View all →</a></div>
+                <div class="text-center py-3 text-muted small">No certificates earned yet.</div>
             </div>
 
         </div>
@@ -158,39 +133,17 @@
         <div class="col-lg-4">
 
             <div class="section-card">
-                <div class="section-card-title">Recent Activity</div>
-                <div class="activity-item">
-                    <div class="activity-dot" style="background:#fff3e0"><i class="bi bi-play-fill" style="color:var(--orange)"></i></div>
-                    <div><div class="fw-medium">Watched lecture 32</div><div class="text-muted" style="font-size:.75rem">Full Stack Web Dev · 2 hours ago</div></div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot" style="background:#e8f5e9"><i class="bi bi-check-lg" style="color:#2e7d32"></i></div>
-                    <div><div class="fw-medium">Completed Section 4</div><div class="text-muted" style="font-size:.75rem">Full Stack Web Dev · Yesterday</div></div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot" style="background:#e3f2fd"><i class="bi bi-award" style="color:#1565c0"></i></div>
-                    <div><div class="fw-medium">Certificate earned</div><div class="text-muted" style="font-size:.75rem">UI/UX Design · Jan 15, 2026</div></div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot" style="background:#fff3e0"><i class="bi bi-cart-check" style="color:var(--orange)"></i></div>
-                    <div><div class="fw-medium">Enrolled in course</div><div class="text-muted" style="font-size:.75rem">AWS Cloud · Jan 10, 2026</div></div>
-                </div>
-            </div>
-
-            <div class="section-card">
-                <div class="section-card-title">Recommended for You <a href="/Courses">Browse →</a></div>
-                <a class="rec-card" href="/Course/Detail/4">
-                    <img src="https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?w=200" alt="">
-                    <div><div class="rec-card-title">React & Next.js Masterclass</div><div class="rec-card-meta"><span style="color:#f5a623">★</span> 4.9 · ₹5,499</div></div>
-                </a>
-                <a class="rec-card" href="/Course/Detail/5">
-                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=200" alt="">
-                    <div><div class="rec-card-title">Docker & Kubernetes</div><div class="rec-card-meta"><span style="color:#f5a623">★</span> 4.8 · ₹5,999</div></div>
-                </a>
-                <a class="rec-card" href="/Course/Detail/6">
-                    <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=200" alt="">
-                    <div><div class="rec-card-title">Prompt Engineering for LLMs</div><div class="rec-card-meta"><span style="color:#f5a623">★</span> 4.7 · ₹2,499</div></div>
-                </a>
+                <div class="section-card-title">Recommended for You <a href="/User/Home/Courses">Browse →</a></div>
+                @foreach (var course in Model.RecommendedCourses)
+                {
+                    <a class="rec-card" href="/User/Home/CourseDetails?id=@course.courseId">
+                        <img src="@(course.Thumbnail_Url ?? "https://via.placeholder.com/200")" alt="@course.Title">
+                        <div>
+                            <div class="rec-card-title text-truncate" style="max-width: 150px;">@course.Title</div>
+                            <div class="rec-card-meta"><span style="color:#f5a623">★</span> 5.0 · ₹@course.Total_Price</div>
+                        </div>
+                    </a>
+                }
             </div>
 
             <!-- streak -->
@@ -226,7 +179,7 @@
                         <div style="font-size:.65rem;color:var(--muted)">Sun</div>
                     </div>
                 </div>
-                <p class="text-muted small mb-0 text-center">🔥 <strong>5-day streak</strong> — Keep going!</p>
+                <p class="text-muted small mb-0 text-center">🔥 <strong>Streak Active</strong> — Keep going!</p>
             </div>
 
         </div>

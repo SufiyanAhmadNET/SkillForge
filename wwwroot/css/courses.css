@@ -8,9 +8,21 @@
 
 /*hero at top*/
 .course-hero {
-    padding: 28px 10px 16px;
-    margin-bottom: 18px;
+    padding: 32px 16px 20px;
+    margin-bottom: 20px;
     text-align: center;
+}
+
+@media (max-width: 768px) {
+    .course-hero {
+        padding: 24px 12px 16px;
+    }
+    .course-hero h1 {
+        font-size: 1.35rem !important;
+    }
+    .course-hero p {
+        font-size: 0.85rem !important;
+    }
 }
 
     .course-hero h1 {
@@ -292,50 +304,39 @@
     }
 
 /* ===== CATEGORY SCROLL ===== */
-.cat-pill {
-    padding: 6px 10px;
-    font-size: .88rem;
-    background: transparent;
-    border: none;
-    font-weight: 600;
-    color: #666;
-    cursor: pointer;
-    position: relative;
-    transition: .2s;
-}
-
 .cat-scroll {
     display: flex;
-    flex-wrap: wrap; 
-    gap: 14px;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 12px;
     padding: 10px 4px;
-    margin: 14px 0 20px;
+    margin: 10px 0 20px;
     border-bottom: 1px solid #eee;
+    -webkit-overflow-scrolling: touch;
 }
+
     .cat-scroll::-webkit-scrollbar {
         display: none;
     }
-.cat-pill::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 0%;
-    height: 2px;
+
+.cat-pill {
+    padding: 6px 14px;
+    font-size: .85rem;
+    background: #f8f9fa;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    transition: .2s;
+    flex-shrink: 0;
+}
+
+.cat-pill:hover, .cat-pill.active {
     background: var(--orange);
-    transition: .25s;
+    color: #fff;
+    border-color: var(--orange);
 }
-
-.cat-pill:hover::after {
-    width: 100%;
-}
-.cat-pill.active {
-    color: var(--orange);
-}
-
-    .cat-pill.active::after {
-        width: 100%;
-    }
 
 .category-section {
     background: rgba(255, 102, 0, 0.035);
@@ -373,10 +374,20 @@
 }
 
 /* video */
-.course-video iframe {
+.course-video iframe, 
+.course-video video {
     width: 100%;
-    height: 400px;
+    aspect-ratio: 16 / 9;
+    height: auto !important;
     border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .course-video iframe, 
+    .course-video video {
+        border-radius: 8px;
+    }
 }
 
 /* right box */

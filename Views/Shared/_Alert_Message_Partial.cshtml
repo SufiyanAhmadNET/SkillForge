@@ -1,3 +1,26 @@
-﻿
-
+@* Global Alert Container - Toasts will be appended here *@
 <div id="alert-container" class="alert-container"></div>
+
+@if (TempData["Alert"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Check if showAlert exists (it should be in Alert.js)
+            if (typeof showAlert === "function") {
+                showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
+            }
+        });
+    </script>
+}
+
+@* Handle other specific TempData messages if needed *@
+@if (TempData["LoginSuccess"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof showAlert === "function") {
+                showAlert("@TempData["LoginSuccess"]", "success");
+            }
+        });
+    </script>
+}

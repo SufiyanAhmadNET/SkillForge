@@ -1,24 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SkillForge.Controllers;
 using SkillForge.Data;
+using SkillForge.Controllers;
+using System;
 
 namespace SkillForge.Areas.Instructor.Controllers
 {
     public class InstructorBaseController : AuthBaseController
     {
-        [FromServices]
-        public required SkillForgeDbContext _context { get; set; }
+        protected readonly SkillForgeDbContext _context;
 
-        // override was missing — that's why photo never loaded
+        public InstructorBaseController(SkillForgeDbContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var id = CurrentUserId(); // string (Identity GUID)
 
-            if (!string.IsNullOrEmpty(id) && _context is not null)
+            if (!string.IsNullOrEmpty(id))
             {
-                // query profile using string Id
-                var profile = _context.instructorProfiles.FirstOrDefault(p => p.InstructorId.ToString()== id);
+                // query instructor profile using string Id
+                var profile = _context.instructorProfiles.FirstOrDefault(p => p.InstructorId.ToString() == id);
 
                 ViewBag.Email = CurrentUserEmail();
                 ViewBag.FirstName = profile?.FirstName;

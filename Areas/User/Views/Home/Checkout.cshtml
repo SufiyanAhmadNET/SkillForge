@@ -76,9 +76,9 @@
     order_id:    "@ViewBag.RazorpayOrderId",
 
     prefill: {
-    contact: "9999999999",  // test number — needed for UPI to appear
-    email:   "test@test.com",
-    name:    "Test User"
+    contact: "@ViewBag.StudentMobile",
+    email:   "@ViewBag.StudentEmail",
+    name:    "@ViewBag.StudentName"
     },
 
     // razorpay calls this on success
@@ -89,12 +89,6 @@
 
     // auto-submit to our verify endpoint
     document.getElementById('paymentForm').submit();
-    },
-
-    prefill: {
-    name:    "",
-    email:   "",
-    contact: ""
     },
 
     theme: {

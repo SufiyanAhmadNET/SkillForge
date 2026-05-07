@@ -116,11 +116,11 @@ namespace SkillForge.Services
         {
             try
             {
-                //check empty input
+                // basic validation
                 if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
                     return new AuthResult { Success = false, status = AuthMessage.EmptyFields };
 
-                // normalize email 
+                // normalize email
                 Email = Email.Trim().ToLower();
 
                 //Student Login    

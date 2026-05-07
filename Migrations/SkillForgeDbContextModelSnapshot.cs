@@ -71,10 +71,19 @@ namespace SkillForge.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("GithubUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Headline")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("InstructorId")
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkedinUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Location")
@@ -87,6 +96,15 @@ namespace SkillForge.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Profession")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Skills")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TwitterUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebsiteUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Pid");
@@ -169,6 +187,30 @@ namespace SkillForge.Migrations
                     b.ToTable("StudentProfiles");
                 });
 
+            modelBuilder.Entity("SkillForge.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Carts");
+                });
+
             modelBuilder.Entity("SkillForge.Models.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -245,6 +287,58 @@ namespace SkillForge.Migrations
                         .IsUnique();
 
                     b.ToTable("CourseDetails");
+                });
+
+            modelBuilder.Entity("SkillForge.Models.CourseLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int")
+                        .HasColumnName("module_id");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModuleId");
+
+                    b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("SkillForge.Models.CourseModules", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int")
+                        .HasColumnName("course_id");
+
+                    b.Property<string>("ModuleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Syllabus");
                 });
 
             modelBuilder.Entity("SkillForge.Models.CourseOutcomes", b =>
@@ -363,6 +457,57 @@ namespace SkillForge.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("SkillForge.Models.UserLessonProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserProgress");
+                });
+
+            modelBuilder.Entity("SkillForge.Models.Wishlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Wishlists");
+                });
+
             modelBuilder.Entity("SkillForge.Areas.Instructor.Models.InstructorProfile", b =>
                 {
                     b.HasOne("SkillForge.Areas.Instructor.Models.Instructor", "Instructor")
@@ -385,6 +530,17 @@ namespace SkillForge.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("SkillForge.Models.Cart", b =>
+                {
+                    b.HasOne("SkillForge.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("SkillForge.Models.Course", b =>
                 {
                     b.HasOne("SkillForge.Models.Course_Category", "courseCategory")
@@ -401,6 +557,28 @@ namespace SkillForge.Migrations
                     b.HasOne("SkillForge.Models.Course", "Course")
                         .WithOne("CourseDetails")
                         .HasForeignKey("SkillForge.Models.CourseDetails", "CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("SkillForge.Models.CourseLesson", b =>
+                {
+                    b.HasOne("SkillForge.Models.CourseModules", "Module")
+                        .WithMany("Lessons")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("SkillForge.Models.CourseModules", b =>
+                {
+                    b.HasOne("SkillForge.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -448,6 +626,25 @@ namespace SkillForge.Migrations
                     b.Navigation("Enrollment");
                 });
 
+            modelBuilder.Entity("SkillForge.Models.Wishlist", b =>
+                {
+                    b.HasOne("SkillForge.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SkillForge.Areas.User.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("SkillForge.Areas.Instructor.Models.Instructor", b =>
                 {
                     b.Navigation("Profile");
@@ -464,6 +661,11 @@ namespace SkillForge.Migrations
                         .IsRequired();
 
                     b.Navigation("CourseOutcomes");
+                });
+
+            modelBuilder.Entity("SkillForge.Models.CourseModules", b =>
+                {
+                    b.Navigation("Lessons");
                 });
 
             modelBuilder.Entity("SkillForge.Models.Course_Category", b =>

@@ -30,40 +30,26 @@ namespace SkillForge.Areas.User.Controllers
         [Authorize(Roles = "Student")]
         public IActionResult Dashboard()
         {
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
 
-            //read Login info from Cookie
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            return View(new DashboardVM { Email = email });
+            var vm = _courseService.GetStudentDashboard(studentId);
+            return View(vm);
         }
 
         //Profile - get
         public IActionResult Profile()
         {
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
 
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(id ?? string.Empty, out var studentId))
-            {
-                // No valid user id in claims — redirect to login or return Unauthorized
-                return RedirectToAction("StudentLogin");
-            }
+            // Use service to get comprehensive dashboard data (counts, courses, etc)
+            var dvm = _courseService.GetStudentDashboard(studentId);
 
-
-            // Load student by primary key 
-            var student = _context.Students.Find(studentId);
-            if (student == null)
-            {
-                return NotFound();
-            }
-            //fetch student profile
-            var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == student.Id);
-
-            var dvm = new DashboardVM();
-            dvm.Email = student.Email;
+            // Fetch profile for additional fields not in dashboard service
+            var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == studentId);
             if (profile != null)
             {
-                //map properties
                 dvm.FirstName = profile.FirstName;
                 dvm.LastName = profile.LastName;
                 dvm.Mobile = profile.Mobile;
@@ -72,6 +58,7 @@ namespace SkillForge.Areas.User.Controllers
                 dvm.Profession = profile.Profession;
                 dvm.PhotoPath = profile.PhotoPath ?? "/images/DefaultProfilePhoto.jfif";
             }
+
             return View(dvm);
         }
 
@@ -120,7 +107,9 @@ namespace SkillForge.Areas.User.Controllers
             {     // auto model binding by ef core
                 _context.Add(profile);
                 _context.SaveChanges();
-                return RedirectToAction("Dashboard");
+                TempData["Alert"] = "Profile created successfully!";
+                TempData["AlertType"] = "success";
+                return RedirectToAction("Profile");
             }
             else
             {
@@ -134,6 +123,8 @@ namespace SkillForge.Areas.User.Controllers
 
                 _context.Update(existingprofile);
                 _context.SaveChanges();
+                TempData["Alert"] = "Profile updated successfully.";
+                TempData["AlertType"] = "success";
                 return RedirectToAction("Profile");
             }
         }
@@ -145,21 +136,70 @@ namespace SkillForge.Areas.User.Controllers
         [Authorize(Roles = "Student")]
         public IActionResult Courses()
         {
-            var vm = _courseService.GetPublishedCoursePage();
+            var studentId = GetStudentId();
+            var vm = _courseService.GetPublishedCoursePage(studentId);
             return View(vm);
         }
 
-        //Course Details Page
-        public IActionResult CourseDetails(int id)
+        // course details for students (with optional instructor preview)
+        public IActionResult CourseDetails(int id, bool preview = false)
         {
             if (id <= 0)
                 return RedirectToAction("Courses");
 
-            var vm = _courseService.GetCourseDetails(id);
+            var studentId = GetStudentId();
+            
+            // IF student already enrolled: Open Learning View page
+            if (!preview && studentId > 0 && _enrollmentService.IsEnrolled(studentId, id))
+            {
+                return RedirectToAction("LearningView", new { id = id });
+            }
+
+            var vm = _courseService.GetCourseDetails(id, studentId);
 
             if (vm == null)
                 return NotFound();
+
+            ViewBag.IsPreview = preview;
             return View(vm);
+        }
+
+        // Learning View for enrolled students
+        [Authorize(Roles = "Student")]
+        public IActionResult LearningView(int id)
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
+
+            if (!_enrollmentService.IsEnrolled(studentId, id))
+            {
+                return RedirectToAction("CourseDetails", new { id = id });
+            }
+
+            var vm = _courseService.GetCourseDetails(id, studentId);
+            if (vm == null) return NotFound();
+
+            ViewBag.CompletedLessons = _courseService.GetCompletedLessonIds(studentId, id);
+            
+            return View(vm);
+        }
+
+        // Mark lesson as complete - AJAX
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public IActionResult MarkLessonComplete(int lessonId, int courseId)
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return Json(new { success = false });
+
+            bool success = _courseService.MarkLessonAsComplete(studentId, lessonId);
+            
+            // Recalculate progress for UI update
+            var enrolledCourses = _courseService.GetEnrolledCourses(studentId);
+            var course = enrolledCourses.FirstOrDefault(c => c.courseId == courseId);
+            var progress = course?.ProgressPercentage ?? 0;
+
+            return Json(new { success = success, progress = progress });
         }
 
 
@@ -207,6 +247,11 @@ namespace SkillForge.Areas.User.Controllers
             ViewBag.CourseTitle = result.CourseTitle;
             ViewBag.CourseId = courseId;
             ViewBag.RazorpayKeyId = _config["Razorpay:KeyId"];
+            
+            // student details for prefill
+            ViewBag.StudentEmail = result.StudentEmail;
+            ViewBag.StudentMobile = result.StudentMobile;
+            ViewBag.StudentName = result.StudentName;
 
             return View();
         }
@@ -250,18 +295,35 @@ namespace SkillForge.Areas.User.Controllers
 
         //Wishlist
         [Authorize(Roles = "Student")]
-
         public IActionResult Wishlist()
         {
-            return View();
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
+
+            var wishlist = _courseService.GetWishlist(studentId);
+            return View(wishlist);
+        }
+
+        //Toggle Wishlist - AJAX
+        [HttpPost]
+        public IActionResult ToggleWishlist(int courseId)
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return Json(new { success = false, message = "Please login first" });
+
+            bool added = _courseService.ToggleWishlist(studentId, courseId);
+            return Json(new { success = true, added = added });
         }
 
         //Orders
         [Authorize(Roles = "Student")]
-
         public IActionResult Orders()
         {
-            return View();
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
+
+            var orders = _courseService.GetStudentOrders(studentId);
+            return View(orders);
         }
 
         //Certificates
@@ -271,6 +333,44 @@ namespace SkillForge.Areas.User.Controllers
 
 
             return View();
+        }
+
+        // ── Cart ──
+        [Authorize(Roles = "Student")]
+        public IActionResult Cart()
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
+
+            var cartItems = _courseService.GetCartItems(studentId);
+            return View(cartItems);
+        }
+
+        [HttpPost]
+        public IActionResult AddToCart(int courseId)
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return Json(new { success = false, message = "Please login first" });
+
+            bool added = _courseService.AddToCart(studentId, courseId);
+            if (added)
+            {
+                var count = _courseService.GetCartCount(studentId);
+                return Json(new { success = true, message = "Added to cart", cartCount = count });
+            }
+            return Json(new { success = false, message = "You are already enrolled in this course" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public IActionResult RemoveFromCart(int courseId)
+        {
+            var studentId = GetStudentId();
+            if (studentId == 0) return Json(new { success = false, message = "Please login first" });
+
+            _courseService.RemoveFromCart(studentId, courseId);
+            var count = _courseService.GetCartCount(studentId);
+            return Json(new { success = true, message = "Removed from cart", cartCount = count });
         }
     }
 }

@@ -96,6 +96,9 @@ BEHAVIOR:
 - Infer patterns from existing code before writing new code
 - If unsure, follow existing implementation style
 - Avoid overengineering
+short humanize comment , not explain in comment also do not add comment for fix and changes
+comments just for identify code block/logic/section 
+as beginner to mid level write short comment whenever necessary to itdeitfy easily 
 
 ---
 

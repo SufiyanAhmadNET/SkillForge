@@ -13,6 +13,7 @@
                 </h6>
             </div>
 
+            @* fill form with existing data if editing *@
             <div class="card-body pt-2">
                @*  title *@
                 <div class="mb-3">
@@ -20,7 +21,7 @@
                         Course Title <span class="text-danger">*</span>
                     </label>
                     <input type="text" class="form-control"
-                           placeholder="Enter Course Title " name="title">
+                           placeholder="Enter Course Title " name="Title" value="@Model?.Title">
                     <span class="text-danger small"></span>
                 </div>
               @*  decription *@
@@ -29,7 +30,7 @@
                         Short Description <span class="text-danger">*</span>
                     </label>
                     <textarea class="form-control" rows="3"
-                              placeholder="What will students learn in this course?" name="description"></textarea>
+                              placeholder="What will students learn in this course?" name="Description">@Model?.Description</textarea>
                     <span class="text-danger small"></span>
                 </div>
              @* category *@
@@ -39,14 +40,14 @@
                             Category <span class="text-danger">*</span>
                         </label>
 
-                        @* categories from DB - in future*@
-                        <select class="form-select" name="category_id">
+                        @* categories selection *@
+                        <select class="form-select" name="Category_Id">
                             <option value="">Select category</option>
-                            <option value="1">Software Development</option>
-                            <option value="2">Data Science</option>
-                            <option value="3">AI / Machine Learning</option>
-                            <option value="4">DevOps & Cloud</option>
-                            <option value="5">Cybersecurity</option>
+                            <option value="1" selected="@(Model?.Category_Id == "1")">Software Development</option>
+                            <option value="2" selected="@(Model?.Category_Id == "2")">Data Science</option>
+                            <option value="3" selected="@(Model?.Category_Id == "3")">AI / Machine Learning</option>
+                            <option value="4" selected="@(Model?.Category_Id == "4")">DevOps & Cloud</option>
+                            <option value="5" selected="@(Model?.Category_Id == "5")">Cybersecurity</option>
                         </select>
                         <span class="text-danger small"></span>
                     </div>
@@ -58,9 +59,9 @@
                         </label>
                         <select class="form-select" name="Difficulty">
                             <option value="">Select level</option>
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Advanced">Advanced</option>
+                            <option value="Beginner" selected="@(Model?.Difficulty?.ToString() == "Beginner")">Beginner</option>
+                            <option value="Intermediate" selected="@(Model?.Difficulty?.ToString() == "Intermediate")">Intermediate</option>
+                            <option value="Advanced" selected="@(Model?.Difficulty?.ToString() == "Advanced")">Advanced</option>
                         </select>
                     </div>
                 </div>
@@ -70,7 +71,7 @@
                     @* Duration *@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold" style="font-size:13px;">Duration (weeks)</label>
-                        <input type="number" class="form-control" name="Duration_Weeks" placeholder="e.g. 12" min="1">
+                        <input type="number" class="form-control" name="Duration_Weeks" placeholder="e.g. 12" min="1" value="@Model?.Duration_Weeks">
                     </div>
                     @* Price *@
                     <div class="col-md-4">
@@ -80,7 +81,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light">₹</span>
                             <input type="number" class="form-control" name="Actual_Price"
-                                   id="originalPrice" placeholder="0 = Free" min="0">
+                                   id="originalPrice" placeholder="0 = Free" min="0" value="@Model?.Actual_Price">
                         </div>
                         <span class="text-danger small"></span>
                     </div>
@@ -90,7 +91,7 @@
                         <label class="form-label fw-semibold" style="font-size:13px;">Discount (%)</label>
                         <div class="input-group">
                             <input type="number" class="form-control"
-                                   id="discountPct" placeholder="0" min="0" max="100" name="Discount_Percent">
+                                   id="discountPct" placeholder="0" min="0" max="100" name="Discount_Percent" value="@Model?.Discount_Percent">
                             <span class="input-group-text bg-light">%</span>
                         </div>
                     </div>
@@ -122,7 +123,7 @@
                 <div class="mb-0">
                     <label class="form-label fw-semibold" style="font-size:13px;">What Students Will Learn</label>
                     <textarea class="form-control" rows="4" name="OutcomesRaw"
-                              placeholder="One outcome per line…"></textarea>
+                              placeholder="One outcome per line…">@string.Join("\n", Model?.outcome ?? new List<string>())</textarea>
                     <small class="text-muted">Each line = one bullet on the course page</small>
                 </div>
 
@@ -140,12 +141,12 @@
 
                 @* toggle — only one active *@
                 <div class="d-flex gap-2 mb-3">
-                    <input type="radio" class="btn-check" name="videoType" id="ytOption" value="youtube" checked>
+                    <input type="radio" class="btn-check" name="videoType" id="ytOption" value="youtube" @(string.IsNullOrEmpty(Model?.Intro_Video_Url) || Model.Intro_Video_Url.Contains("youtube") || Model.Intro_Video_Url.Contains("youtu.be") ? "checked" : "")>
                     <label class="btn btn-outline-secondary btn-sm px-3" for="ytOption">
                         <i class="bi bi-youtube me-1 text-danger"></i>YouTube Link
                     </label>
 
-                    <input type="radio" class="btn-check" name="videoType" id="uploadOption" value="upload">
+                    <input type="radio" class="btn-check" name="videoType" id="uploadOption" value="upload" @(!string.IsNullOrEmpty(Model?.Intro_Video_Url) && !Model.Intro_Video_Url.Contains("youtube") && !Model.Intro_Video_Url.Contains("youtu.be") ? "checked" : "")>
                     <label class="btn btn-outline-secondary btn-sm px-3" for="uploadOption">
                         <i class="bi bi-upload me-1"></i>Upload Video
                     </label>
@@ -154,7 +155,7 @@
                 @* youtube panel *@
                 <div id="ytPanel">
                     <input type="url" class="form-control" name="YouTubeUrl"
-                           placeholder="https://youtube.com/watch?v=...">
+                           placeholder="https://youtube.com/watch?v=..." value="@(Model?.Intro_Video_Url?.Contains("youtube") == true || Model?.Intro_Video_Url?.Contains("youtu.be") == true ? Model.Intro_Video_Url : "")">
                     <small class="text-muted">Paste YouTube URL — students see this as preview</small>
                 </div>
 

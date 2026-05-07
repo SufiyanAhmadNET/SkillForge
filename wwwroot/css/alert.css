@@ -1,128 +1,150 @@
-.alert-container {
-    position: fixed;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1090;
-    width: min(760px, calc(100vw - 20px));
-    pointer-events: none;
+/* ─── ALERT SYSTEM (Floating Notifications) ─── */
+
+:root {
+    --alert-success-bg: #ecfdf5;
+    --alert-success-text: #065f46;
+    --alert-success-border: #10b981;
+    --alert-danger-bg: #fef2f2;
+    --alert-danger-text: #991b1b;
+    --alert-danger-border: #ef4444;
+    --alert-warning-bg: #fffbeb;
+    --alert-warning-text: #92400e;
+    --alert-warning-border: #f59e0b;
+    --alert-info-bg: #eff6ff;
+    --alert-info-text: #1e40af;
+    --alert-info-border: #3b82f6;
 }
 
+/* Container for floating alerts */
+.alert-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 2100; /* Over everything */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none; /* Let clicks pass through to background when empty */
+    width: 380px;
+    max-width: calc(100vw - 48px);
+}
+
+/* Individual Alert Toast */
 .alert {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 12px 14px;
-    border: 1px solid;
-    border-left-width: 4px;
-    border-radius: 12px;
-    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.14);
-    font-size: 14px;
-    font-weight: 500;
+    pointer-events: auto; /* Re-enable clicks for the alert itself */
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
     opacity: 0;
-    transform: translateY(-10px) scale(0.99);
-    animation: alertSlideIn .25s ease forwards;
-    pointer-events: auto;
+    transform: translateX(30px);
+    animation: alert-slide-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    position: relative;
+    overflow: hidden;
 }
 
+@keyframes alert-slide-in {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Fade out animation */
+.alert.fade-out {
+    animation: alert-fade-out 0.3s ease forwards;
+}
+
+@keyframes alert-fade-out {
+    to {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+}
+
+/* Message Text */
 .alert-message {
     flex: 1;
-    line-height: 1.45;
-    padding-top: 1px;
+    margin-right: 12px;
 }
 
-.alert-container.alert-inline {
-    position: static;
-    left: auto;
-    top: auto;
-    transform: none;
-    width: 100%;
-    margin-bottom: 12px;
-    pointer-events: auto;
-}
-
-.alert-container.alert-inline .alert {
-    border-radius: 10px;
-    box-shadow: none;
-    animation-name: alertInlineIn;
-}
-
+/* Close Button */
 .alert-close-btn {
-    border: 1px solid currentColor;
     background: transparent;
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
+    border: none;
+    color: currentColor;
+    opacity: 0.5;
+    font-size: 18px;
+    line-height: 1;
     padding: 0;
-    border-radius: 999px;
-    display: inline-flex;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    line-height: 1;
-    font-size: 15px;
-    font-weight: 700;
-    opacity: .82;
-    transition: opacity .15s ease, transform .15s ease, background-color .15s ease;
+}
+
+.alert-close-btn:hover {
+    opacity: 1;
 }
 
 .alert-close-btn::before {
-    content: "\00D7";
+    content: "\2715"; /* Multiplication X */
+    font-family: Arial, sans-serif;
 }
 
-.alert-close-btn:hover,
-.alert-close-btn:focus-visible {
-    opacity: 1;
-    transform: scale(1.06);
-    background-color: rgba(255, 255, 255, 0.55);
-    outline: none;
+/* Color Variants */
+.alert-success {
+    background-color: var(--alert-success-bg);
+    color: var(--alert-success-text);
+    border-color: var(--alert-success-border);
 }
 
-.fade-out {
-    opacity: 0 !important;
-    transform: translateY(-8px) scale(0.98) !important;
-    transition: opacity .2s ease, transform .2s ease;
+.alert-danger {
+    background-color: var(--alert-danger-bg);
+    color: var(--alert-danger-text);
+    border-color: var(--alert-danger-border);
 }
 
-@keyframes alertSlideIn {
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+.alert-warning {
+    background-color: var(--alert-warning-bg);
+    color: var(--alert-warning-text);
+    border-color: var(--alert-warning-border);
+}
+
+.alert-info {
+    background-color: var(--alert-info-bg);
+    color: var(--alert-info-text);
+    border-color: var(--alert-info-border);
+}
+
+/* 📱 Mobile Responsive Styles */
+@media (max-width: 576px) {
+    .alert-container {
+        top: 16px;
+        right: 16px;
+        left: 16px; /* Take full width on mobile */
+        width: auto;
+    }
+
+    .alert {
+        padding: 14px 16px;
+        font-size: 13px;
+        transform: translateY(-20px);
+        animation-name: alert-slide-in-mobile;
     }
 }
 
-@keyframes alertInlineIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-
+@keyframes alert-slide-in-mobile {
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* Three color system only: green, blue, red */
-.alert-success {
-    background-color: #ebfff3;
-    color: #137647;
-    border-color: #34c27d;
-}
-
-.alert-info {
-    background-color: #edf4ff;
-    color: #0c4fb3;
-    border-color: #4f8ef7;
-}
-
-.alert-danger,
-.alert-warning,
-.alert-error {
-    background-color: #ffefef;
-    color: #b11f2b;
-    border-color: #ea6d76;
 }

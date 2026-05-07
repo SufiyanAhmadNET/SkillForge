@@ -16,6 +16,16 @@ namespace SkillForge.Areas.User.Models
         public string? Profession { get; set; }
 
         public string? PhotoPath { get; set; }
+
+        // stats
+        public int EnrolledCount { get; set; }
+        public int CompletedCount { get; set; }
+        public int CertificateCount { get; set; }
+        public int WishlistCount { get; set; }
+
+        // course lists
+        public List<SkillForge.Models.CourseCardVM> EnrolledCourses { get; set; } = new();
+        public List<SkillForge.Models.CourseCardVM> RecommendedCourses { get; set; } = new();
   
     }
 }

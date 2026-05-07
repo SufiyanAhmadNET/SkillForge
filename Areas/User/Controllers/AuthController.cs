@@ -155,23 +155,30 @@ namespace SkillForge.Areas.User.Controllers
 
                 return RedirectToAction("StudentLogin");
             }
-                // wrong password
-                if (result.status == AuthMessage.WrongPassword)
+            //wrong password
+            if (result.status == AuthMessage.WrongPassword)
             {
                 TempData["Alert"] = "Incorrect Password";
                 TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentLogin");
             }
 
-          
+            // google user or login failed
+            if (result.status == AuthMessage.LoginFailed)
+            {
+                TempData["Alert"] = "Login failed. If you signed up with Google, please use the 'Login with Google' button.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("StudentLogin");
+            }
+
             //successful login
             if (result.status == AuthMessage.LoginSuccess)
             {
                 await SigninUser(result.Id.ToString(), result.Email, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-                return RedirectToAction("Dashboard", "Home", new { area = "User" });
+                return RedirectToAction("Courses", "Home", new { area = "User" });
             }
 
-            TempData["Alert"] = "Something went wrong";
+            TempData["Alert"] = "Something went wrong. Please try again.";
             return RedirectToAction("StudentLogin");
         }//Login Method
 
@@ -227,7 +234,7 @@ namespace SkillForge.Areas.User.Controllers
                 }
 
                 await SigninUser(result.Id.ToString(), result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-                return RedirectToAction("Dashboard", "Home", new { area = "User" });
+                return RedirectToAction("Courses", "Home", new { area = "User" });
             }
             catch (InvalidJwtException)
             {
@@ -281,6 +288,7 @@ namespace SkillForge.Areas.User.Controllers
         {
             await HttpContext.SignOutAsync();
             HttpContext.Session.Clear();
+            TempData.Clear();
             return RedirectToAction("StudentLogin");
         }
     }
