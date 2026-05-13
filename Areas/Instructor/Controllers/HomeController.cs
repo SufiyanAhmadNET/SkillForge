@@ -1,49 +1,63 @@
-using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkillForge.Areas.Instructor.Models;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Services;
+using SkillForge.Interfaces.Instructors;
+using SkillForge.Interfaces.Courses;
 using System.Security.Claims;
+using SkillForge.Services.Courses.Models;
 
 namespace SkillForge.Areas.Instructor.Controllers
 {
+    // Instructor area home controller
     [Area("Instructor")]
     public class HomeController : InstructorBaseController
     {
-        private readonly CourseService _courseService;
+        private readonly IInstructorService _instructorService;
+        private readonly ICourseManagementService _courseManagementService;
+        private readonly ICourseContentService _courseContentService;
+        private readonly SkillForge.Interfaces.Auth.IAuthService _authService;
+        private readonly SkillForge.Interfaces.Auth.IOtpService _otpService;
 
-        public HomeController(SkillForgeDbContext context, CourseService courseService) : base(context) => _courseService = courseService;
+        public HomeController(SkillForgeDbContext context, 
+            IInstructorService instructorService,
+            ICourseManagementService courseManagementService,
+            ICourseContentService courseContentService,
+            SkillForge.Interfaces.Auth.IAuthService authService,
+            SkillForge.Interfaces.Auth.IOtpService otpService) : base(context)
+        {
+            _instructorService = instructorService;
+            _courseManagementService = courseManagementService;
+            _courseContentService = courseContentService;
+            _authService = authService;
+            _otpService = otpService;
+        }
 
+        // Instructor dashboard with stats
         [Authorize(Roles = "Instructor")]
         public IActionResult Dashboard()
         {
-            // get instructor id from claims
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(idClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
-
-            var vm = _courseService.GetInstructorDashboard(instructorId);
+            }
+            var vm = _instructorService.GetInstructorDashboard(instructorId);
             return View(vm);
         }
 
-        // Add course page
-        [Authorize(Roles = "Instructor")]
+        // Show add course page
         public IActionResult AddCourse()
         {
             return View();
         }
 
-        // Add Course - POST
-        [Authorize(Roles = "Instructor")]
+        // Handle add course submission
         [HttpPost]
         public IActionResult AddCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string action)
         {
-            //instructor id from claim
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var InstructorId))
             {
@@ -52,7 +66,7 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin", "Auth");
             }
 
-            //split input outcomes into liste by line
+            // Parse outcomes from textarea
             if (!string.IsNullOrWhiteSpace(OutcomesRaw))
             {
                 courseVM.outcome = OutcomesRaw
@@ -62,24 +76,18 @@ namespace SkillForge.Areas.Instructor.Controllers
                     .ToList();
             }
 
-            //pass to service
-            var course = _courseService.AddCourse(courseVM, InstructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
-
+            // Save course via service
+            var course = _courseManagementService.AddCourse(courseVM, InstructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
             if (course.message == CourseMessage.EmptyFields)
             {
                 TempData["Alert"] = !string.IsNullOrWhiteSpace(course.TechnicalMessage)
                     ? course.TechnicalMessage
                     : "Please enter all required course details in the correct format.";
-                TempData["AlertType"] = "danger";
                 return RedirectToAction("AddCourse", "Home");
             }
-
             if (!course.Success)
             {
-                TempData["Alert"] = !string.IsNullOrWhiteSpace(course.TechnicalMessage)
-                    ? course.TechnicalMessage
-                    : "Course could not be added. Please check your input and try again.";
-                TempData["AlertType"] = "danger";
+                TempData["Alert"] = course.TechnicalMessage ?? "Course could not be added. Please check your input and try again.";
                 return RedirectToAction("AddCourse", "Home");
             }
 
@@ -90,63 +98,62 @@ namespace SkillForge.Areas.Instructor.Controllers
             return RedirectToAction("MyCourses", "Home");
         }
 
-
-        // Get Courses List - Instructor
-        [Authorize(Roles ="Instructor")]
+        // List instructor's courses
+        [Authorize(Roles = "Instructor")]
         public IActionResult MyCourses()
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var InstructorId))
             {
-                TempData["Alert"] = "Session expired. Please login again.";
-                TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorLogin", "Auth");
             }
-            var mycourse = _courseService.MyCourses(InstructorId);
-
+            var mycourse = _courseManagementService.MyCourses(InstructorId);
             return View(mycourse);
         }
 
-        // Course details - instructor view with students
-        [Authorize(Roles = "Instructor")]
+        // Detailed course overview for instructor
         public IActionResult CourseDetails(int id)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
-
-            var courseDetails = _courseService.GetInstructorCourseDetails(id, instructorId);
+            }
+            var courseDetails = _instructorService.GetInstructorCourseDetails(id, instructorId);
             if (courseDetails == null)
+            {
                 return NotFound();
-
+            }
             return View(courseDetails);
         }
 
-        // get course for editing
-        [Authorize(Roles = "Instructor")]
+        // Show edit course page
         public IActionResult EditCourse(int id)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
-
-            var course = _courseService.GetCourseForEdit(id, instructorId);
+            }
+            var course = _courseManagementService.GetCourseForEdit(id, instructorId);
             if (course == null)
+            {
                 return NotFound();
-
+            }
             return View(course);
         }
 
-        // update course data
-        [Authorize(Roles = "Instructor")]
+        // Handle edit course submission
         [HttpPost]
         public IActionResult EditCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string action)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
+            }
 
-            // parse outcomes from raw text
+            // Parse outcomes
             if (!string.IsNullOrWhiteSpace(OutcomesRaw))
             {
                 courseVM.outcome = OutcomesRaw
@@ -156,32 +163,29 @@ namespace SkillForge.Areas.Instructor.Controllers
                     .ToList();
             }
 
-            var result = _courseService.UpdateCourse(courseVM, instructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
-
+            // Update via service
+            var result = _courseManagementService.UpdateCourse(courseVM, instructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
             if (result.Success)
             {
                 TempData["Alert"] = "Course updated successfully.";
                 TempData["AlertType"] = "success";
                 return RedirectToAction("MyCourses");
             }
-
             TempData["Alert"] = result.TechnicalMessage ?? "Failed to update course.";
             TempData["AlertType"] = "danger";
             return View(courseVM);
         }
 
-        // Delete course 
-        [Authorize(Roles = "Instructor")]
-        [HttpPost]
+        // Remove course and its data
         public IActionResult DeleteCourse(int id)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
+            }
 
-            // Delete course
-            bool deleted = _courseService.DeleteCourse(id, instructorId);
-
+            bool deleted = _courseManagementService.DeleteCourse(id, instructorId);
             if (deleted)
             {
                 TempData["Alert"] = "Course deleted successfully.";
@@ -192,36 +196,38 @@ namespace SkillForge.Areas.Instructor.Controllers
                 TempData["Alert"] = "Failed to delete course. Check permissions.";
                 TempData["AlertType"] = "danger";
             }
-
             return RedirectToAction("MyCourses");
         }
 
-        //My Earning
+        // Instructor earnings view
         public IActionResult Earning()
         {
             return View();
         }
 
-        [Authorize(Roles = "Instructor")]
+        // Instructor profile management view
         public IActionResult Profile()
         {
-            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(idClaim, out var instructorId))
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
+            }
 
             var instructor = _context.instructors
                 .Include(i => i.Profile)
                 .FirstOrDefault(i => i.Id == instructorId);
-
+            
             if (instructor == null) return NotFound();
-
+            
             var profile = instructor.Profile ?? new InstructorProfile();
             
-            // fetch real stats for profile sidebar
+            // Calculate stats
             var coursesCount = _context.Courses.Count(c => c.instructor_id == instructorId);
             var studentCount = _context.Enrollments
                 .Count(e => _context.Courses.Any(c => c.Id == e.CourseId && c.instructor_id == instructorId) && e.Status == EnrollmentStatus.Active);
-
+            
+            // Map to dashboard VM
             var vm = new InstructorDashboardVM
             {
                 Email = instructor.Email,
@@ -242,21 +248,28 @@ namespace SkillForge.Areas.Instructor.Controllers
                 TotalStudents = studentCount
             };
 
+            // Preserve security tab state
+            TempData.Keep("EmailSent");
+            TempData.Keep("ForgotEmail");
+            TempData.Keep("OtpVerified");
+            TempData.Keep("VerifiedOtp");
+
             return View(vm);
         }
 
-        // instructor profile - POST
-        [Authorize(Roles = "Instructor")]
+        // Handle profile update
         [HttpPost]
         public IActionResult Profile(InstructorProfile profile, IFormFile PhotoFile)
         {
-            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(idClaim, out var instructorId))
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
                 return RedirectToAction("InstructorLogin", "Auth");
+            }
 
             profile.InstructorId = instructorId;
 
-            // photo upload logic
+            // Handle photo upload
             if (PhotoFile != null && PhotoFile.Length > 0)
             {
                 var fileName = Guid.NewGuid() + Path.GetExtension(PhotoFile.FileName);
@@ -270,10 +283,11 @@ namespace SkillForge.Areas.Instructor.Controllers
             }
             else
             {
-                var existing = _context.instructorProfiles.FirstOrDefault(p => p.InstructorId == instructorId);
+                var existing = _context.instructorProfiles.AsNoTracking().FirstOrDefault(p => p.InstructorId == instructorId);
                 profile.PhotoPath = existing?.PhotoPath ?? "/images/DefaultProfilePhoto.jfif";
             }
 
+            // Upsert profile
             var existingProfile = _context.instructorProfiles.FirstOrDefault(p => p.InstructorId == instructorId);
             if (existingProfile == null)
             {
@@ -296,20 +310,53 @@ namespace SkillForge.Areas.Instructor.Controllers
                 existingProfile.PhotoPath = profile.PhotoPath;
                 _context.instructorProfiles.Update(existingProfile);
             }
-
             _context.SaveChanges();
             TempData["Alert"] = "Profile updated successfully.";
             TempData["AlertType"] = "success";
-            
             return RedirectToAction("Profile");
         }
 
-        // Syllabus Management - Add Module
+        // Update course syllabus modules/lessons
         [HttpPost]
-        [Authorize(Roles = "Instructor")]
+        public IActionResult UpdateSyllabus(int id, List<ModuleVM> Syllabus)
+        {
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
+                return RedirectToAction("InstructorLogin", "Auth");
+            }
+
+            // Fetch existing course
+            var courseVM = _courseManagementService.GetCourseForEdit(id, instructorId);
+            if (courseVM == null)
+            {
+                return NotFound();
+            }
+
+            // Update syllabus only
+            courseVM.Syllabus = Syllabus;
+
+            // Save via management service
+            var result = _courseManagementService.UpdateCourse(courseVM, instructorId, null, null, null, null, "draft");
+            if (result.Success)
+            {
+                TempData["Alert"] = "Syllabus updated successfully.";
+                TempData["AlertType"] = "success";
+            }
+            else
+            {
+                TempData["Alert"] = result.TechnicalMessage ?? "Failed to update syllabus.";
+                TempData["AlertType"] = "danger";
+            }
+
+            return RedirectToAction("CourseDetails", new { id = id });
+        }
+
+        // Add new module to course
+        [HttpPost]
         public IActionResult AddModule(int courseId, string moduleName)
         {
-            var success = _courseService.AddModule(courseId, moduleName);
+            var success = _courseContentService.AddModule(courseId, moduleName);
             if (success)
             {
                 TempData["Alert"] = "Module added successfully.";
@@ -318,12 +365,11 @@ namespace SkillForge.Areas.Instructor.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
-        // Syllabus Management - Add Lesson
+        // Add new lesson to module
         [HttpPost]
-        [Authorize(Roles = "Instructor")]
         public IActionResult AddLesson(int moduleId, int courseId, string title, string videoUrl)
         {
-            var success = _courseService.AddLesson(moduleId, title, videoUrl);
+            var success = _courseContentService.AddLesson(moduleId, title, videoUrl);
             if (success)
             {
                 TempData["Alert"] = "Lesson added successfully.";
@@ -332,12 +378,11 @@ namespace SkillForge.Areas.Instructor.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
-        // Syllabus Management - Delete Module
+        // Remove module from course
         [HttpPost]
-        [Authorize(Roles = "Instructor")]
         public IActionResult DeleteModule(int moduleId, int courseId)
         {
-            var success = _courseService.DeleteModule(moduleId);
+            var success = _courseContentService.DeleteModule(moduleId);
             if (success)
             {
                 TempData["Alert"] = "Module deleted.";
@@ -346,12 +391,11 @@ namespace SkillForge.Areas.Instructor.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
-        // Syllabus Management - Delete Lesson
+        // Remove lesson from module
         [HttpPost]
-        [Authorize(Roles = "Instructor")]
         public IActionResult DeleteLesson(int lessonId, int courseId)
         {
-            var success = _courseService.DeleteLesson(lessonId);
+            var success = _courseContentService.DeleteLesson(lessonId);
             if (success)
             {
                 TempData["Alert"] = "Lesson deleted.";
@@ -360,6 +404,126 @@ namespace SkillForge.Areas.Instructor.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
+        // ==========================================
+        // SECURITY / PASSWORD MANAGEMENT
+        // ==========================================
 
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult UpdatePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                TempData["Alert"] = "Passwords do not match.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("Profile", new { tab = "security", view = "change" });
+            }
+
+            var email = CurrentUserEmail();
+            var result = _authService.ChangePassword(email, currentPassword, newPassword, "Instructor");
+
+            if (result.Success)
+            {
+                TempData["Alert"] = "Password updated successfully.";
+                TempData["AlertType"] = "success";
+            }
+            else
+            {
+                string msg = "Failed to update password.";
+                if (result.status == SkillForge.Services.Auth.Models.AuthMessage.WrongPassword) msg = "Incorrect current password.";
+
+                TempData["Alert"] = msg;
+                TempData["AlertType"] = "danger";
+            }
+
+            return RedirectToAction("Profile", new { tab = "security", view = "change" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult SendProfileOTP(string email)
+        {
+            var result = _otpService.SendEmailOtp(email, "Instructor");
+            if (result.Success)
+            {
+                TempData["Alert"] = "OTP sent to your email.";
+                TempData["AlertType"] = "success";
+                TempData["EmailSent"] = true;
+                TempData["ForgotEmail"] = email;
+            }
+            else
+            {
+                TempData["Alert"] = "Failed to send OTP.";
+                TempData["AlertType"] = "danger";
+            }
+            return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult VerifyForgotOTP(string email, string otp)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp))
+            {
+                TempData["Alert"] = "Email and OTP are required.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+            }
+
+            var result = _otpService.VerifySecurityOtp(email, otp, false);
+            if (result.Success)
+            {
+                TempData["Alert"] = "OTP verified. You can now reset your password.";
+                TempData["AlertType"] = "success";
+                TempData["OtpVerified"] = true;
+                TempData["VerifiedOtp"] = otp;
+                TempData["ForgotEmail"] = email;
+                TempData["EmailSent"] = true;
+            }
+            else
+            {
+                TempData["Alert"] = "Invalid or expired OTP.";
+                TempData["AlertType"] = "danger";
+                TempData["EmailSent"] = true;
+                TempData["ForgotEmail"] = email;
+            }
+            return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult ResetProfilePassword(string email, string otp, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                TempData["Alert"] = "Passwords do not match.";
+                TempData["AlertType"] = "danger";
+                TempData["OtpVerified"] = true;
+                TempData["VerifiedOtp"] = otp;
+                TempData["ForgotEmail"] = email;
+                return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+            }
+
+            var result = _authService.ResetPassword(email, newPassword, otp, "Instructor");
+            if (result.Success)
+            {
+                TempData["Alert"] = "Password reset successfully.";
+                TempData["AlertType"] = "success";
+                // Clear state
+                TempData.Remove("EmailSent");
+                TempData.Remove("ForgotEmail");
+                TempData.Remove("OtpVerified");
+                TempData.Remove("VerifiedOtp");
+            }
+            else
+            {
+                TempData["Alert"] = "Failed to reset password.";
+                TempData["AlertType"] = "danger";
+                TempData["OtpVerified"] = true;
+                TempData["VerifiedOtp"] = otp;
+                TempData["ForgotEmail"] = email;
+            }
+            return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+        }
     }
 }

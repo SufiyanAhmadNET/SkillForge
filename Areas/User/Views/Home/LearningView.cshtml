@@ -5,12 +5,12 @@
     var completedLessons = ViewBag.CompletedLessons as List<int> ?? new List<int>();
 }
 
-<div class="container-fluid p-0">
+<div class="container-fluid p-0 bg-white" style="margin-top: -1.5rem;">
     <div class="row g-0">
         @* player & details *@
         <div class="col-lg-8 border-end bg-white">
-            <div class="video-section bg-black p-0 position-relative shadow-sm" style="min-height: 480px;">
-                <div id="videoContainer" class="ratio ratio-16x9">
+            <div class="video-section bg-black p-0 position-relative shadow-sm" style="min-height: 480px; background-color: #000 !important;">
+                <div id="videoContainer" class="ratio ratio-16x9 h-100">
                     <div class="d-flex align-items-center justify-content-center text-white flex-column h-100 bg-dark bg-gradient">
                         <i class="bi bi-play-circle display-1 opacity-25 mb-3"></i>
                         <h5 class="fw-light opacity-75">Select a lesson to start learning</h5>
@@ -20,18 +20,25 @@
 
             <div class="content-section p-4">
                 <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                             <a asp-action="EnrolledCourses" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;">
+                                <i class="bi bi-arrow-left me-1"></i>Back
+                             </a>
+                             <span class="badge bg-light text-dark border fw-normal" style="font-size: 11px;">@Model.CategoryName</span>
+                        </div>
                         <h4 class="fw-bold mb-1">@Model.Title</h4>
-                        <div class="text-muted small">
-                            <span class="me-3"><i class="bi bi-person-badge me-1"></i>Instructor: @Model.EnrolledStudents.FirstOrDefault()?.Name</span>
-                            <span><i class="bi bi-journal-text me-1"></i>@Model.modules?.Count Modules</span>
+                        <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
+                            <span class="d-flex align-items-center"><i class="bi bi-journal-text me-1"></i>@Model.modules?.Count Modules</span>
+                            <span class="d-flex align-items-center"><i class="bi bi-bar-chart me-1"></i>@Model.Difficulty</span>
+                            <span class="d-flex align-items-center"><i class="bi bi-clock me-1"></i>@Model.Duration Weeks</span>
                         </div>
                     </div>
-                    <div class="text-end">
-                        <div class="progress mb-1" style="height: 6px; width: 120px; background-color: #eee;">
-                            <div id="courseProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
+                    <div class="text-end ms-3">
+                        <div class="progress mb-1" style="height: 6px; width: 120px; background-color: #eee; border-radius: 10px;">
+                            <div id="courseProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%; border-radius: 10px;"></div>
                         </div>
-                        <span id="courseProgressText" class="text-muted" style="font-size: 11px;">0% Complete</span>
+                        <span id="courseProgressText" class="text-muted d-block" style="font-size: 11px;">0% Complete</span>
                     </div>
                 </div>
 
@@ -42,42 +49,30 @@
                     <li class="nav-item">
                         <button class="nav-link fw-bold border-0 bg-transparent text-dark" data-bs-toggle="tab" data-bs-target="#outcomes">Outcomes</button>
                     </li>
-                    <li class="nav-item">
-                        <button class="nav-link fw-bold border-0 bg-transparent text-dark" data-bs-toggle="tab" data-bs-target="#details">More Details</button>
-                    </li>
                 </ul>
 
                 <div class="tab-content pt-2">
                     <div class="tab-pane fade show active" id="description">
-                        <p class="text-muted" style="line-height: 1.7; font-size: 15px;">@Model.Desciption</p>
+                        <p class="text-muted" style="line-height: 1.7; font-size: 15px; white-space: pre-line;">@Model.Desciption</p>
                     </div>
                     <div class="tab-pane fade" id="outcomes">
                         <div class="row g-3">
-                            @foreach (var outcome in Model.outcomes)
+                            @if (Model.outcomes != null && Model.outcomes.Any())
                             {
-                                <div class="col-md-6">
-                                    <div class="d-flex gap-2">
-                                        <i class="bi bi-check-circle-fill text-success" style="font-size: 14px;"></i>
-                                        <span class="text-muted small">@outcome.Outcome</span>
+                                @foreach (var outcome in Model.outcomes)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="d-flex gap-2">
+                                            <i class="bi bi-check-circle-fill text-success" style="font-size: 14px;"></i>
+                                            <span class="text-muted small">@outcome.Outcome</span>
+                                        </div>
                                     </div>
-                                </div>
+                                }
                             }
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="details">
-                        <div class="row g-4">
-                            <div class="col-md-4">
-                                <div class="small text-muted mb-1 text-uppercase ls-1" style="font-size: 10px;">Difficulty</div>
-                                <div class="fw-bold text-dark">@Model.Difficulty</div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="small text-muted mb-1 text-uppercase ls-1" style="font-size: 10px;">Duration</div>
-                                <div class="fw-bold text-dark">@Model.Duration Weeks</div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="small text-muted mb-1 text-uppercase ls-1" style="font-size: 10px;">Category</div>
-                                <div class="fw-bold text-dark">@Model.CategoryName</div>
-                            </div>
+                            else
+                            {
+                                <div class="col-12 text-muted small">No specific learning outcomes listed for this course.</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -85,11 +80,14 @@
         </div>
 
         @* syllabus sidebar *@
-        <div class="col-lg-4 bg-light border-start">
+        <div class="col-lg-4 bg-light border-start syllabus-col">
             <div class="syllabus-header p-3 bg-white border-bottom sticky-top" style="top: 0; z-index: 10;">
-                <h6 class="fw-bold mb-0">Course Content</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0">Course Content</h6>
+                    <span class="badge bg-dark rounded-pill" style="font-size: 10px;">@Model.modules?.SelectMany(m => m.Lessons).Count() Lessons</span>
+                </div>
             </div>
-            <div class="syllabus-body overflow-auto" style="height: calc(100vh - 120px);">
+            <div class="syllabus-body overflow-auto" style="height: calc(100vh - 120px); max-height: calc(100vh - 120px);">
                 <div class="accordion accordion-flush" id="syllabusAccordion">
                     @if (Model.modules != null && Model.modules.Any())
                     {
@@ -101,39 +99,46 @@
                                     <button class="accordion-button @(i == 0 ? "" : "collapsed") bg-white py-3 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#module-@module.Id">
                                         <div class="w-100">
                                             <div class="fw-bold small text-dark" style="font-size: 13px;">Module @(i + 1): @module.ModuleName</div>
-                                            <div class="text-muted mt-1" style="font-size: 11px;">@module.Lessons.Count Lessons</div>
+                                            <div class="text-muted mt-1" style="font-size: 11px;">@module.Lessons?.Count Lessons</div>
                                         </div>
                                     </button>
                                 </h2>
                                 <div id="module-@module.Id" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#syllabusAccordion">
                                     <div class="accordion-body p-0">
                                         <div class="list-group list-group-flush">
-                                            @foreach (var lesson in module.Lessons)
+                                            @if (module.Lessons != null && module.Lessons.Any())
                                             {
-                                                var isCompleted = completedLessons.Contains(lesson.Id);
-                                                <div class="list-group-item list-group-item-action border-0 lesson-item d-flex align-items-center gap-3 p-3 bg-white" 
-                                                        style="cursor: pointer;" onclick="loadVideo('@lesson.VideoUrl', @lesson.Id, this)">
-                                                    <div class="lesson-status flex-shrink-0">
-                                                        @if (isCompleted)
-                                                        {
-                                                            <i class="bi bi-check-circle-fill text-success lesson-check-@lesson.Id" style="font-size: 18px;"></i>
-                                                        }
-                                                        else
-                                                        {
-                                                            <i class="bi bi-play-circle text-muted lesson-check-@lesson.Id" style="font-size: 18px;"></i>
-                                                        }
-                                                    </div>
-                                                    <div class="flex-grow-1 min-w-0">
-                                                        <div class="small fw-medium text-dark text-truncate lesson-title" style="font-size: 13px;">@lesson.Title</div>
-                                                        <div class="text-muted d-flex align-items-center mt-1" style="font-size: 10px;">
-                                                            <i class="bi bi-youtube me-1 text-danger"></i>Video · 10m
+                                                @foreach (var lesson in module.Lessons.OrderBy(l => l.Order))
+                                                {
+                                                    var isCompleted = completedLessons.Contains(lesson.Id);
+                                                    <div class="list-group-item list-group-item-action border-0 lesson-item d-flex align-items-center gap-3 p-3 bg-white" 
+                                                            style="cursor: pointer;" onclick="loadVideo('@lesson.VideoUrl', @lesson.Id, this)">
+                                                        <div class="lesson-status flex-shrink-0">
+                                                            @if (isCompleted)
+                                                            {
+                                                                <i class="bi bi-check-circle-fill text-success lesson-check-@lesson.Id" style="font-size: 18px;"></i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i class="bi bi-play-circle text-muted lesson-check-@lesson.Id" style="font-size: 18px;"></i>
+                                                            }
+                                                        </div>
+                                                        <div class="flex-grow-1 min-w-0">
+                                                            <div class="small fw-medium text-dark text-truncate lesson-title" style="font-size: 13px;">@lesson.Title</div>
+                                                            <div class="text-muted d-flex align-items-center mt-1" style="font-size: 10px;">
+                                                                <i class="bi bi-youtube me-1 text-danger"></i>Video · YouTube
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-check m-0" onclick="event.stopPropagation();">
+                                                            <input class="form-check-input lesson-checkbox" type="checkbox" @(isCompleted ? "checked" : "") 
+                                                                   onchange="toggleCompletion(@lesson.Id, @Model.CourseId, event, this)" style="cursor: pointer; border-color: #ddd;">
                                                         </div>
                                                     </div>
-                                                    <div class="form-check m-0">
-                                                        <input class="form-check-input lesson-checkbox" type="checkbox" @(isCompleted ? "checked" : "") 
-                                                               onclick="toggleCompletion(@lesson.Id, @Model.CourseId, event, this)" style="cursor: pointer; border-color: #ddd;">
-                                                    </div>
-                                                </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="p-3 text-center text-muted small">No lessons in this module.</div>
                                             }
                                         </div>
                                     </div>
@@ -143,7 +148,10 @@
                     }
                     else
                     {
-                        <div class="p-4 text-center text-muted small">Syllabus details coming soon.</div>
+                        <div class="p-5 text-center">
+                            <i class="bi bi-journal-x display-4 text-muted opacity-25 d-block mb-3"></i>
+                            <div class="text-muted small">Syllabus details coming soon.</div>
+                        </div>
                     }
                 </div>
             </div>

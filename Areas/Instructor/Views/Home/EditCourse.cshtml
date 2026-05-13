@@ -1,8 +1,11 @@
 @model CourseVM
-@using SkillForge.Services
+@using SkillForge.Services.Courses.Models
 @{
     ViewData["Title"] = "Edit Course";
     Layout = "~/Areas/Instructor/Views/Shared/InstructorLayout.cshtml";
+    
+    // detect video type
+    bool isYouTube = Model.Intro_Video_Url?.Contains("youtube.com") == true || Model.Intro_Video_Url?.Contains("youtu.be") == true;
 }
 
 <main class="p-4 flex-grow-1 inst-bg">
@@ -30,15 +33,21 @@
     <div id="add-course-alert" class="alert-container alert-inline"></div>
 
     @* tabs navigation *@
-    <ul class="nav nav-pills mb-4 gap-2" id="courseTab" role="tablist">
+    <ul class="nav nav-pills course-stepper mb-4" id="courseTab" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active fw-semibold px-4 rounded-pill" id="basic-tab" data-bs-toggle="pill" data-bs-target="#basic-info">1. Basic Info</button>
+            <button class="nav-link active" id="basic-tab" data-bs-toggle="pill" data-bs-target="#basic-info">
+                <i class="bi bi-info-circle"></i> 1. Basic Info
+            </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-semibold px-4 rounded-pill" id="content-tab" data-bs-toggle="pill" data-bs-target="#course-content">2. Course Content</button>
+            <button class="nav-link" id="content-tab" data-bs-toggle="pill" data-bs-target="#course-content">
+                <i class="bi bi-journal-text"></i> 2. Course Content
+            </button>
         </li>
         <li class="nav-item">
-            <button class="nav-link fw-semibold px-4 rounded-pill" id="additional-tab" data-bs-toggle="pill" data-bs-target="#additional-info">3. Final Details</button>
+            <button class="nav-link" id="additional-tab" data-bs-toggle="pill" data-bs-target="#additional-info">
+                <i class="bi bi-check-circle"></i> 3. Final Details
+            </button>
         </li>
     </ul>
 
@@ -56,16 +65,18 @@
                             <h6 class="fw-bold mb-3">Basic Information</h6>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Course Title *</label>
-                                <input type="text" class="form-control" name="Title" asp-for="Title" placeholder="Enter Course Title" required>
+                                <input type="text" class="form-control" asp-for="Title" placeholder="e.g. Complete Web Development 2026" required>
+                                <span asp-validation-for="Title" class="text-danger small"></span>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Description *</label>
-                                <textarea class="form-control" name="Description" asp-for="Description" rows="4" placeholder="Description..." required></textarea>
+                                <textarea class="form-control" asp-for="Description" rows="4" placeholder="Tell students what this course is about..." required></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold">Category *</label>
-                                    <select class="form-select" name="Category_Id" asp-for="Category_Id" required>
+                                    <select class="form-select" asp-for="Category_Id" required>
                                         <option value="">Select category</option>
                                         <option value="1">Software Development</option>
                                         <option value="2">Data Science</option>
@@ -73,51 +84,56 @@
                                         <option value="4">DevOps & Cloud</option>
                                         <option value="5">Cybersecurity</option>
                                     </select>
+                                    <span asp-validation-for="Category_Id" class="text-danger small"></span>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold">Difficulty *</label>
-                                    <select class="form-select" name="Difficulty" asp-for="Difficulty" required>
+                                    <select class="form-select" asp-for="Difficulty" required>
                                         <option value="">Select level</option>
                                         <option value="Beginner">Beginner</option>
                                         <option value="Intermediate">Intermediate</option>
                                         <option value="Advanced">Advanced</option>
                                     </select>
+                                    <span asp-validation-for="Difficulty" class="text-danger small"></span>
                                 </div>
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Duration (weeks)</label>
-                                    <input type="number" class="form-control" name="Duration_Weeks" asp-for="Duration_Weeks" placeholder="12" min="1">
+                                    <input type="number" class="form-control" asp-for="Duration_Weeks" placeholder="12" min="1">
+                                    <span asp-validation-for="Duration_Weeks" class="text-danger small"></span>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Original Price (₹)</label>
-                                    <input type="number" class="form-control" name="Actual_Price" asp-for="Actual_Price" id="originalPrice" min="0">
+                                    <input type="number" class="form-control" asp-for="Actual_Price" id="originalPrice" placeholder="999" min="0">
+                                    <span asp-validation-for="Actual_Price" class="text-danger small"></span>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Discount (%)</label>
-                                    <input type="number" class="form-control" name="Discount_Percent" asp-for="Discount_Percent" id="discountPct" min="0" max="100">
+                                    <input type="number" class="form-control" asp-for="Discount_Percent" id="discountPct" placeholder="20" min="0" max="100">
+                                    <span asp-validation-for="Discount_Percent" class="text-danger small"></span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card border-0 shadow-sm rounded-4 p-4">
                             <h6 class="fw-bold mb-3">Intro Video</h6>
-                            @{
-                                bool hasYt = !string.IsNullOrEmpty(Model.Intro_Video_Url) && (Model.Intro_Video_Url.Contains("youtube") || Model.Intro_Video_Url.Contains("youtu.be"));
-                            }
                             <div class="d-flex gap-2 mb-3">
-                                <input type="radio" class="btn-check" name="videoType" id="ytOption" value="youtube" @(hasYt ? "checked" : "")>
+                                <input type="radio" class="btn-check" name="videoType" id="ytOption" value="youtube" @(isYouTube ? "checked" : "")>
                                 <label class="btn btn-outline-secondary btn-sm px-3" for="ytOption"><i class="bi bi-youtube me-1"></i>YouTube</label>
-                                <input type="radio" class="btn-check" name="videoType" id="uploadOption" value="upload" @(!hasYt ? "checked" : "")>
+                                <input type="radio" class="btn-check" name="videoType" id="uploadOption" value="upload" @(!isYouTube ? "checked" : "")>
                                 <label class="btn btn-outline-secondary btn-sm px-3" for="uploadOption"><i class="bi bi-upload me-1"></i>Upload</label>
                             </div>
-                            <div id="ytPanel" style="@(hasYt ? "" : "display:none;")">
-                                <input type="url" class="form-control" name="YouTubeUrl" value="@(hasYt ? Model.Intro_Video_Url : "")" placeholder="https://youtube.com/watch?v=...">
+                            <div id="ytPanel" style="@(isYouTube ? "" : "display:none;")">
+                                <input type="url" class="form-control" name="YouTubeUrl" value="@(isYouTube ? Model.Intro_Video_Url : "")" placeholder="https://youtube.com/watch?v=...">
                             </div>
-                            <div id="uploadPanel" style="@(!hasYt ? "" : "display:none;")">
+                            <div id="uploadPanel" style="@(!isYouTube ? "" : "display:none;")">
                                 <input type="file" class="form-control" name="Video_File" accept="video/*">
-                                @if(!hasYt && !string.IsNullOrEmpty(Model.Intro_Video_Url)) {
-                                    <small class="text-success d-block mt-1">Current: @Model.Intro_Video_Url.Split('/').Last()</small>
+                                @if (!isYouTube && !string.IsNullOrEmpty(Model.Intro_Video_Url))
+                                {
+                                    <div class="mt-2 small text-muted">
+                                        <i class="bi bi-file-play me-1"></i> Current video: @System.IO.Path.GetFileName(Model.Intro_Video_Url)
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -126,10 +142,13 @@
                     <div class="col-lg-4">
                         <div class="card border-0 shadow-sm rounded-4 p-4 mb-3">
                             <h6 class="fw-bold mb-3">Thumbnail</h6>
-                            <div id="thumbPreview" class="rounded-4 mb-3 d-flex align-items-center justify-content-center border" style="height:160px; background:#f8f9fa; cursor:pointer;" onclick="document.getElementById('thumbInput').click()">
-                                @if (!string.IsNullOrEmpty(Model.Thumbnail_Url)) {
+                            <div id="thumbPreview" class="rounded-4 mb-3 d-flex align-items-center justify-content-center border" style="height:160px; background:#f8f9fa; cursor:pointer; overflow:hidden;" onclick="document.getElementById('thumbInput').click()">
+                                @if (!string.IsNullOrEmpty(Model.Thumbnail_Url))
+                                {
                                     <img src="@Model.Thumbnail_Url" class="rounded-4" style="width:100%;height:100%;object-fit:cover;">
-                                } else {
+                                }
+                                else
+                                {
                                     <div class="text-center text-muted">
                                         <i class="bi bi-image fs-1 opacity-25"></i>
                                         <p class="small mb-0">Click to upload</p>
@@ -142,7 +161,7 @@
                     </div>
                 </div>
                 <div class="mt-4 text-end">
-                    <button type="button" class="btn btn-orange px-4 fw-semibold rounded-pill shadow-sm" onclick="document.getElementById('content-tab').click()">Next: Manage Content →</button>
+                    <button type="button" class="btn btn-orange px-4 fw-semibold rounded-pill shadow-sm" onclick="document.getElementById('content-tab').click()">Next: Build Syllabus →</button>
                 </div>
             </div>
 
@@ -154,59 +173,9 @@
                             <h6 class="fw-bold mb-0">Course Content / Syllabus</h6>
                             <p class="text-muted small mb-0">Update modules and lessons for this course</p>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-orange rounded-pill px-3" onclick="addModule()">
-                            <i class="bi bi-plus-lg me-1"></i>Add Module
-                        </button>
                     </div>
 
-                    <div id="syllabus-container">
-                        @if (Model.Syllabus != null)
-                        {
-                            for (int mIdx = 0; mIdx < Model.Syllabus.Count; mIdx++)
-                            {
-                                <div class="module-item border rounded-4 mb-3 overflow-hidden bg-white shadow-sm" id="module-@mIdx">
-                                    <div class="d-flex gap-2 p-3 bg-light align-items-center border-bottom">
-                                        <i class="bi bi-grid-3x3-gap text-muted"></i>
-                                        <input type="text" name="Syllabus[@mIdx].ModuleName" value="@Model.Syllabus[mIdx].ModuleName" class="form-control form-control-sm fw-bold border-0 shadow-none bg-transparent" 
-                                               placeholder="Module Name" required style="font-size: 15px;">
-                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-auto" onclick="removeElement('module-@mIdx')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="lessons-container p-3" id="lessons-container-@mIdx">
-                                        <div class="lesson-list mb-2" id="lesson-list-@mIdx">
-                                            @if (Model.Syllabus[mIdx].Lessons != null)
-                                            {
-                                                for (int lIdx = 0; lIdx < Model.Syllabus[mIdx].Lessons.Count; lIdx++)
-                                                {
-                                                    <div class="lesson-item d-flex gap-3 mb-3 p-3 rounded-4 border bg-light bg-opacity-50 align-items-center" id="module-@mIdx-lesson-@lIdx">
-                                                        <div class="flex-shrink-0 text-muted small">#@(lIdx + 1)</div>
-                                                        <div class="flex-grow-1">
-                                                            <input type="text" name="Syllabus[@mIdx].Lessons[@lIdx].Title" value="@Model.Syllabus[mIdx].Lessons[lIdx].Title" class="form-control form-control-sm border-0 shadow-none bg-white rounded-3 mb-2" 
-                                                                   placeholder="Lesson Title" required>
-                                                            <div class="input-group input-group-sm">
-                                                                <span class="input-group-text border-0 bg-white"><i class="bi bi-youtube text-danger"></i></span>
-                                                                <input type="url" name="Syllabus[@mIdx].Lessons[@lIdx].VideoUrl" value="@Model.Syllabus[mIdx].Lessons[lIdx].VideoUrl" class="form-control border-0 shadow-none bg-white rounded-3" 
-                                                                       placeholder="YouTube Link" required>
-                                                            </div>
-                                                        </div>
-                                                        <button type="button" class="btn btn-sm btn-link text-danger p-0 align-self-start" onclick="removeElement('module-@mIdx-lesson-@lIdx')">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </button>
-                                                    </div>
-                                                }
-                                            }
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-link text-orange text-decoration-none p-0 small fw-bold" onclick="addLesson(@mIdx)">
-                                            <i class="bi bi-plus"></i> Add Lesson
-                                        </button>
-                                    </div>
-                                    <input type="hidden" id="lesson-count-@mIdx" value="@(Model.Syllabus[mIdx].Lessons?.Count ?? 0)">
-                                </div>
-                            }
-                        }
-                    </div>
+                    @await Html.PartialAsync("_SyllabusEditor", Model.Syllabus)
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
@@ -246,68 +215,6 @@
 @section Scripts {
     <script src="~/js/Discount.js" asp-append-version="true"></script>
     <script>
-        let moduleCount = @(Model.Syllabus?.Count ?? 0);
-
-        function addModule() {
-            const container = document.getElementById('syllabus-container');
-            if (moduleCount === 0) container.innerHTML = '';
-
-            const mIdx = moduleCount++;
-            const modHtml = `
-                <div class="module-item border rounded-4 mb-3 overflow-hidden bg-white shadow-sm" id="module-${mIdx}">
-                    <div class="d-flex gap-2 p-3 bg-light align-items-center border-bottom">
-                        <i class="bi bi-grid-3x3-gap text-muted"></i>
-                        <input type="text" name="Syllabus[${mIdx}].ModuleName" class="form-control form-control-sm fw-bold border-0 shadow-none bg-transparent" 
-                               placeholder="Module Name" required style="font-size: 15px;">
-                        <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-auto" onclick="removeElement('module-${mIdx}')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="lessons-container p-3" id="lessons-container-${mIdx}">
-                        <div class="lesson-list mb-2" id="lesson-list-${mIdx}"></div>
-                        <button type="button" class="btn btn-sm btn-link text-orange text-decoration-none p-0 small fw-bold" onclick="addLesson(${mIdx})">
-                            <i class="bi bi-plus"></i> Add Lesson
-                        </button>
-                    </div>
-                    <input type="hidden" id="lesson-count-${mIdx}" value="0">
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', modHtml);
-        }
-
-        function addLesson(mIdx) {
-            const container = document.getElementById(`lesson-list-${mIdx}`);
-            const countInput = document.getElementById(`lesson-count-${mIdx}`);
-            const lIdx = parseInt(countInput.value);
-            
-            const lessonHtml = `
-                <div class="lesson-item d-flex gap-3 mb-3 p-3 rounded-4 border bg-light bg-opacity-50 align-items-center" id="module-${mIdx}-lesson-${lIdx}">
-                    <div class="flex-shrink-0 text-muted small">#${lIdx + 1}</div>
-                    <div class="flex-grow-1">
-                        <input type="text" name="Syllabus[${mIdx}].Lessons[${lIdx}].Title" class="form-control form-control-sm border-0 shadow-none bg-white rounded-3 mb-2" 
-                               placeholder="Lesson Title" required>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text border-0 bg-white"><i class="bi bi-youtube text-danger"></i></span>
-                            <input type="url" name="Syllabus[${mIdx}].Lessons[${lIdx}].VideoUrl" class="form-control border-0 shadow-none bg-white rounded-3" 
-                                   placeholder="YouTube Link" required>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-link text-danger p-0 align-self-start" onclick="removeElement('module-${mIdx}-lesson-${lIdx}')">
-                        <i class="bi bi-x-circle"></i>
-                    </button>
-                </div>
-            `;
-            
-            container.insertAdjacentHTML('beforeend', lessonHtml);
-            countInput.value = lIdx + 1;
-        }
-
-        function removeElement(id) {
-            const el = document.getElementById(id);
-            if (el) el.remove();
-        }
-
         // video toggle
         document.querySelectorAll('input[name="videoType"]').forEach(r => {
             r.addEventListener('change', () => {
@@ -325,16 +232,65 @@
         });
     </script>
     <style>
-        .nav-pills .nav-link { color: #666; background: #eee; }
-        .nav-pills .nav-link.active { background: var(--orange); color: #fff; }
+        :root {
+            --orange: #FF6B00;
+        }
+
+        /* modernized stepper */
+        .course-stepper {
+            background: #f8f9fa;
+            padding: 6px;
+            border-radius: 12px;
+            display: flex;
+            gap: 4px;
+            border: 1px solid #eee;
+        }
+
+        .course-stepper .nav-item {
+            flex: 1;
+        }
+
+        .course-stepper .nav-link {
+            width: 100%;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            background: transparent;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .course-stepper .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .course-stepper .nav-link.active {
+            background: #fff !important;
+            color: var(--orange) !important;
+            border-color: #eee;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .course-stepper .nav-link:not(.active):hover {
+            background: rgba(0,0,0,0.03);
+            color: #333;
+        }
+
+        /* general refinements */
         .btn-orange { background: var(--orange); color: #fff; border: none; }
         .btn-orange:hover { background: #e65c00; color: #fff; }
-        .btn-outline-orange { color: var(--orange); border-color: var(--orange); }
-        .btn-outline-orange:hover { background: var(--orange); color: #fff; }
-        .bg-orange { background-color: var(--orange); }
-        .text-orange { color: var(--orange); }
-        .text-click:hover { color: var(--orange) !important; }
-        .module-item { border-color: #eee !important; }
-        .lesson-item { border-color: #f0f0f0 !important; }
+        .inst-bg { background-color: #fbfbfb; }
+        .card { border: 1px solid #f0f0f0 !important; }
+        .form-label { color: #444; }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 0.25rem rgba(255, 107, 0, 0.1);
+        }
     </style>
 }

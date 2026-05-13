@@ -1,0 +1,147 @@
+
+
+@* Reusable Confirmation Modal *@
+<div id="sf-confirm-modal" class="sf-modal-overlay" style="display: none;">
+    <div class="sf-modal-card">
+        <div class="sf-modal-icon">
+            <i class="bi bi-exclamation-circle"></i>
+        </div>
+        <div class="sf-modal-body">
+            <h5 class="sf-modal-title">Confirm Action</h5>
+            <p id="sf-confirm-message" class="sf-modal-text">Are you sure you want to proceed?</p>
+        </div>
+        <div class="sf-modal-footer">
+            <button type="button" class="btn-sf-cancel" onclick="SkillForge.closeConfirm()">Cancel</button>
+            <button type="button" id="sf-confirm-btn" class="btn-sf-confirm">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .sf-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .sf-modal-overlay.active {
+        opacity: 1;
+    }
+
+    .sf-modal-card {
+        background: #fff;
+        width: 100%;
+        max-width: 360px;
+        border-radius: 16px;
+        padding: 24px;
+        text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: scale(0.9);
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border: 1px solid rgba(232, 114, 12, 0.1);
+    }
+
+    .sf-modal-overlay.active .sf-modal-card {
+        transform: scale(1);
+    }
+
+    .sf-modal-icon {
+        width: 56px;
+        height: 56px;
+        background: #fff7ed;
+        color: #e8720c;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 16px;
+    }
+
+    .sf-modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .sf-modal-text {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.5;
+        margin-bottom: 24px;
+    }
+
+    .sf-modal-footer {
+        display: flex;
+        gap: 12px;
+    }
+
+    .sf-modal-footer button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .btn-sf-cancel {
+        background: #f1f5f9;
+        color: #64748b;
+    }
+
+    .btn-sf-cancel:hover {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .btn-sf-confirm {
+        background: #e8720c;
+        color: #fff;
+    }
+
+    .btn-sf-confirm:hover {
+        background: #d06208;
+        box-shadow: 0 4px 12px rgba(232, 114, 12, 0.2);
+    }
+</style>
+
+<script>
+    window.SkillForge = window.SkillForge || {};
+    
+    SkillForge.confirm = function(options) {
+        const modal = document.getElementById('sf-confirm-modal');
+        const msgEl = document.getElementById('sf-confirm-message');
+        const confirmBtn = document.getElementById('sf-confirm-btn');
+        
+        msgEl.innerText = options.message || "Are you sure?";
+        confirmBtn.innerText = options.confirmText || "Yes, Delete";
+        
+        // Handle confirm click
+        confirmBtn.onclick = function() {
+            if (options.onConfirm) options.onConfirm();
+            SkillForge.closeConfirm();
+        };
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    };
+
+    SkillForge.closeConfirm = function() {
+        const modal = document.getElementById('sf-confirm-modal');
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 200);
+    };
+</script>

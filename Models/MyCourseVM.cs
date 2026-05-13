@@ -1,4 +1,4 @@
-﻿using SkillForge.Services;
+﻿using SkillForge.Services.Courses.Models;
 
 namespace SkillForge.Models
 {

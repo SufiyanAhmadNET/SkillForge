@@ -1,4 +1,4 @@
-﻿using SkillForge.Services;
+﻿using SkillForge.Services.Courses.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

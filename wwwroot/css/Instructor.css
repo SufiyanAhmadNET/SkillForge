@@ -530,7 +530,7 @@ body {
     color: var(--muted);
 }
 
-/* dashed upload box — thumbnail picker */
+/* DASHED upload box — thumbnail picker */
 .upload-box {
     border: 2px dashed #ddd;
     border-radius: 10px;
@@ -541,3 +541,311 @@ body {
     .upload-box:hover {
         border-color: var(--orange);
     }
+
+/* Unified Syllabus & Stepper Styles */
+
+:root {
+    --orange: #e8720c;
+    --orange-light: rgba(232, 114, 12, 0.10);
+    --orange-border: rgba(232, 114, 12, 0.30);
+    --orange-focus: rgba(232, 114, 12, 0.12);
+    --orange-dark: #d06208;
+}
+
+/* 2. Syllabus Management UI */
+.syllabus-editor .module-item {
+    border: 1px solid var(--orange-border) !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px;
+    background: #ffffff;
+    box-shadow: none !important;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.syllabus-editor .module-header {
+    background: #fff;
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid transparent;
+}
+
+.module-item.is-open .module-header {
+    border-bottom-color: #f1f5f9;
+}
+
+.module-drag-handle {
+    color: #bbb;
+    cursor: grab;
+    font-size: 14px;
+}
+
+.module-title-input {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    border: none;
+    background: transparent;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.module-title-input:focus {
+    outline: none;
+}
+
+.lesson-count-badge {
+    font-size: 11px;
+    background: var(--orange-light);
+    color: #c05e00;
+    border-radius: 20px;
+    padding: 2px 9px;
+    white-space: nowrap;
+}
+
+.module-chevron {
+    font-size: 16px;
+    color: var(--orange);
+    transition: transform 0.28s ease;
+}
+
+.module-item.is-open .module-chevron {
+    transform: rotate(180deg);
+}
+
+.btn-remove-module {
+    color: #e05252;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+}
+
+.module-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s ease;
+}
+
+.module-item.is-open .module-body {
+    max-height: 1000px;
+    padding: 12px;
+}
+
+.lesson-item {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+.lesson-index {
+    width: 22px;
+    font-size: 12px;
+    color: #999;
+    flex-shrink: 0;
+    background: none !important;
+}
+
+.yt-pill {
+    width: 32px;
+    height: 24px;
+    background: #FF0000;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 10px;
+}
+
+.lesson-inputs {
+    flex-grow: 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.lesson-title-input {
+    flex: 2.5 !important;
+    height: 32px !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    padding: 0 10px !important;
+    margin: 0 !important;
+}
+
+.lesson-url-input {
+    flex: 1.8 !important;
+    height: 32px !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    padding: 0 10px !important;
+}
+
+.lesson-title-input:focus, .lesson-url-input:focus {
+    border-color: var(--orange) !important;
+    box-shadow: 0 0 0 2px var(--orange-focus) !important;
+    outline: none !important;
+}
+
+.btn-remove-lesson {
+    width: 20px;
+    color: #e05252;
+    padding: 0;
+    border: none;
+    background: transparent;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.btn-add-lesson {
+    border: 1.5px dashed rgba(232,114,12,0.45) !important;
+    border-radius: 7px !important;
+    color: var(--orange) !important;
+    font-size: 13px !important;
+    padding: 5px 14px !important;
+    background: transparent !important;
+    width: 100%;
+    margin-top: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add-lesson:hover {
+    background: rgba(232,114,12,0.06) !important;
+}
+
+.add-module-divider {
+    position: relative;
+    text-align: center;
+    margin: 25px 0;
+}
+
+.add-module-divider::before {
+    content: none !important;
+}
+
+.btn-add-module-inline {
+    border: 1.5px solid var(--orange) !important;
+    color: var(--orange) !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    padding: 7px 20px !important;
+    font-size: 13px !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add-module-inline:hover {
+    background: rgba(232,114,12,0.07) !important;
+}
+
+.btn-save-content {
+    background: var(--orange) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 22px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+}
+
+.btn-save-content:hover {
+    background: var(--orange-dark) !important;
+}
+
+.syllabus-editor {
+    padding: 0 !important;
+}
+
+.truncation-btn {
+    font-size: 13px;
+    color: var(--orange);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px 0;
+    text-decoration: underline dotted rgba(232,114,12,0.4);
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Custom Confirmation Modal */
+.custom-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.custom-confirm-box {
+    background: #fff;
+    border: 2px solid var(--orange);
+    border-radius: 12px;
+    padding: 24px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(232,114,12,0.15);
+}
+
+.custom-confirm-text {
+    color: var(--orange);
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.custom-confirm-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-confirm-yes {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    padding: 6px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm-no {
+    background: #fff;
+    color: var(--orange);
+    border: 1px solid var(--orange);
+    padding: 6px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm-yes:hover { background: var(--orange-dark); }
+.btn-confirm-no:hover { background: var(--orange-light); }
+
+.btn-add-module-inline i {
+    font-size: 14px;
+}

@@ -1,7 +1,7 @@
-﻿namespace SkillForge.Services
+namespace SkillForge.Services.Auth.Models
 {
     public enum AuthMessage
-    {   
+    {
         //status for Register
         None,
         EmptyFields,
@@ -16,11 +16,22 @@
         EmailNotSent,
         RegisterSuccess,
         RegisterFailed,
-        //status for Login
-        NewUser,
-        WrongPassword,
-        LoginFailed,
-        LoginSuccess
 
+        //Status for Login
+        LoginSuccess,
+        LoginFailed,
+        WrongPassword,
+        NewUser,
+
+        //OTP
+        OtpSent,
+        OtpVerified,
+        OtpExpired,
+        InvalidOtp,
+
+        //Password Reset
+        PasswordResetSuccess,
+        PasswordResetFailed,
+        LinkExpired
     }
 }

@@ -1,11 +1,23 @@
 using Microsoft.EntityFrameworkCore;
-using System.IO;
-using SkillForge.Services;
 using SkillForge.Data;
+using SkillForge.Interfaces.Auth;
+using SkillForge.Interfaces.Courses;
+using SkillForge.Interfaces.Instructors;
+using SkillForge.Interfaces.Payments;
+using SkillForge.Interfaces.Students;
+using SkillForge.Interfaces.Common;
+using SkillForge.Services.Auth;
+using SkillForge.Services.Courses;
+using SkillForge.Services.Instructors;
+using SkillForge.Services.Payments;
+using SkillForge.Services.Students;
+using SkillForge.Services.Common;
+using SkillForge.Services;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Load optional secret configuration (not checked into source)
+// Load optional secret configuration
 var secretConfigPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.secret.json");
 if (File.Exists(secretConfigPath))
 {
@@ -15,39 +27,56 @@ if (File.Exists(secretConfigPath))
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//Register EMail service
-builder.Services.AddScoped<EmailService>();
+// Register Common Services
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IMediaService, MediaService>();
 
-//Register AUthService
-builder.Services.AddScoped<AuthService>();
+// Register Auth Services
+builder.Services.AddScoped<IOtpService, OtpService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
-//Register Course service
-builder.Services.AddScoped<CourseService>();
+// Register Course Services
+builder.Services.AddScoped<ICourseQueryService, CourseQueryService>();
+builder.Services.AddScoped<ICourseContentService, CourseContentService>();
+builder.Services.AddScoped<ICourseManagementService, CourseManagementService>();
+builder.Services.AddScoped<ICourseProgressService, CourseProgressService>();
 
-////Register Enrollment service
-builder.Services.AddScoped<EnrollmentService>();
+// Register Student & Instructor Services
+builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
+builder.Services.AddScoped<IInstructorService, InstructorService>();
 
-//Register Database
-builder.Services.AddDbContext<SkillForgeDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register Enrollment Service
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 
-//Register for use Cookie
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options =>
-    {
-        options.LoginPath = "/User/Account/StudentLogin";
+// Register Database
+builder.Services.AddDbContext<SkillForgeDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        //logout after 10 minute of non activity
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
-        options.SlidingExpiration = true;
-    });
+// Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Cookies";
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie("Cookies", options =>
+{
+    options.LoginPath = "/User/Auth/StudentLogin";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+    options.SlidingExpiration = true;
+})
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
+    options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+});
 
-//register session
+
+// Session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromHours(24); //session dies after 1 day
-    options.Cookie.HttpOnly = true; //js can not read cookie, save from js- xss attack
-    options.Cookie.IsEssential = true;  //store cookire regardless user permision of browser behaviour
-
+    options.IdleTimeout = TimeSpan.FromHours(24);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -56,10 +85,8 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    
     app.UseHsts();
 }
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -67,7 +94,6 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllerRoute(
     name: "myArea",

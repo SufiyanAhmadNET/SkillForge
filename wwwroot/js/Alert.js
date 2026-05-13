@@ -59,10 +59,19 @@ function showAlert(message, type = "info", duration = DEFAULT_DURATION, containe
 function normalizeAlertType(type) {
     const t = (type || "").toString().toLowerCase().trim();
     
-    if (["success", "ok", "saved", "verified"].includes(t)) return "success";
-    if (["error", "danger", "failed", "fail"].includes(t)) return "danger";
-    if (["warning", "warn", "alert"].includes(t)) return "warning";
-    if (["info", "note", "message"].includes(t)) return "info";
+    // success variants (green)
+    if (["success", "ok", "saved", "verified", "green", "sent"].includes(t) || 
+        t.includes("success") || t.includes("verified") || t.includes("sent") || t.includes("ok")) return "success";
+    
+    // error variants (red)
+    if (["error", "danger", "failed", "fail", "red", "wrong", "invalid", "expired"].includes(t) || 
+        t.includes("failed") || t.includes("error") || t.includes("wrong") || t.includes("invalid") || t.includes("expired")) return "danger";
+    
+    // warning variants (orange)
+    if (["warning", "warn", "alert", "orange"].includes(t) || t.includes("warn")) return "warning";
+    
+    // info variants (blue)
+    if (["info", "note", "message", "blue", "process", "loading"].includes(t) || t.includes("info")) return "info";
     
     return "info";
 }

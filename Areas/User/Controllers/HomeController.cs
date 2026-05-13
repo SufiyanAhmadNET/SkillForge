@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SkillForge.Areas.User.Models;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Services;
-using SkillForge.Services.StudentService;
+using SkillForge.Interfaces.Courses;
+using SkillForge.Interfaces.Students;
+using SkillForge.Interfaces.Payments;
 using System.Security.Claims;
 
 namespace SkillForge.Areas.User.Controllers
@@ -14,39 +14,45 @@ namespace SkillForge.Areas.User.Controllers
     [Area("User")]
     public class HomeController : UserBaseController
     {
-        private readonly CourseService _courseService;
-        private readonly EnrollmentService _enrollmentService;
-        private IConfiguration _config;
-        public HomeController(CourseService courseService, EnrollmentService enrollmentService,
-                              IConfiguration config)
+        private readonly ICourseQueryService _courseQueryService;
+        private readonly ICourseProgressService _courseProgressService;
+        private readonly IStudentActivityService _studentActivityService;
+        private readonly IEnrollmentService _enrollmentService;
+        private readonly IConfiguration _config;
+        private readonly SkillForge.Interfaces.Auth.IAuthService _authService;
+        private readonly SkillForge.Interfaces.Auth.IOtpService _otpService;
+
+        public HomeController(ICourseQueryService courseQueryService,
+                              ICourseProgressService courseProgressService,
+                              IStudentActivityService studentActivityService,
+                              IEnrollmentService enrollmentService,
+                              IConfiguration config,
+                              SkillForge.Interfaces.Auth.IAuthService authService,
+                              SkillForge.Interfaces.Auth.IOtpService otpService)
         {
-            _courseService = courseService;
+            _courseQueryService = courseQueryService;
+            _courseProgressService = courseProgressService;
+            _studentActivityService = studentActivityService;
             _enrollmentService = enrollmentService;
             _config = config;
+            _authService = authService;
+            _otpService = otpService;
         }
 
-
-        //Dashboard
         [Authorize(Roles = "Student")]
         public IActionResult Dashboard()
         {
             var studentId = GetStudentId();
             if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            var vm = _courseService.GetStudentDashboard(studentId);
+            var vm = _studentActivityService.GetStudentDashboard(studentId);
             return View(vm);
         }
 
-        //Profile - get
+        [Authorize(Roles = "Student")]
         public IActionResult Profile()
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            // Use service to get comprehensive dashboard data (counts, courses, etc)
-            var dvm = _courseService.GetStudentDashboard(studentId);
-
-            // Fetch profile for additional fields not in dashboard service
+            var dvm = _studentActivityService.GetStudentDashboard(studentId);
             var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == studentId);
             if (profile != null)
             {
@@ -59,57 +65,53 @@ namespace SkillForge.Areas.User.Controllers
                 dvm.PhotoPath = profile.PhotoPath ?? "/images/DefaultProfilePhoto.jfif";
             }
 
+            // Preserve security tab state
+            TempData.Keep("EmailSent");
+            TempData.Keep("ForgotEmail");
+            TempData.Keep("OtpVerified");
+            TempData.Keep("VerifiedOtp");
+
             return View(dvm);
         }
-
-
 
         [HttpPost]
         [Authorize(Roles = "Student")]
         public IActionResult Profile(StudentProfile profile, IFormFile PhotoFile)
         {
-            // fetch student id from claim
-            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(idClaim ?? string.Empty, out var id))
-            {
-                return RedirectToAction("StudentLogin");
-            }
+            var id = GetStudentId();
+            if (id == 0) return RedirectToAction("StudentLogin", "Auth");
+            
             profile.StudentId = id;
 
-            // handle photo upload
             if (PhotoFile != null && PhotoFile.Length > 0)
             {
-                // create unique filename
                 var fileName = Guid.NewGuid() + Path.GetExtension(PhotoFile.FileName);
-
-                // save to wwwroot/images/profiles/
                 var path = Path.Combine("wwwroot", "images", "profiles", fileName);
-                //save on server
-                using (var stream = new FileStream(path, FileMode.Create))
+                
+                if (!Directory.Exists(Path.GetDirectoryName(path)))
                 {
-                    PhotoFile.CopyTo(stream); // write file to disk
+                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                 }
 
-                // save path to model will goes to DB
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    PhotoFile.CopyTo(stream);
+                }
                 profile.PhotoPath = "/images/profiles/" + fileName;
             }
             else
             {
-                // no new photo uploaded
-                // keep existing photo from DB 
-                var existing = _context.StudentProfiles.FirstOrDefault(s => s.StudentId == id);
-                profile.PhotoPath = existing?.PhotoPath
-                                     ?? "/images/DefaultProfilePhoto.jfif";
+                var existing = _context.StudentProfiles.AsNoTracking().FirstOrDefault(s => s.StudentId == id);
+                profile.PhotoPath = existing?.PhotoPath ?? "/images/DefaultProfilePhoto.jfif";
             }
 
             var existingprofile = _context.StudentProfiles.FirstOrDefault(s => s.StudentId == id);
             if (existingprofile == null)
-            {     // auto model binding by ef core
-                _context.Add(profile);
+            {
+                _context.StudentProfiles.Add(profile);
                 _context.SaveChanges();
                 TempData["Alert"] = "Profile created successfully!";
                 TempData["AlertType"] = "success";
-                return RedirectToAction("Profile");
             }
             else
             {
@@ -120,109 +122,88 @@ namespace SkillForge.Areas.User.Controllers
                 existingprofile.City = profile.City;
                 existingprofile.Profession = profile.Profession;
                 existingprofile.PhotoPath = profile.PhotoPath;
-
                 _context.Update(existingprofile);
                 _context.SaveChanges();
                 TempData["Alert"] = "Profile updated successfully.";
                 TempData["AlertType"] = "success";
-                return RedirectToAction("Profile");
             }
+
+            // Preserve security tab state
+            TempData.Keep("EmailSent");
+            TempData.Keep("ForgotEmail");
+            TempData.Keep("OtpVerified");
+            TempData.Keep("VerifiedOtp");
+
+            return RedirectToAction("Profile");
         }
 
-
-
-
-        //Course Page
-        [Authorize(Roles = "Student")]
         public IActionResult Courses()
         {
             var studentId = GetStudentId();
-            var vm = _courseService.GetPublishedCoursePage(studentId);
+            var vm = _courseQueryService.GetPublishedCoursePage(studentId);
             return View(vm);
         }
 
-        // course details for students (with optional instructor preview)
         public IActionResult CourseDetails(int id, bool preview = false)
         {
-            if (id <= 0)
-                return RedirectToAction("Courses");
-
-            var studentId = GetStudentId();
+            if (id <= 0) return RedirectToAction("Courses");
             
-            // IF student already enrolled: Open Learning View page
+            var studentId = GetStudentId();
             if (!preview && studentId > 0 && _enrollmentService.IsEnrolled(studentId, id))
             {
                 return RedirectToAction("LearningView", new { id = id });
             }
 
-            var vm = _courseService.GetCourseDetails(id, studentId);
-
-            if (vm == null)
-                return NotFound();
-
+            var vm = _courseQueryService.GetCourseDetails(id, studentId);
+            if (vm == null) return NotFound();
+            
             ViewBag.IsPreview = preview;
             return View(vm);
         }
 
-        // Learning View for enrolled students
         [Authorize(Roles = "Student")]
         public IActionResult LearningView(int id)
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
             if (!_enrollmentService.IsEnrolled(studentId, id))
             {
                 return RedirectToAction("CourseDetails", new { id = id });
             }
 
-            var vm = _courseService.GetCourseDetails(id, studentId);
+            var vm = _courseQueryService.GetCourseDetails(id, studentId);
             if (vm == null) return NotFound();
-
-            ViewBag.CompletedLessons = _courseService.GetCompletedLessonIds(studentId, id);
             
+            ViewBag.CompletedLessons = _courseProgressService.GetCompletedLessonIds(studentId, id);
             return View(vm);
         }
 
-        // Mark lesson as complete - AJAX
         [HttpPost]
         [Authorize(Roles = "Student")]
         public IActionResult MarkLessonComplete(int lessonId, int courseId)
         {
             var studentId = GetStudentId();
             if (studentId == 0) return Json(new { success = false });
-
-            bool success = _courseService.MarkLessonAsComplete(studentId, lessonId);
             
-            // Recalculate progress for UI update
-            var enrolledCourses = _courseService.GetEnrolledCourses(studentId);
+            bool success = _courseProgressService.MarkLessonAsComplete(studentId, lessonId);
+            var enrolledCourses = _studentActivityService.GetEnrolledCourses(studentId);
             var course = enrolledCourses.FirstOrDefault(c => c.courseId == courseId);
             var progress = course?.ProgressPercentage ?? 0;
-
+            
             return Json(new { success = success, progress = progress });
         }
 
-
-        //Enrolled Courses
         [Authorize(Roles = "Student")]
         public IActionResult EnrolledCourses()
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            // fetch enrolled courses from service
-            var enrolledCourses = _courseService.GetEnrolledCourses(studentId);
-            
+            var enrolledCourses = _studentActivityService.GetEnrolledCourses(studentId);
             return View(enrolledCourses);
         }
 
-        //enroll in course
+        [Authorize(Roles = "Student")]
         public IActionResult Checkout(int courseId)
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            // already enrolled? skip to success
             if (_enrollmentService.IsEnrolled(studentId, courseId))
             {
                 TempData["Alert"] = "You are already enrolled in this course!";
@@ -230,9 +211,7 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("EnrolledCourses", "Home");
             }
 
-            // create razorpay order
             var result = _enrollmentService.CreateOrder(studentId, courseId);
-
             if (!result.Success)
             {
                 TempData["Alert"] = result.Message;
@@ -240,125 +219,96 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("CourseDetails", "Home", new { id = courseId });
             }
 
-            // pass data to checkout page
             ViewBag.RazorpayOrderId = result.RazorpayOrderId;
-            ViewBag.Amount = result.Amount;          // paise
-            ViewBag.AmountDisplay = result.Amount / 100m;   // INR for display
+            ViewBag.Amount = result.Amount;
+            ViewBag.AmountDisplay = result.Amount / 100m;
             ViewBag.CourseTitle = result.CourseTitle;
             ViewBag.CourseId = courseId;
             ViewBag.RazorpayKeyId = _config["Razorpay:KeyId"];
-            
-            // student details for prefill
             ViewBag.StudentEmail = result.StudentEmail;
             ViewBag.StudentMobile = result.StudentMobile;
             ViewBag.StudentName = result.StudentName;
-
+            
             return View();
         }
 
-
-        // ── POST: /User/Enrollment/VerifyPayment ──
-        // razorpay JS calls this after payment
         [HttpPost]
+        [Authorize(Roles = "Student")]
         public IActionResult VerifyPayment(string razorpay_order_id, string razorpay_payment_id, string razorpay_signature, int courseId)
         {
             var result = _enrollmentService.VerifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
-
             if (!result.Success)
             {
                 TempData["Alert"] = result.Message ?? "Payment failed.";
                 TempData["AlertType"] = "danger";
-                return RedirectToAction("CourseDetails", "Home", new { id = courseId });
+                return RedirectToAction("Checkout", new { courseId = courseId });
             }
 
-            TempData["Alert"] = " Enrollment successful! Start learning now.";
+            TempData["Alert"] = "Enrollment successful! Start learning now.";
             TempData["AlertType"] = "success";
             return RedirectToAction("EnrollmentSuccess", new { enrollmentId = result.EnrollmentId });
         }
 
-
-        // ── GET: /User/Enrollment/EnrollmentSuccess ──
+        [Authorize(Roles = "Student")]
         public IActionResult EnrollmentSuccess(int enrollmentId)
         {
             ViewBag.EnrollmentId = enrollmentId;
             return View();
         }
 
-
-        // ── helper: get student id from cookie claim ──
-        private int GetStudentId()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return int.TryParse(claim, out var id) ? id : 0;
-        }
-
-
-        //Wishlist
         [Authorize(Roles = "Student")]
         public IActionResult Wishlist()
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            var wishlist = _courseService.GetWishlist(studentId);
+            var wishlist = _studentActivityService.GetWishlist(studentId);
             return View(wishlist);
         }
 
-        //Toggle Wishlist - AJAX
         [HttpPost]
+        [Authorize(Roles = "Student")]
         public IActionResult ToggleWishlist(int courseId)
         {
             var studentId = GetStudentId();
             if (studentId == 0) return Json(new { success = false, message = "Please login first" });
-
-            bool added = _courseService.ToggleWishlist(studentId, courseId);
+            
+            bool added = _studentActivityService.ToggleWishlist(studentId, courseId);
             return Json(new { success = true, added = added });
         }
 
-        //Orders
         [Authorize(Roles = "Student")]
         public IActionResult Orders()
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            var orders = _courseService.GetStudentOrders(studentId);
+            var orders = _studentActivityService.GetStudentOrders(studentId);
             return View(orders);
         }
 
-        //Certificates
         [Authorize(Roles = "Student")]
         public IActionResult Certificates()
         {
-
-
             return View();
         }
 
-        // ── Cart ──
         [Authorize(Roles = "Student")]
         public IActionResult Cart()
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return RedirectToAction("StudentLogin", "Auth");
-
-            var cartItems = _courseService.GetCartItems(studentId);
+            var cartItems = _studentActivityService.GetCartItems(studentId);
             return View(cartItems);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Student")]
         public IActionResult AddToCart(int courseId)
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return Json(new { success = false, message = "Please login first" });
-
-            bool added = _courseService.AddToCart(studentId, courseId);
+            bool added = _studentActivityService.AddToCart(studentId, courseId);
             if (added)
             {
-                var count = _courseService.GetCartCount(studentId);
+                var count = _studentActivityService.GetCartCount(studentId);
                 return Json(new { success = true, message = "Added to cart", cartCount = count });
             }
-            return Json(new { success = false, message = "You are already enrolled in this course" });
+            return Json(new { success = false, message = "You are already enrolled in this course or item already in cart" });
         }
 
         [HttpPost]
@@ -366,11 +316,136 @@ namespace SkillForge.Areas.User.Controllers
         public IActionResult RemoveFromCart(int courseId)
         {
             var studentId = GetStudentId();
-            if (studentId == 0) return Json(new { success = false, message = "Please login first" });
-
-            _courseService.RemoveFromCart(studentId, courseId);
-            var count = _courseService.GetCartCount(studentId);
+            _studentActivityService.RemoveFromCart(studentId, courseId);
+            var count = _studentActivityService.GetCartCount(studentId);
             return Json(new { success = true, message = "Removed from cart", cartCount = count });
+        }
+
+        private int GetStudentId()
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(claim, out var id) ? id : 0;
+        }
+
+        // ==========================================
+        // SECURITY / PASSWORD MANAGEMENT
+        // ==========================================
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public IActionResult UpdatePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                TempData["Alert"] = "Passwords do not match.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("Profile", new { tab = "security", view = "change" });
+            }
+
+            var email = CurrentUserEmail();
+            var result = _authService.ChangePassword(email, currentPassword, newPassword, "Student");
+
+            if (result.Success)
+            {
+                TempData["Alert"] = "Password updated successfully.";
+                TempData["AlertType"] = "success";
+            }
+            else
+            {
+                string msg = "Failed to update password.";
+                if (result.status == SkillForge.Services.Auth.Models.AuthMessage.WrongPassword) msg = "Incorrect current password.";
+
+                TempData["Alert"] = msg;
+                TempData["AlertType"] = "danger";
+            }
+
+            return RedirectToAction("Profile", new { tab = "security", view = "change" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public IActionResult SendProfileOTP(string email)
+        {
+            var result = _otpService.SendEmailOtp(email, "Student");
+            if (result.Success)
+            {
+                TempData["Alert"] = "OTP sent to your email.";
+                TempData["AlertType"] = "success";
+                TempData["EmailSent"] = true;
+                TempData["ForgotEmail"] = email;
+            }
+            else
+            {
+                TempData["Alert"] = "Failed to send OTP.";
+                TempData["AlertType"] = "danger";
+            }
+            return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public IActionResult VerifyForgotOTP(string email, string otp)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp))
+            {
+                TempData["Alert"] = "Email and OTP are required.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+            }
+
+            var result = _otpService.VerifySecurityOtp(email, otp, false);
+            if (result.Success)
+            {
+                TempData["Alert"] = "OTP verified. You can now reset your password.";
+                TempData["AlertType"] = "success";
+                TempData["OtpVerified"] = true;
+                TempData["VerifiedOtp"] = otp;
+                TempData["ForgotEmail"] = email;
+            }
+            else
+            {
+                TempData["Alert"] = "Invalid or expired OTP.";
+                TempData["AlertType"] = "danger";
+                TempData["EmailSent"] = true;
+                TempData["ForgotEmail"] = email;
+            }
+            return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public IActionResult ResetProfilePassword(string email, string otp, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                TempData["Alert"] = "Passwords do not match.";
+                TempData["AlertType"] = "danger";
+                TempData["OtpVerified"] = true;
+                TempData["VerifiedOtp"] = otp;
+                TempData["ForgotEmail"] = email;
+                return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
+            }
+
+            var result = _authService.ResetPassword(email, newPassword, otp, "Student");
+            if (result.Success)
+            {
+                TempData["Alert"] = "Password reset successfully.";
+                TempData["AlertType"] = "success";
+                // Clear state
+                TempData.Remove("EmailSent");
+                TempData.Remove("ForgotEmail");
+                TempData.Remove("OtpVerified");
+                TempData.Remove("VerifiedOtp");
+            }
+            else
+            {
+                TempData["Alert"] = "Failed to reset password.";
+                TempData["AlertType"] = "danger";
+                TempData["OtpVerified"] = true;
+                TempData["VerifiedOtp"] = otp;
+                TempData["ForgotEmail"] = email;
+            }
+            return RedirectToAction("Profile", new { tab = "security", view = "forgot" });
         }
     }
 }

@@ -17,13 +17,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
+@{
+    bool isPreview = ViewBag.IsPreview == true;
+}
 <body class="student-layout">
 
     <!-- ── HEADER ── -->
     <header class="sf-header">
 
         <!-- Left: Brand -->
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3 @(isPreview ? "pe-none" : "")">
             <a class="sf-brand" asp-area="User" asp-controller="Home" asp-action="Courses">
                 <i class="bi bi-mortarboard-fill"></i> SkillForge
             </a>
@@ -38,13 +41,13 @@
         </div>
 
         <!-- Center: search — hidden on mobile, shown on md+ -->
-        <div class="sf-search d-none d-md-flex" style="max-width:380px; width:100%;">
+        <div class="sf-search d-none d-md-flex @(isPreview ? "pe-none opacity-75" : "")" style="max-width:380px; width:100%;">
             <i class="bi bi-search" style="font-size:13px;"></i>
             <input type="text" placeholder="Search courses..." style="font-size:13px;" />
         </div>
 
         <!-- Right: links + bell + apps + avatar -->
-        <div class="sf-header-right">
+        <div class="sf-header-right @(isPreview ? "pe-none" : "")">
 
             <div class="sf-header-links d-none d-xl-flex">
                 <a href="#" class="sf-hlink">FAQ</a>
@@ -55,7 +58,7 @@
             <!-- Cart Icon (Shown on all) -->
             <a asp-area="User" asp-controller="Home" asp-action="Cart" class="sf-bell me-1" style="text-decoration:none; position:relative;">
                 <i class="bi bi-cart3"></i>
-                @if (ViewBag.CartCount > 0)
+                @if (!isPreview && ViewBag.CartCount > 0)
                 {
                     <span class="sf-cart-badge">@ViewBag.CartCount</span>
                 }
@@ -64,7 +67,10 @@
             <!-- Bell (Hidden on small mobile) -->
             <button class="sf-bell d-none d-sm-flex">
                 <i class="bi bi-bell"></i>
-                <span class="sf-bell-dot"></span>
+                @if (!isPreview)
+                {
+                    <span class="sf-bell-dot"></span>
+                }
             </button>
 
             <!-- Apps grid popup (Hidden on mobile) -->
@@ -77,69 +83,75 @@
                     </div>
                 </button>
 
-                <div class="sf-apps-popup" id="appsMenu">
-                    <div class="sf-apps-grid">
-                        <a asp-area="User" asp-controller="Home" asp-action="Dashboard" class="sf-app-item">
-                            <i class="bi bi-grid-1x2"></i> Dashboard
-                        </a>
-                        <a asp-area="User" asp-controller="Home" asp-action="EnrolledCourses" class="sf-app-item">
-                            <i class="bi bi-play-btn"></i> My Courses
-                        </a>
-                        <a asp-area="User" asp-controller="Home" asp-action="Cart" class="sf-app-item">
-                            <i class="bi bi-cart3"></i> Cart
-                        </a>
-                        <a asp-area="User" asp-controller="Home" asp-action="Wishlist" class="sf-app-item">
-                            <i class="bi bi-heart"></i> Wishlist
-                        </a>
-                        <a asp-area="User" asp-controller="Home" asp-action="Certificates" class="sf-app-item">
-                            <i class="bi bi-award"></i> Certificates
-                        </a>
-                        <a asp-area="User" asp-controller="Home" asp-action="Orders" class="sf-app-item">
-                            <i class="bi bi-receipt"></i> Orders
-                        </a>
+                @if (!isPreview)
+                {
+                    <div class="sf-apps-popup" id="appsMenu">
+                        <div class="sf-apps-grid">
+                            <a asp-area="User" asp-controller="Home" asp-action="Dashboard" class="sf-app-item">
+                                <i class="bi bi-grid-1x2"></i> Dashboard
+                            </a>
+                            <a asp-area="User" asp-controller="Home" asp-action="EnrolledCourses" class="sf-app-item">
+                                <i class="bi bi-play-btn"></i> My Courses
+                            </a>
+                            <a asp-area="User" asp-controller="Home" asp-action="Cart" class="sf-app-item">
+                                <i class="bi bi-cart3"></i> Cart
+                            </a>
+                            <a asp-area="User" asp-controller="Home" asp-action="Wishlist" class="sf-app-item">
+                                <i class="bi bi-heart"></i> Wishlist
+                            </a>
+                            <a asp-area="User" asp-controller="Home" asp-action="Certificates" class="sf-app-item">
+                                <i class="bi bi-award"></i> Certificates
+                            </a>
+                            <a asp-area="User" asp-controller="Home" asp-action="Orders" class="sf-app-item">
+                                <i class="bi bi-receipt"></i> Orders
+                            </a>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
 
             <!-- Avatar + profile dropdown (Hidden on mobile) -->
             <div class="sf-profile d-none d-md-block" id="profileBtn">
                 <button class="sf-avatar-btn">
-                    <img class="sf-avatar-img" src="@((ViewBag.PhotoPath ?? "/images/DefaultProfilePhoto.jfif") + "?t=" + DateTime.Now.Ticks)" alt="Profile" />
+                    <img class="sf-avatar-img" src="@((isPreview ? "/images/DefaultProfilePhoto.jfif" : (ViewBag.PhotoPath ?? "/images/DefaultProfilePhoto.jfif")) + "?t=" + DateTime.Now.Ticks)" alt="Profile" />
                 </button>
 
-                <div class="sf-profile-menu" id="profileMenu">
+                @if (!isPreview)
+                {
+                    <div class="sf-profile-menu" id="profileMenu">
 
-                    <!-- User Profile Info -->
-                    <div class="sf-profile-head">
-                        <img src="@(ViewBag.PhotoPath ?? "/images/DefaultProfilePhoto.jfif")" class="sf-profile-thumb" alt="Profile" />
-                        <div>
-                            <div class="sf-profile-name">@(string.IsNullOrEmpty(ViewBag.FirstName) ? "Guest User" : $"{ViewBag.FirstName} {ViewBag.LastName}")</div>
-                            <div class="sf-profile-meta" style="font-size:11px;color:#666">@ViewBag.Email</div>
+                        <!-- User Profile Info -->
+                        <div class="sf-profile-head">
+                            <img src="@(ViewBag.PhotoPath ?? "/images/DefaultProfilePhoto.jfif")" class="sf-profile-thumb" alt="Profile" />
+                            <div>
+                                <div class="sf-profile-name">@(string.IsNullOrEmpty(ViewBag.FirstName) ? "Guest User" : $"{ViewBag.FirstName} {ViewBag.LastName}")</div>
+                                <div class="sf-profile-meta" style="font-size:11px;color:#666">@ViewBag.Email</div>
+                            </div>
+                        </div>
+
+                        <a class="sf-menu-item" asp-area="User" asp-controller="Home" asp-action="Profile">
+                            <i class="bi bi-person"></i> My Profile
+                        </a>
+                        <a class="sf-menu-item" asp-area="User" asp-controller="Home" asp-action="Dashboard">
+                            <i class="bi bi-house"></i> Home
+                        </a>
+
+                        <div style="height:1px;background:#eee;margin:8px 0;"></div>
+
+                        <!-- icon-only actions row -->
+                        <div class="sf-icon-row">
+                            <a asp-area="User" asp-controller="Home" asp-action="Profile" asp-route-tab="security" class="sf-icon-btn" title="Change Password">
+                                <i class="bi bi-key"></i>
+                            </a>
+                            <form asp-area="User" asp-controller="Auth" asp-action="Logout" method="post"
+                                  style="flex:1;display:flex;margin:0">
+                                <button type="submit" class="sf-icon-btn sf-icon-danger" style="width:100%;border:none">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
-
-                    <a class="sf-menu-item" asp-area="User" asp-controller="Home" asp-action="Profile">
-                        <i class="bi bi-person"></i> My Profile
-                    </a>
-                    <a class="sf-menu-item" asp-area="User" asp-controller="Home" asp-action="Dashboard">
-                        <i class="bi bi-house"></i> Home
-                    </a>
-
-                    <div style="height:1px;background:#eee;margin:8px 0;"></div>
-
-                    <!-- icon-only actions row -->
-                    <div class="sf-icon-row">
-                        <a asp-area="User" asp-controller="Profile" asp-action="ChangePassword" class="sf-icon-btn">
-                            <i class="bi bi-key"></i>
-                        </a>
-                        <form asp-area="User" asp-controller="Auth" asp-action="Logout" method="post"
-                              style="flex:1;display:flex;margin:0">
-                            <button type="submit" class="sf-icon-btn sf-icon-danger" style="width:100%;border:none">
-                                <i class="bi bi-box-arrow-right"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                }
             </div>
 
             <!-- Mobile Menu Toggle -->
@@ -159,13 +171,13 @@
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body p-0">
+        <div class="offcanvas-body p-0 @(isPreview ? "pe-none" : "")">
             <!-- User Info in Mobile Menu -->
             <div class="p-3 bg-light border-bottom d-flex align-items-center gap-3">
-                <img src="@(ViewBag.PhotoPath ?? "/images/DefaultProfilePhoto.jfif")" class="sf-avatar-img" style="width:50px; height:50px;" alt="Profile" />
+                <img src="@(isPreview ? "/images/DefaultProfilePhoto.jfif" : (ViewBag.PhotoPath ?? "/images/DefaultProfilePhoto.jfif"))" class="sf-avatar-img" style="width:50px; height:50px;" alt="Profile" />
                 <div>
-                    <div class="fw-bold">@(string.IsNullOrEmpty(ViewBag.FirstName) ? "Guest User" : $"{ViewBag.FirstName} {ViewBag.LastName}")</div>
-                    <div class="text-muted small">@ViewBag.Email</div>
+                    <div class="fw-bold">@(isPreview || string.IsNullOrEmpty(ViewBag.FirstName) ? "Guest User" : $"{ViewBag.FirstName} {ViewBag.LastName}")</div>
+                    <div class="text-muted small">@(isPreview ? "" : ViewBag.Email)</div>
                 </div>
             </div>
 
@@ -184,7 +196,7 @@
                 </a>
                 <a asp-area="User" asp-controller="Home" asp-action="Cart" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center">
                     <span><i class="bi bi-cart3 me-2"></i> My Cart</span>
-                    @if (ViewBag.CartCount > 0)
+                    @if (!isPreview && ViewBag.CartCount > 0)
                     {
                         <span class="badge bg-orange rounded-pill">@ViewBag.CartCount</span>
                     }

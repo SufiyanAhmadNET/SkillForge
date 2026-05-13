@@ -1,4 +1,4 @@
-﻿namespace SkillForge.Services
+namespace SkillForge.Services.Courses.Models
 {
     public enum Course_Difficulty
     {

@@ -1,6 +1,6 @@
-﻿namespace SkillForge.Services
+namespace SkillForge.Services.Auth.Models
 {
-    public class AuthResult 
+    public class AuthResult
     {
         public bool Success { get; set; }
         public string Role { get; set; } = string.Empty;
