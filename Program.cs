@@ -23,7 +23,13 @@ if (File.Exists(secretConfigPath))
 {
     builder.Configuration.AddJsonFile(secretConfigPath, optional: true, reloadOnChange: false);
 }
-    
+
+//debug google login failure
+//var testId = builder.Configuration["GoogleAuth:ClientId"];
+//var testSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+//throw new Exception($"ID={testId} | Secret={testSecret}");
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -56,7 +62,7 @@ builder.Services.AddDbContext<SkillForgeDbContext>(options =>
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "Cookies";
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = "Cookies";
 })
 .AddCookie("Cookies", options =>
 {
@@ -66,8 +72,8 @@ builder.Services.AddAuthentication(options =>
 })
 .AddGoogle(options =>
 {
-    options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
-    options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+    options.ClientId = builder.Configuration["GoogleAuth:ClientId"] ?? string.Empty;
+    options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"] ?? "dummy-secret";
 });
 
 

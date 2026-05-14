@@ -31,7 +31,6 @@ namespace SkillForge.Areas.Instructor.Controllers
         //====================
         public IActionResult InstructorRegistration()
         {
-            ViewBag.GoogleClientId = _config["GoogleAuth:ClientId"];
             return View();
         }
 
@@ -106,8 +105,6 @@ namespace SkillForge.Areas.Instructor.Controllers
         //Login Methods
         public IActionResult InstructorLogin()
         {
-            //Google Login
-            ViewBag.GoogleClientId = _config["GoogleAuth:ClientId"];
             return View();
         }
 
@@ -151,20 +148,25 @@ namespace SkillForge.Areas.Instructor.Controllers
         }
             
         [HttpPost]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> GoogleLogin(string credential)
         {
             try
             {
                 // validation 
-                if (request == null || string.IsNullOrEmpty(request.Token))
+                if (string.IsNullOrEmpty(credential))
                 {
-                    return Json(new { success = false, message = "Missing token." });
+                    TempData["Alert"] = "Google login failed: missing credential.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("InstructorLogin");
                 }
                 //Verify token with Google
-                var verify = await GoogleJsonWebSignature.ValidateAsync(request.Token);
+                var verify = await GoogleJsonWebSignature.ValidateAsync(credential);
                 if (verify == null || string.IsNullOrEmpty(verify.Email))
                 {
-                    return Json(new { success = false, message = "Google verification failed." });
+                    TempData["Alert"] = "Google verification failed.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("InstructorLogin");
                 }
                 // Call Auth Service
                 var result = _authService.GoogleAuth(
@@ -178,11 +180,15 @@ namespace SkillForge.Areas.Instructor.Controllers
                 //  fail
                 if (result != null && result.status == AuthMessage.EmailRegisteredAsStudent)
                 {
-                    return Json(new { success = false, message = "Registered as Student." });
+                    TempData["Alert"] = "This email is registered as Student. Please login from Student panel.";
+                    TempData["AlertType"] = "warning";
+                    return RedirectToAction("InstructorLogin");
                 }
                 if (result == null || !result.Success)
                 {
-                    return Json(new { success = false, message = "Google login failed." });
+                    TempData["Alert"] = "Google login failed. Please try again.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("InstructorLogin");
                 }
                 // Sign in user
                 await SigninUser(
@@ -191,15 +197,16 @@ namespace SkillForge.Areas.Instructor.Controllers
                     "Instructor",
                     result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif"
                 );
-                return Json(new { success = true });
-            }
-            catch (InvalidJwtException )
-            {
-                return Json(new { success = false, message = "Invalid token." });
+                
+                TempData["Alert"] = "Welcome back, Instructor!";
+                TempData["AlertType"] = "success";
+                return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
             }
             catch (Exception )
             {
-                return Json(new { success = false, message = "Something went wrong." });
+                TempData["Alert"] = "Something went wrong during Google login.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("InstructorLogin");
             }
         }
 

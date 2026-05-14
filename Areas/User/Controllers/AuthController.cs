@@ -25,7 +25,6 @@ namespace SkillForge.Areas.User.Controllers
         // Show student registration page
         public IActionResult StudentRegistration()
         {
-            ViewBag.GoogleClientId = _config["GoogleAuth:ClientId"];
             return View();
         }
 
@@ -88,7 +87,6 @@ namespace SkillForge.Areas.User.Controllers
         // Show student login page
         public IActionResult StudentLogin()
         {
-            ViewBag.GoogleClientId = _config["GoogleAuth:ClientId"];
             return View();
         }
 
@@ -135,22 +133,25 @@ namespace SkillForge.Areas.User.Controllers
 
         // Handle Google authentication callback
         [HttpPost]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequestDTO request)
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> GoogleLogin(string credential)
         {
             try
             {
-                if (request == null || string.IsNullOrEmpty(request.Token))
+                if (string.IsNullOrEmpty(credential))
                 {
-                    TempData["Alert"] = "Google login failed: missing token.";
+                    TempData["Alert"] = "Google login failed: missing credential.";
                     TempData["AlertType"] = "danger";
                     return RedirectToAction("StudentLogin");
                 }
 
                 // Validate Google token
-                var verify = await GoogleJsonWebSignature.ValidateAsync(request.Token);
+                var verify = await GoogleJsonWebSignature.ValidateAsync(credential);
                 if (verify == null || string.IsNullOrEmpty(verify.Email))
                 {
-                    TempData["Alert"] = "Google verification failed or email missing.";
+                    TempData["Alert"] = "Google verification failed.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("StudentLogin");
                 }
 
                 // Authenticate via service
@@ -165,30 +166,31 @@ namespace SkillForge.Areas.User.Controllers
 
                 if (result != null && result.status == AuthMessage.EmailRegisteredAsInstructor)
                 {
-                    TempData["Alert"] = "This email is registered as Instructor. Please continue as Instructor.";
+                    TempData["Alert"] = "This email is registered as Instructor. Please login as Instructor.";
                     TempData["AlertType"] = "warning";
+                    return RedirectToAction("StudentLogin");
                 }
                 
-                if (result == null || !result.Success || string.IsNullOrEmpty(result.Email) || result.Id <= 0)
+                if (result == null || !result.Success)
                 {
-                    TempData["Alert"] = "Google login failed: account creation or lookup failed.";
+                    TempData["Alert"] = "Google login failed. Please try again.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("StudentLogin");
                 }
-                else
-                {
-                    // Sign in user
-                    await SigninUser(result.Id.ToString(), result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-                    return Json(new { success = true });
-                }
-            }
-            catch (InvalidJwtException)
-            {
-                TempData["Alert"] = "Invalid Google token.";
+
+                // Sign in user
+                await SigninUser(result.Id.ToString(), result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
+                
+                TempData["Alert"] = "Welcome! Logged in with Google.";
+                TempData["AlertType"] = "success";
+                return RedirectToAction("Courses", "Home", new { area = "User" });
             }
             catch (Exception)
             {
                 TempData["Alert"] = "Something went wrong during Google login.";
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("StudentLogin");
             }
-            return Json(new { success = false });
         }
 
         // Request email verification OTP
