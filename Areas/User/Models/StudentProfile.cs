@@ -13,9 +13,8 @@ namespace SkillForge.Areas.User.Models
 
         public string? Mobile { get; set; }
 
-        public string? Bio { get; set; }
         public string? City { get; set; }
-        public string? Profession { get; set; }
+        public string? Interests { get; set; }
 
         public string? PhotoPath { get; set; }
 

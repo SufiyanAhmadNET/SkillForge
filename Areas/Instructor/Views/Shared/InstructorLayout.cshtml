@@ -70,7 +70,7 @@
             </nav>
 
             <div class="px-3 pb-3">
-                <a asp-area="Instructor" asp-controller="Auth" asp-action="Logout" class="nav-link sidebar-link text-danger">
+                <a href="javascript:void(0)" onclick="confirmLogoutInstructor('@Url.Action("Logout", "Auth", new { area = "Instructor" })')" class="nav-link sidebar-link text-danger">
                     <i class="bi bi-box-arrow-left me-2"></i>Logout
                 </a>
             </div>
@@ -113,6 +113,7 @@
 
 
             <partial name="_Alert_Message_Partial" />
+            <partial name="_ConfirmModal" />
 
             @* display validation summary only when model has errors *@
             @if (!ViewData.ModelState.IsValid)
@@ -120,98 +121,20 @@
                 <div id="validationSummary" asp-validation-summary="All" class="alert alert-danger validation-summary"></div>
             }
 
-
-
             @RenderBody()
             @RenderSection("Scripts", required: false)
 
-
-
-           @* CSS and JS for error message display *@
-           
-           @*  <style>
-                .validation-summary {
-                    position: relative;
-                    padding-right: 35px !important;
-                    animation: slideDown 0.3s ease-out;
-                    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-                    cursor: pointer;
-                }
-
-                    .validation-summary.fade-out {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                        pointer-events: none;
-                    }
-
-                    .validation-summary::after {
-                        content: "✕";
-                        position: absolute;
-                        right: 12px;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        font-size: 16px;
-                        opacity: 0.6;
-                        font-weight: bold;
-                    }
-
-                    .validation-summary:hover::after {
-                        opacity: 1;
-                    }
-
-                keyframes slideDown {
-                    from
-
-                {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-
-                }
-            </style>
-
-            <div id="validationSummary" asp-validation-summary="All" class="alert alert-danger validation-summary"></div>
-
             <script>
-                (function() {
-                    const summary = document.getElementById('validationSummary');
-
-                    if (summary && summary.children.length > 0) {
-                        let timeoutId;
-                        let isHiding = false;
-
-                        function hideSummary() {
-                            if (!isHiding && summary) {
-                                isHiding = true;
-                                summary.classList.add('fade-out');
-
-                                setTimeout(() => {
-                                    if (summary) {
-                                        summary.style.display = 'none';
-                                    }
-                                    isHiding = false;
-                                }, 300);
-                            }
+                function confirmLogoutInstructor(logoutUrl) {
+                    SkillForge.confirm({
+                        message: "Are you sure you want to log out from the instructor panel?",
+                        confirmText: "Logout",
+                        onConfirm: function() {
+                            window.location.href = logoutUrl;
                         }
-
-                        timeoutId = setTimeout(hideSummary, 3000);
-
-                        summary.addEventListener('click', hideSummary);
-
-                        summary.addEventListener('mouseenter', () => clearTimeout(timeoutId));
-
-                        summary.addEventListener('mouseleave', () => {
-                            if (!isHiding) timeoutId = setTimeout(hideSummary, 3000);
-                        });
-                    }
-                })();
-            </script> *@
-
+                    });
+                }
+            </script>
             <script src="~/js/Alert.js" asp-append-version="true"></script>
 </body>
 </html>

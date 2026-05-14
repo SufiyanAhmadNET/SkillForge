@@ -12,7 +12,7 @@ namespace SkillForge.Areas.User.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var id = CurrentUserId(); // string (Identity GUID)
+            var id = CurrentUserId(); // string- Identity GUID
 
             if (!string.IsNullOrEmpty(id))
             {

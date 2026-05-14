@@ -14,5 +14,6 @@ namespace SkillForge.Interfaces.Students
         List<CourseCardVM> GetCartItems(int studentId);
         void RemoveFromCart(int studentId, int courseId);
         int GetCartCount(int studentId);
+        bool IsProfileComplete(int studentId);
     }
 }

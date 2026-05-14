@@ -141,9 +141,8 @@ namespace SkillForge.Services.Students
                 FirstName = student?.Profile?.FirstName ?? "Student",
                 LastName = student?.Profile?.LastName,
                 Mobile = student?.Profile?.Mobile,
-                Bio = student?.Profile?.Bio,
                 City = student?.Profile?.City,
-                Profession = student?.Profile?.Profession,
+                Interests = student?.Profile?.Interests,
                 PhotoPath = student?.Profile?.PhotoPath ?? "/images/DefaultProfilePhoto.jfif",
                 EnrolledCount = enrollments.Count,
                 WishlistCount = wishlistCount,
@@ -238,6 +237,15 @@ namespace SkillForge.Services.Students
         public int GetCartCount(int studentId)
         {
             return _context.Carts.Count(c => c.StudentId == studentId);
+        }
+
+        public bool IsProfileComplete(int studentId)
+        {
+            var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId == studentId);
+            return profile != null &&
+                   !string.IsNullOrWhiteSpace(profile.FirstName) &&
+                   !string.IsNullOrWhiteSpace(profile.LastName) &&
+                   !string.IsNullOrWhiteSpace(profile.Mobile);
         }
     }
 }

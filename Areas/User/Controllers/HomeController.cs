@@ -59,9 +59,8 @@ namespace SkillForge.Areas.User.Controllers
                 dvm.FirstName = profile.FirstName;
                 dvm.LastName = profile.LastName;
                 dvm.Mobile = profile.Mobile;
-                dvm.Bio = profile.Bio;
                 dvm.City = profile.City;
-                dvm.Profession = profile.Profession;
+                dvm.Interests = profile.Interests;
                 dvm.PhotoPath = profile.PhotoPath ?? "/images/DefaultProfilePhoto.jfif";
             }
 
@@ -118,9 +117,8 @@ namespace SkillForge.Areas.User.Controllers
                 existingprofile.FirstName = profile.FirstName;
                 existingprofile.LastName = profile.LastName;
                 existingprofile.Mobile = profile.Mobile;
-                existingprofile.Bio = profile.Bio;
                 existingprofile.City = profile.City;
-                existingprofile.Profession = profile.Profession;
+                existingprofile.Interests = profile.Interests;
                 existingprofile.PhotoPath = profile.PhotoPath;
                 _context.Update(existingprofile);
                 _context.SaveChanges();
@@ -204,6 +202,14 @@ namespace SkillForge.Areas.User.Controllers
         public IActionResult Checkout(int courseId)
         {
             var studentId = GetStudentId();
+
+            if (!_studentActivityService.IsProfileComplete(studentId))
+            {
+                TempData["Alert"] = "Please complete your profile before enrolling in courses.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Profile", "Home");
+            }
+
             if (_enrollmentService.IsEnrolled(studentId, courseId))
             {
                 TempData["Alert"] = "You are already enrolled in this course!";
@@ -236,6 +242,14 @@ namespace SkillForge.Areas.User.Controllers
         [Authorize(Roles = "Student")]
         public IActionResult VerifyPayment(string razorpay_order_id, string razorpay_payment_id, string razorpay_signature, int courseId)
         {
+            var studentId = GetStudentId();
+            if (!_studentActivityService.IsProfileComplete(studentId))
+            {
+                TempData["Alert"] = "Please complete your profile before proceeding.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Profile", "Home");
+            }
+
             var result = _enrollmentService.VerifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
             if (!result.Success)
             {
@@ -302,6 +316,12 @@ namespace SkillForge.Areas.User.Controllers
         public IActionResult AddToCart(int courseId)
         {
             var studentId = GetStudentId();
+
+            if (!_studentActivityService.IsProfileComplete(studentId))
+            {
+                return Json(new { success = false, message = "Please complete your profile before adding courses to cart." });
+            }
+
             bool added = _studentActivityService.AddToCart(studentId, courseId);
             if (added)
             {
