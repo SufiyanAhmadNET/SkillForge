@@ -1,0 +1,9 @@
+.vs/
+bin/
+obj/
+GEMINI.md
+*.user
+*.suo
+*.log
+appsettings.secret.json					
+	
