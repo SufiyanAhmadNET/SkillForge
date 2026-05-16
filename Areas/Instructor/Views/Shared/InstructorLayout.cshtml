@@ -34,29 +34,32 @@
                     </li>
                 </ul>
 
-                <p class="nav-section-label mt-3">MY COURSES</p>
-                <ul class="nav flex-column gap-1">
-                    <li>
-                        <a asp-area="Instructor" asp-controller="Home" asp-action="MyCourses" class="nav-link sidebar-link">
-                            <i class="bi bi-journal-bookmark me-2"></i>My Courses
-                        </a>
-                    </li>
-
-                    <li>
-                        <a asp-area="Instructor" asp-controller="Home" asp-action="AddCourse" class="nav-link sidebar-link">
-                            <i class="bi bi-plus-circle me-2"></i>Add Course
-                        </a>
-                    </li>
-                </ul>
-
-                <p class="nav-section-label mt-3">FINANCE</p>
-                <ul class="nav flex-column gap-1">
-                    <li>
-                        <a asp-area="Instructor" asp-controller="Home" asp-action="Earning" class="nav-link sidebar-link">
-                        <i class="bi bi-cash-stack me-2"></i>Earnings
-                        </a>
+                @if (ViewBag.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Approved)
+                {
+                    <p class="nav-section-label mt-3">MY COURSES</p>
+                    <ul class="nav flex-column gap-1">
+                        <li>
+                            <a asp-area="Instructor" asp-controller="Home" asp-action="MyCourses" class="nav-link sidebar-link">
+                                <i class="bi bi-journal-bookmark me-2"></i>My Courses
+                            </a>
                         </li>
-                </ul>
+
+                        <li>
+                            <a asp-area="Instructor" asp-controller="Home" asp-action="AddCourse" class="nav-link sidebar-link">
+                                <i class="bi bi-plus-circle me-2"></i>Add Course
+                            </a>
+                        </li>
+                    </ul>
+
+                    <p class="nav-section-label mt-3">FINANCE</p>
+                    <ul class="nav flex-column gap-1">
+                        <li>
+                            <a asp-area="Instructor" asp-controller="Home" asp-action="Earning" class="nav-link sidebar-link">
+                                <i class="bi bi-cash-stack me-2"></i>Earnings
+                            </a>
+                        </li>
+                    </ul>
+                }
 
                 <p class="nav-section-label mt-3">ACCOUNT</p>
                 <ul class="nav flex-column gap-1">

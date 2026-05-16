@@ -55,6 +55,10 @@
                     <i class="bi bi-link-45deg me-2"></i>Social Links
                 </button>
 
+                <button type="button" data-section="applicationSection" class="btn btn-sm w-100 py-2 btn-section btn-sidebar-nav">
+                    <i class="bi bi-file-earmark-text me-2"></i>My Application
+                </button>
+
                 <button type="button" data-section="passwordSection" class="btn btn-sm w-100 py-2 btn-section btn-sidebar-nav">
                     <i class="bi bi-lock me-2"></i>Security
                 </button>
@@ -101,7 +105,7 @@
                             <input type="text" name="LastName" class="form-control" value="@Model.LastName">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-medium">Email (Primary)</label>
+                            <label class="form-label small fw-medium">Email Address</label>
                             <input type="email" class="form-control bg-light" value="@Model.Email" readonly>
                         </div>
                         <div class="col-md-6">
@@ -114,7 +118,7 @@
                         </div>
                         <div class="col-12 text-end mt-4">
                             <button type="submit" class="btn btn-purple-save px-5 py-2 shadow-sm">
-                                <i class="bi bi-save me-2"></i>Save Personal Info
+                                Save Info
                             </button>
                         </div>
                     </div>
@@ -127,24 +131,28 @@
                     <div class="form-section-title">Professional Details</div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-medium">Current Profession</label>
-                            <input type="text" name="Profession" class="form-control" value="@Model.Profession" placeholder="e.g. Senior Software Engineer">
+                            <label class="form-label small fw-medium">Current Role</label>
+                            <input type="text" name="CurrentRole" class="form-control" value="@Model.CurrentRole" placeholder="e.g. Senior Software Engineer">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-medium">Headline</label>
-                            <input type="text" name="Headline" class="form-control" value="@Model.Headline" placeholder="e.g. Expert Java Developer & Technical Lead">
+                            <label class="form-label small fw-medium">Expertise</label>
+                            <input type="text" name="Expertise" class="form-control" value="@Model.Expertise" placeholder="e.g. Java Developer & Technical Lead">
                         </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-medium">Bio / About Me</label>
-                            <textarea name="Bio" class="form-control" rows="5" placeholder="Share your experience and teaching style...">@Model.Bio</textarea>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Years of Experience</label>
+                            <input type="number" name="YearsExperience" class="form-control" value="@Model.YearsExperience" placeholder="e.g. 5">
                         </div>
-                        <div class="col-12">
+                        <div class="col-md-6">
                             <label class="form-label small fw-medium">Skills (Comma separated)</label>
                             <input type="text" name="Skills" class="form-control" value="@Model.Skills" placeholder="React, Node.js, C#, System Design">
                         </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-medium">About You</label>
+                            <textarea name="AboutYou" class="form-control" rows="5" placeholder="Share your experience and teaching style...">@Model.AboutYou</textarea>
+                        </div>
                         <div class="col-12 text-end mt-4">
                             <button type="submit" class="btn btn-purple-save px-5 py-2 shadow-sm">
-                                <i class="bi bi-save me-2"></i>Save Professional Details
+                                Save Professional
                             </button>
                         </div>
                     </div>
@@ -174,13 +182,139 @@
                         </div>
                         <div class="col-12 text-end mt-4">
                             <button type="submit" class="btn btn-purple-save px-5 py-2 shadow-sm">
-                                <i class="bi bi-save me-2"></i>Update Social Links
+                                Save Social Links
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
+
+        <!-- MY APPLICATION SECTION -->
+        <div id="applicationSection" class="profile-content-section">
+            <div class="section-card shadow-sm p-4 border-purple-soft" style="background:#fff; border-radius:12px;">
+                <div class="form-section-title">Mentor Application</div>
+
+                @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.NotApplied || Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected)
+                {
+                    <div id="appCtaView">
+                        <div class="text-center py-4">
+                            <div class="mb-4">
+                                <div class="bg-purple bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-mortarboard text-purple fs-1"></i>
+                                </div>
+                            </div>
+                            <h4 class="fw-bold">Teach on SkillForge</h4>
+                            <p class="text-muted mx-auto mb-4" style="max-width: 500px;">
+                                Apply as a verified mentor and start creating courses that matter. 
+                                Share your expertise with students around the globe.
+                            </p>
+
+                            @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected)
+                            {
+                                <div class="alert alert-danger mb-4 mx-auto" style="max-width: 600px;">
+                                    <div class="fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Application Rejected</div>
+                                    <p class="small mb-1">@Model.ApplicationComment</p>
+                                    <span class="small opacity-75">You can reapply by addressing the feedback above.</span>
+                                </div>
+                            }
+
+                            <button type="button" class="btn btn-purple px-5 py-2 shadow-sm rounded-pill" onclick="toggleApplicationView('form')">
+                                @(Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected ? "Reapply as Mentor" : "Apply as Mentor")
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="appFormView" style="display:none;">
+                        <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+                            <button type="button" class="btn btn-sm btn-light me-2 rounded-pill px-3" onclick="toggleApplicationView('cta')">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
+                            <h5 class="fw-bold mb-0">Apply as Mentor</h5>
+                        </div>
+
+                        <form asp-area="Instructor" asp-controller="Home" asp-action="ApplyMentor" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="form-label small fw-medium">Upload Resume (PDF only)</label>
+                                    <input type="file" name="ResumeFile" class="form-control" accept=".pdf" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-medium">Why do you want to teach on SkillForge?</label>
+                                    <textarea name="WhyTeach" class="form-control" rows="4" placeholder="Share your motivation and goals..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-medium">What topics can you teach?</label>
+                                    <input type="text" name="Topics" class="form-control" placeholder="e.g. Web Development, AI, Business Strategy" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-medium">Portfolio / Course Sample Link (Optional)</label>
+                                    <input type="url" name="PortfolioUrl" class="form-control" placeholder="https://yourportfolio.com or YouTube link">
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="p-3 rounded-3 bg-light border">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <i class="bi bi-info-circle text-purple"></i>
+                                            <span class="small fw-bold">Professional Auto-Sync</span>
+                                        </div>
+                                        <p class="small text-muted mb-0">
+                                            Your Role (@Model.CurrentRole), Expertise (@Model.Expertise), and Experience (@Model.YearsExperience years) 
+                                            will be included in your application from your professional profile.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-purple px-5 py-2 shadow-sm rounded-pill">
+                                        Submit Application
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                }
+                else if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Pending)
+                {
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-clock-history text-primary fs-1"></i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold">Application Pending</h4>
+                        <p class="text-muted mx-auto mb-4" style="max-width: 500px;">
+                            We have received your mentor application! Our team is currently reviewing your profile and professional details.
+                            We'll notify you via email once a decision is made.
+                        </p>
+                        <div class="badge bg-primary px-4 py-2 rounded-pill shadow-sm">Review in Progress</div>
+                    </div>
+                }
+                else if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Approved)
+                {
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-patch-check-fill text-success fs-1"></i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold">Verified Mentor</h4>
+                        <p class="text-muted mx-auto mb-4" style="max-width: 500px;">
+                            Congratulations! Your mentor application has been approved. 
+                            You now have full access to create courses and manage your teaching dashboard.
+                        </p>
+                        <div class="badge bg-success px-4 py-2 rounded-pill shadow-sm">Approved & Verified</div>
+                        
+                        <div class="mt-5 pt-4 border-top">
+                            <a asp-area="Instructor" asp-controller="Home" asp-action="AddCourse" class="btn btn-purple px-4 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-plus-circle me-2"></i>Create New Course
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
 
         <!-- SECURITY SECTION (OUTSIDE MAIN FORM TO AVOID NESTING) -->
         <div id="passwordSection" class="profile-content-section">
@@ -380,6 +514,9 @@
                 const view = urlParams.get('view');
                 if (view) toggleSecurityView(view);
             }
+        } else if (urlParams.get('tab') === 'application') {
+            const appBtn = document.querySelector('[data-section="applicationSection"]');
+            if (appBtn) appBtn.click();
         }
     });
 
@@ -411,6 +548,25 @@
         if (target) {
             target.style.display = 'block';
             $(target).hide().fadeIn(300);
+        }
+    }
+
+    function toggleApplicationView(view) {
+        const ctaView = document.getElementById('appCtaView');
+        const formView = document.getElementById('appFormView');
+        
+        if (view === 'form') {
+            if (ctaView) ctaView.style.display = 'none';
+            if (formView) {
+                formView.style.display = 'block';
+                $(formView).hide().fadeIn(300);
+            }
+        } else {
+            if (formView) formView.style.display = 'none';
+            if (ctaView) {
+                ctaView.style.display = 'block';
+                $(ctaView).hide().fadeIn(300);
+            }
         }
     }
 </script>

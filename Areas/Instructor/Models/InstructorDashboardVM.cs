@@ -13,8 +13,10 @@ namespace SkillForge.Areas.Instructor.Models
         public string? PhotoPath { get; set; }
         public string? Mobile { get; set; }
         public string? Location { get; set; }
-        public string? Bio { get; set; }
-        public string? Profession { get; set; }
+        public string? AboutYou { get; set; }
+        public string? CurrentRole { get; set; }
+        public string? Expertise { get; set; }
+        public int? YearsExperience { get; set; }
         
         // professional and social presence
         public string? Headline { get; set; }
@@ -23,6 +25,9 @@ namespace SkillForge.Areas.Instructor.Models
         public string? LinkedinUrl { get; set; }
         public string? TwitterUrl { get; set; }
         public string? Skills { get; set; }
+
+        public MentorApplicationStatus ApplicationStatus { get; set; } = MentorApplicationStatus.NotApplied;
+        public string? ApplicationComment { get; set; }
 
         // stats
         public int TotalCourses { get; set; }

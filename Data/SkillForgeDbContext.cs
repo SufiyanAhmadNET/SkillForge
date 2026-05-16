@@ -25,6 +25,7 @@ namespace SkillForge.Data
 
         //Instructor Profile 
         public DbSet<InstructorProfile> instructorProfiles { get; set; }
+        public DbSet<MentorApplication> MentorApplications { get; set; }
 
         //course
         public DbSet<Course> Courses { get; set; }
@@ -79,6 +80,10 @@ namespace SkillForge.Data
             // payment status - stored as string
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<MentorApplication>()
+                .Property(m => m.Status)
                 .HasConversion<string>();
 
             // one enrollment - one payment

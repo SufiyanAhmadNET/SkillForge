@@ -18,6 +18,12 @@ namespace SkillForge.Services.Instructors
             var instructor = _context.instructors
                 .Include(i => i.Profile)
                 .FirstOrDefault(i => i.Id == instructorId);
+            
+            var application = _context.MentorApplications
+                .Where(m => m.InstructorId == instructorId)
+                .OrderByDescending(m => m.CreatedAt)
+                .FirstOrDefault();
+
             var courses = _context.Courses
                 .Where(c => c.instructor_id == instructorId)
                 .Include(c => c.CourseDetails)
@@ -41,9 +47,26 @@ namespace SkillForge.Services.Instructors
 
             var vm = new InstructorDashboardVM
             {
+                Email = instructor?.Email,
                 FirstName = instructor?.Profile?.FirstName ?? "Instructor",
                 LastName = instructor?.Profile?.LastName,
+                Mobile = instructor?.Profile?.Mobile,
+                Location = instructor?.Profile?.Location,
+                AboutYou = instructor?.Profile?.AboutYou,
+                CurrentRole = instructor?.Profile?.CurrentRole,
+                Expertise = instructor?.Profile?.Expertise,
+                YearsExperience = instructor?.Profile?.YearsExperience,
+                Headline = instructor?.Profile?.Headline,
+                WebsiteUrl = instructor?.Profile?.WebsiteUrl,
+                GithubUrl = instructor?.Profile?.GithubUrl,
+                LinkedinUrl = instructor?.Profile?.LinkedinUrl,
+                TwitterUrl = instructor?.Profile?.TwitterUrl,
+                Skills = instructor?.Profile?.Skills,
                 PhotoPath = instructor?.Profile?.PhotoPath ?? "/images/DefaultProfilePhoto.jfif",
+                
+                ApplicationStatus = application?.Status ?? MentorApplicationStatus.NotApplied,
+                ApplicationComment = application?.AdminComment,
+
                 TotalCourses = courses.Count,
                 TotalStudents = enrollments.Count,
                 TotalEarnings = earnings,

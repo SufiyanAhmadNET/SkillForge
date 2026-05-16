@@ -235,8 +235,10 @@ namespace SkillForge.Areas.Instructor.Controllers
                 LastName = profile.LastName,
                 Mobile = profile.Mobile,
                 Location = profile.Location,
-                Bio = profile.Bio,
-                Profession = profile.Profession,
+                AboutYou = profile.AboutYou,
+                CurrentRole = profile.CurrentRole,
+                Expertise = profile.Expertise,
+                YearsExperience = profile.YearsExperience,
                 Headline = profile.Headline,
                 WebsiteUrl = profile.WebsiteUrl,
                 GithubUrl = profile.GithubUrl,
@@ -247,6 +249,15 @@ namespace SkillForge.Areas.Instructor.Controllers
                 TotalCourses = coursesCount,
                 TotalStudents = studentCount
             };
+
+            // Get Application Status
+            var application = _context.MentorApplications
+                .Where(m => m.InstructorId == instructorId)
+                .OrderByDescending(m => m.CreatedAt)
+                .FirstOrDefault();
+            
+            vm.ApplicationStatus = application?.Status ?? MentorApplicationStatus.NotApplied;
+            vm.ApplicationComment = application?.AdminComment;
 
             // Preserve security tab state
             TempData.Keep("EmailSent");
@@ -299,8 +310,10 @@ namespace SkillForge.Areas.Instructor.Controllers
                 existingProfile.LastName = profile.LastName;
                 existingProfile.Mobile = profile.Mobile;
                 existingProfile.Location = profile.Location;
-                existingProfile.Bio = profile.Bio;
-                existingProfile.Profession = profile.Profession;
+                existingProfile.AboutYou = profile.AboutYou;
+                existingProfile.CurrentRole = profile.CurrentRole;
+                existingProfile.Expertise = profile.Expertise;
+                existingProfile.YearsExperience = profile.YearsExperience;
                 existingProfile.Headline = profile.Headline;
                 existingProfile.WebsiteUrl = profile.WebsiteUrl;
                 existingProfile.GithubUrl = profile.GithubUrl;
@@ -314,6 +327,77 @@ namespace SkillForge.Areas.Instructor.Controllers
             TempData["Alert"] = "Profile updated successfully.";
             TempData["AlertType"] = "success";
             return RedirectToAction("Profile");
+        }
+
+        // Handle mentor application submission
+        [HttpPost]
+        [Authorize(Roles = "Instructor")]
+        public IActionResult ApplyMentor(MentorApplication application, IFormFile ResumeFile)
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var instructorId)) return RedirectToAction("InstructorLogin", "Auth");
+
+            // Ensure profile is complete before applying
+            var profile = _context.instructorProfiles.FirstOrDefault(p => p.InstructorId == instructorId);
+            if (profile == null ||
+                string.IsNullOrWhiteSpace(profile.FirstName) ||
+                string.IsNullOrWhiteSpace(profile.LastName) ||
+                string.IsNullOrWhiteSpace(profile.Mobile) ||
+                string.IsNullOrWhiteSpace(profile.Location) ||
+                string.IsNullOrWhiteSpace(profile.CurrentRole) ||
+                string.IsNullOrWhiteSpace(profile.Expertise) ||
+                profile.YearsExperience == null ||
+                string.IsNullOrWhiteSpace(profile.Skills) ||
+                string.IsNullOrWhiteSpace(profile.AboutYou))
+            {
+                TempData["Alert"] = "Please complete all Personal and Professional details in your profile before applying as a mentor.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Profile");
+            }
+
+            // Basic validation
+            if (string.IsNullOrWhiteSpace(application.WhyTeach) || string.IsNullOrWhiteSpace(application.Topics))
+            {
+                TempData["Alert"] = "Please fill in all required fields.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Profile", new { tab = "application" });
+            }
+
+            // Handle resume upload
+            if (ResumeFile != null && ResumeFile.Length > 0)
+            {
+                if (Path.GetExtension(ResumeFile.FileName).ToLower() != ".pdf")
+                {
+                    TempData["Alert"] = "Only PDF resumes are allowed.";
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("Profile", new { tab = "application" });
+                }
+
+                var fileName = "Resume_" + instructorId + "_" + Guid.NewGuid().ToString().Substring(0, 8) + ".pdf";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "resumes", fileName);
+                
+                if (!Directory.Exists(Path.GetDirectoryName(path)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                }
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    ResumeFile.CopyTo(stream);
+                }
+                application.ResumePath = "/uploads/resumes/" + fileName;
+            }
+
+            application.InstructorId = instructorId;
+            application.Status = MentorApplicationStatus.Pending;
+            application.CreatedAt = DateTime.UtcNow;
+
+            _context.MentorApplications.Add(application);
+            _context.SaveChanges();
+
+            TempData["Alert"] = "Application submitted successfully! Our team will review it soon.";
+            TempData["AlertType"] = "success";
+            return RedirectToAction("Profile", new { tab = "application" });
         }
 
         // Update course syllabus modules/lessons

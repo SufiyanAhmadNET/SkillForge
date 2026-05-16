@@ -15,8 +15,10 @@ namespace SkillForge.Areas.Instructor.Models
         public string? Mobile { get; set; }
         public string? Location { get; set; }
 
-        public string? Bio { get; set; }
-        public string? Profession { get; set; }
+        public string? AboutYou { get; set; }
+        public string? CurrentRole { get; set; }
+        public string? Expertise { get; set; }
+        public int? YearsExperience { get; set; }
 
         // professional and social presence
         public string? Headline { get; set; }
