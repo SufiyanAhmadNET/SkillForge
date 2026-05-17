@@ -1,6 +1,6 @@
 using SkillForge.Services.Auth.Models;
 
-namespace SkillForge.Interfaces.Auth
+namespace SkillForge.Interfaces
 {
     // Authentication service interface
     public interface IAuthService

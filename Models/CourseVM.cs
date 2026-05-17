@@ -12,7 +12,7 @@ namespace SkillForge.Models
         public string? Category_Id { get; set;}
 
         //enum class type for course status
-        public CourseStatus CourseStatus { get; set; } = CourseStatus.Approved;
+        public CourseStatus CourseStatus { get; set; } = CourseStatus.Draft;
 
         [StringLength(500, ErrorMessage = "Rejection reason cannot exceed 500 characters")]
         public string? Rejection_Reason { get; set; }

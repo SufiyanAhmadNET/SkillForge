@@ -2,7 +2,7 @@ using SkillForge.Areas.Instructor.Models;
 using SkillForge.Areas.User.Models;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Auth;
+using SkillForge.Interfaces;
 using SkillForge.Services.Auth.Models;
 
 namespace SkillForge.Services.Auth

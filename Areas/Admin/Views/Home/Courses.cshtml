@@ -1,4 +1,5 @@
-﻿
+﻿@model List<SkillForge.Areas.Admin.Models.AdminCourseReviewVM>
+@using SkillForge.Services.Courses.Models
 @{
     ViewData["Title"] = "Courses";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -12,7 +13,7 @@
             <h5 class="fw-bold mb-0">Course Management</h5>
             <p class="text-muted mb-0" style="font-size:14px;">Monitor all courses across the platform.</p>
         </div>
-        <a href="admin-reports.html" class="btn btn-sm btn-outline-success">
+        <a href="#" class="btn btn-sm btn-outline-success">
             <i class="bi bi-download me-1"></i>Export CSV
         </a>
     </div>
@@ -20,13 +21,13 @@
     <!-- Quick stat pills — fast overview -->
     <div class="d-flex gap-3 mb-4 flex-wrap">
         <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
-            <span class="badge bg-success">183</span><span style="font-size:13px;">Active</span>
+            <span class="badge bg-success">@Model.Count(c => c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published)</span><span style="font-size:13px;">Active</span>
         </div>
         <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
-            <span class="badge bg-secondary">94</span><span style="font-size:13px;">Completed</span>
+            <span class="badge bg-secondary">@Model.Count(c => c.Status == CourseStatus.Completed)</span><span style="font-size:13px;">Completed</span>
         </div>
         <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
-            <span class="badge bg-warning text-dark">12</span><span style="font-size:13px;">Pending Review</span>
+            <span class="badge bg-warning text-dark">@Model.Count(c => c.Status == CourseStatus.PendingReview)</span><span style="font-size:13px;">Pending Review</span>
         </div>
     </div>
 
@@ -38,10 +39,10 @@
         </div>
         <select class="form-select form-select-sm" style="max-width:160px;">
             <option>All Categories</option>
-            <option>Software Dev</option>
-            <option>Data Science</option>
-            <option>AI / ML</option>
-            <option>DevOps</option>
+            @foreach (var cat in Model.Select(c => c.Category).Distinct())
+            {
+                <option>@cat</option>
+            }
         </select>
         <select class="form-select form-select-sm" style="max-width:140px;">
             <option>All Status</option>
@@ -49,7 +50,7 @@
             <option>Completed</option>
             <option>Pending</option>
         </select>
-        <small class="text-muted ms-auto">Showing 6 of 289 courses</small>
+        <small class="text-muted ms-auto">Showing @Model.Count courses</small>
     </div>
 
     <!-- COURSES TABLE -->
@@ -62,131 +63,108 @@
                         <th>Course</th>
                         <th>Instructor</th>
                         <th>Category</th>
-                        <th>Enrolled</th>
+                        <th>Content</th>
+                        <th>Price</th>
                         <th>Duration</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int index = 1;
+                        foreach (var course in Model)
+                        {
+                            <tr>
+                                <td class="text-muted">@(index++)</td>
+                                <td class="fw-semibold">@course.Title</td>
+                                <td><a href="#" class="text-decoration-none" style="color:var(--orange);">@course.InstructorName</a></td>
+                                <td><span class="badge bg-light text-dark border">@course.Category</span></td>
+                                <td>
+                                    <small class="d-block text-muted">@course.ModuleCount Modules</small>
+                                    <small class="d-block text-muted">@course.LessonCount Lessons</small>
+                                </td>
+                                <td>₹@course.Price</td>
+                                <td>@course.DurationWeeks weeks</td>
+                                <td>
+                                    @if (course.Status == CourseStatus.Approved || course.Status == CourseStatus.Published)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else if (course.Status == CourseStatus.PendingReview)
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                    else if (course.Status == CourseStatus.Rejected)
+                                    {
+                                        <span class="badge bg-danger">Rejected</span>
+                                    }
+                                    else if (course.Status == CourseStatus.Draft)
+                                    {
+                                        <span class="badge bg-secondary">Draft</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@course.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        @if (course.Status == CourseStatus.PendingReview)
+                                        {
+                                            <form asp-action="ApproveCourse" method="post" onsubmit="return confirm('Are you sure you want to approve this course?');">
+                                                <input type="hidden" name="id" value="@course.Id" />
+                                                <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                            </form>
+                                            <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#rejectModal-@course.Id">Reject</button>
 
-                    <tr>
-                        <td class="text-muted">1</td>
-                        <td class="fw-semibold">Full Stack Web Development</td>
-                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Suresh Kumar</a></td>
-                        <td><span class="badge bg-light text-dark border">Software Dev</span></td>
-                        <td>840</td>
-                        <td>12 weeks</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">View</button>
-                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">2</td>
-                        <td class="fw-semibold">Data Science with AI</td>
-                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Neha Verma</a></td>
-                        <td><span class="badge bg-light text-dark border">Data Science</span></td>
-                        <td>890</td>
-                        <td>16 weeks</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">View</button>
-                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">3</td>
-                        <td class="fw-semibold">DevOps and Cloud Computing</td>
-                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Suresh Kumar</a></td>
-                        <td><span class="badge bg-light text-dark border">DevOps</span></td>
-                        <td>430</td>
-                        <td>10 weeks</td>
-                        <td><span class="badge bg-secondary">Completed</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">View</button>
-                                <button class="btn btn-sm btn-outline-success">Reopen</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">4</td>
-                        <td class="fw-semibold">Advanced ML & AI</td>
-                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Anjali Singh</a></td>
-                        <td><span class="badge bg-light text-dark border">AI / ML</span></td>
-                        <td>560</td>
-                        <td>20 weeks</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">View</button>
-                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">5</td>
-                        <td class="fw-semibold">React & Node.js Bootcamp</td>
-                        <td><a href="admin-instructor-profile.html" class="text-decoration-none" style="color:var(--orange);">Suresh Kumar</a></td>
-                        <td><span class="badge bg-light text-dark border">Software Dev</span></td>
-                        <td>280</td>
-                        <td>8 weeks</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">View</button>
-                                <button class="btn btn-sm btn-outline-danger">Deactivate</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">6</td>
-                        <td class="fw-semibold">Cybersecurity Fundamentals</td>
-                        <td class="text-muted">—</td>
-                        <td><span class="badge bg-light text-dark border">Security</span></td>
-                        <td>—</td>
-                        <td>12 weeks</td>
-                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-secondary">Review</button>
-                                <button class="btn btn-sm btn-success">Approve</button>
-                            </div>
-                        </td>
-                    </tr>
-
+                                            <!-- Reject Modal -->
+                                            <div class="modal fade" id="rejectModal-@course.Id" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form asp-action="RejectCourse" method="post">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Reject Course</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <input type="hidden" name="id" value="@course.Id" />
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Reason for Rejection</label>
+                                                                    <textarea class="form-control" name="reason" rows="3" required placeholder="Tell the instructor what needs to be changed..."></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-danger">Confirm Reject</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <a href="/User/Home/CourseDetails/@course.Id" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">No courses found.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
 
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-            <small class="text-muted">Showing 1–6 of 289 courses</small>
-            <nav>
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
+            <small class="text-muted">Showing @Model.Count courses</small>
         </div>
 
     </div>
 
 </main>
-
-</div>
-</div>
-
 </body>

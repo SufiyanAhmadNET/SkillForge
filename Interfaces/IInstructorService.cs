@@ -1,7 +1,7 @@
 using SkillForge.Models;
 using SkillForge.Areas.Instructor.Models;
 
-namespace SkillForge.Interfaces.Instructors
+namespace SkillForge.Interfaces
 {
     public interface IInstructorService
     {

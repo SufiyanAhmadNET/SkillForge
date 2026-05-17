@@ -16,6 +16,7 @@
 
         // Instructor course details
         public string? Status { get; set; }
+        public string? RejectionReason { get; set; }
         public int Duration { get; set; }
         public string? Difficulty { get; set; }
         public string? CategoryName { get; set; }

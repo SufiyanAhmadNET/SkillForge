@@ -43,9 +43,22 @@
                     <h6 class="fw-bold mb-1">@Model.Title</h6>
 
                     <!-- Status badge -->
-                    <span class="badge @(Model.Status == "Published" ? "bg-success" : Model.Status == "PendingReview" ? "bg-warning" : "bg-secondary") mb-3">
+                    @{
+                        var badgeClass = Model.Status == "Approved" || Model.Status == "Published" ? "bg-success" : 
+                                         Model.Status == "PendingReview" ? "bg-warning text-dark" : 
+                                         Model.Status == "Rejected" ? "bg-danger" : "bg-secondary";
+                    }
+                    <span class="badge @badgeClass mb-3">
                         @Model.Status
                     </span>
+
+                    @if (Model.Status == "Rejected" && !string.IsNullOrEmpty(Model.RejectionReason))
+                    {
+                        <div class="alert alert-danger p-2 mb-3" style="font-size:12px;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            <strong>Admin Feedback:</strong> @Model.RejectionReason
+                        </div>
+                    }
 
                     <!-- Course metadata -->
                     <div class="d-flex flex-column gap-2" style="font-size:13px;">

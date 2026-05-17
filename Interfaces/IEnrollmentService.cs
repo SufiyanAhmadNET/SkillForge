@@ -1,6 +1,6 @@
 using SkillForge.Models;
 
-namespace SkillForge.Interfaces.Payments
+namespace SkillForge.Interfaces
 {
     public interface IEnrollmentService
     {

@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Courses;
-using SkillForge.Interfaces.Common;
+using SkillForge.Interfaces;
 using SkillForge.Services.Courses.Models;
 
 namespace SkillForge.Services.Courses
@@ -19,7 +18,7 @@ namespace SkillForge.Services.Courses
         }
 
         // Add new course with details and syllabus
-        public CourseReturn AddCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string action = "draft")
+        public CourseReturn AddCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string submitAction = "draft")
         {
             try
             {
@@ -57,7 +56,7 @@ namespace SkillForge.Services.Courses
                 if (!_context.course_Categories.Any(c => c.Id == categoryId))
                     return new CourseReturn { Success = false, message = CourseMessage.EmptyFields, TechnicalMessage = "Selected category is not available." };
                 
-                bool isSubmitAction = action?.ToLower() == "submit";
+                bool isSubmitAction = submitAction?.ToLower() == "submit";
                 
                 // Create course entity
                 var course = new Course
@@ -65,8 +64,10 @@ namespace SkillForge.Services.Courses
                     Title = courseVM.Title,
                     instructor_id = instructorId,
                     category_id = categoryId,
-                    Status = CourseStatus.Published, // Testing mode
-                    Rejection_Reason = null
+                    Status = isSubmitAction ? CourseStatus.PendingReview : CourseStatus.Draft,
+                    Rejection_Reason = null,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
                 
                 // Add course details
@@ -142,7 +143,7 @@ namespace SkillForge.Services.Courses
         }
 
         // Update existing course details and syllabus
-        public CourseReturn UpdateCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string action = "draft")
+        public CourseReturn UpdateCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string submitAction = "draft")
         {
             try
             {
@@ -159,9 +160,12 @@ namespace SkillForge.Services.Courses
                 // Update basic info
                 course.Title = courseVM.Title;
                 course.category_id = int.Parse(courseVM.Category_Id ?? "0");
+                course.UpdatedAt = DateTime.UtcNow;
                 
-                if (action?.ToLower() == "submit")
-                    course.Status = CourseStatus.Published;
+                if (submitAction?.ToLower() == "submit")
+                    course.Status = CourseStatus.PendingReview;
+                else if (course.Status == CourseStatus.Approved || course.Status == CourseStatus.Published)
+                    course.Status = CourseStatus.Draft;
                 
                 if (course.CourseDetails == null) course.CourseDetails = new CourseDetails();
                 

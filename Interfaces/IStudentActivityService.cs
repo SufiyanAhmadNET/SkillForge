@@ -1,7 +1,7 @@
 using SkillForge.Models;
 using SkillForge.Areas.User.Models;
 
-namespace SkillForge.Interfaces.Students
+namespace SkillForge.Interfaces
 {
     public interface IStudentActivityService
     {

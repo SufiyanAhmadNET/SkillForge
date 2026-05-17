@@ -7,6 +7,7 @@ namespace SkillForge.Services.Courses.Models
         Published,
         Approved,
         Rejected,
-        PendingReview
+        PendingReview,
+        Completed
     }
 }

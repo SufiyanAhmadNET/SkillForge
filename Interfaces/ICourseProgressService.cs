@@ -1,4 +1,4 @@
-namespace SkillForge.Interfaces.Courses
+namespace SkillForge.Interfaces
 {
     public interface ICourseProgressService
     {

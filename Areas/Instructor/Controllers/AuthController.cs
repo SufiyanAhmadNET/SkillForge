@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SkillForge.Areas.User.Controllers;
 using SkillForge.Areas.User.Models;
-using SkillForge.Interfaces.Auth;
+using SkillForge.Interfaces;
 using SkillForge.Services.Auth.Models;
 using System.Data;
 using System.Diagnostics;

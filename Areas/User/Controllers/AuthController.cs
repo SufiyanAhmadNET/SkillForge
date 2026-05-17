@@ -2,7 +2,7 @@ using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using SkillForge.Areas.User.Models;
-using SkillForge.Interfaces.Auth;
+using SkillForge.Interfaces;
 using SkillForge.Services.Auth.Models;
 
 namespace SkillForge.Areas.User.Controllers

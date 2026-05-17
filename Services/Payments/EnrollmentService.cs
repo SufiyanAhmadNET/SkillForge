@@ -4,7 +4,7 @@ using SkillForge.Data;
 using SkillForge.Models;
 using System.Security.Cryptography;
 using System.Text;
-using SkillForge.Interfaces.Payments;
+using SkillForge.Interfaces;
 
 namespace SkillForge.Services.Payments
 {

@@ -12,7 +12,7 @@
             <h5 class="fw-bold mb-0">Welcome back, @Model.FirstName 👋</h5>
             <p class="text-muted mb-0" style="font-size:14px;">Here's your teaching overview for today.</p>
         </div>
-        @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Approved)
+        @if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
         {
             <a asp-area="Instructor" asp-controller="Home" asp-action="AddCourse" class="btn btn-sm fw-semibold" style="background:var(--orange);color:#fff;border:none;">
                 <i class="bi bi-plus-circle me-1"></i>Add New Course
@@ -20,7 +20,7 @@
         }
     </div>
 
-    @if (Model.ApplicationStatus != SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Approved)
+    @if (Model.ApplicationStatus != SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
     {
         <div class="card border-0 shadow-sm mb-4" style="border-radius:15px; overflow:hidden;">
             <div class="card-body p-0">
@@ -35,7 +35,7 @@
                             Apply now to unlock course creation, student management, and professional teaching tools.
                         </p>
 
-                        @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.NotApplied)
+                        @if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.NotApplied)
                         {
                             <div class="d-flex gap-3">
                                 <a asp-action="Profile" asp-route-tab="application" class="btn btn-purple px-4 py-2 rounded-pill shadow-sm fw-bold">
@@ -46,7 +46,7 @@
                                 </a>
                             </div>
                         }
-                        else if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Pending)
+                        else if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
                         {
                             <div class="alert alert-primary border-0 bg-primary bg-opacity-10 d-flex align-items-center gap-3 p-3" style="border-radius: 12px; max-width: 500px;">
                                 <i class="bi bi-clock-history fs-3"></i>
@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                         }
-                        else if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected)
+                        else if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected)
                         {
                             <div class="alert alert-danger border-0 bg-danger bg-opacity-10 d-flex align-items-center gap-3 p-3" style="border-radius: 12px; max-width: 500px;">
                                 <i class="bi bi-exclamation-octagon fs-3"></i>
@@ -78,7 +78,7 @@
         </div>
     }
 
-    @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Approved)
+    @if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
     {
         <!-- STAT CARDS -->
         <div class="row g-3 mb-4">

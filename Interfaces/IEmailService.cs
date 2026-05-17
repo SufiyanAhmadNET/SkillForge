@@ -1,4 +1,4 @@
-namespace SkillForge.Interfaces.Common
+namespace SkillForge.Interfaces
 {
     public interface IEmailService
     {

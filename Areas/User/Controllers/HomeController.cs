@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SkillForge.Areas.User.Models;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Courses;
-using SkillForge.Interfaces.Students;
-using SkillForge.Interfaces.Payments;
+using SkillForge.Interfaces;
 using System.Security.Claims;
 
 namespace SkillForge.Areas.User.Controllers
@@ -19,16 +17,16 @@ namespace SkillForge.Areas.User.Controllers
         private readonly IStudentActivityService _studentActivityService;
         private readonly IEnrollmentService _enrollmentService;
         private readonly IConfiguration _config;
-        private readonly SkillForge.Interfaces.Auth.IAuthService _authService;
-        private readonly SkillForge.Interfaces.Auth.IOtpService _otpService;
+        private readonly IAuthService _authService;
+        private readonly IOtpService _otpService;
 
         public HomeController(ICourseQueryService courseQueryService,
                               ICourseProgressService courseProgressService,
                               IStudentActivityService studentActivityService,
                               IEnrollmentService enrollmentService,
                               IConfiguration config,
-                              SkillForge.Interfaces.Auth.IAuthService authService,
-                              SkillForge.Interfaces.Auth.IOtpService otpService)
+                              IAuthService authService,
+                              IOtpService otpService)
         {
             _courseQueryService = courseQueryService;
             _courseProgressService = courseProgressService;
@@ -147,7 +145,9 @@ namespace SkillForge.Areas.User.Controllers
             if (id <= 0) return RedirectToAction("Courses");
             
             var studentId = GetStudentId();
-            if (!preview && studentId > 0 && _enrollmentService.IsEnrolled(studentId, id))
+            bool isAdmin = User.IsInRole("Admin");
+
+            if (!preview && !isAdmin && studentId > 0 && _enrollmentService.IsEnrolled(studentId, id))
             {
                 return RedirectToAction("LearningView", new { id = id });
             }
@@ -155,7 +155,7 @@ namespace SkillForge.Areas.User.Controllers
             var vm = _courseQueryService.GetCourseDetails(id, studentId);
             if (vm == null) return NotFound();
             
-            ViewBag.IsPreview = preview;
+            ViewBag.IsPreview = preview || isAdmin;
             return View(vm);
         }
 

@@ -1,11 +1,10 @@
-﻿
+﻿@using SkillForge.Areas.Admin.Models
+@model IEnumerable<MentorApplicationListVM>
 @{
-    ViewData["Title"] = "Pending_Approvals";
+    ViewData["Title"] = "Pending Approvals";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-
-<body>
 <main class="p-4 flex-grow-1 admin-bg">
 
     <!-- Page title -->
@@ -14,7 +13,7 @@
             <h5 class="fw-bold mb-0">Pending Approvals</h5>
             <p class="text-muted mb-0" style="font-size:14px;">Review and approve new instructor applications.</p>
         </div>
-        <span class="badge bg-danger px-3 py-2">3 Pending</span>
+        <span class="badge bg-danger px-3 py-2">@Model.Count(a => a.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending) Pending</span>
     </div>
 
     <!-- APPROVALS TABLE -->
@@ -22,11 +21,11 @@
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h6 class="mb-0 fw-bold"><i class="bi bi-person-check me-2 text-success"></i>Instructor Applications</h6>
             <!-- filter tabs using Bootstrap nav pills -->
-            <ul class="nav nav-pills nav-sm" style="font-size:13px;">
-                <li class="nav-item"><a class="nav-link py-1 px-3 active" href="#">All</a></li>
-                <li class="nav-item"><a class="nav-link py-1 px-3" href="#">Pending</a></li>
-                <li class="nav-item"><a class="nav-link py-1 px-3" href="#">Approved</a></li>
-                <li class="nav-item"><a class="nav-link py-1 px-3" href="#">Rejected</a></li>
+            <ul class="nav nav-pills nav-sm" style="font-size:13px;" id="applicationFilters">
+                <li class="nav-item"><a class="nav-link py-1 px-3 active" href="#" data-filter="all">All</a></li>
+                <li class="nav-item"><a class="nav-link py-1 px-3" href="#" data-filter="Pending">Pending</a></li>
+                <li class="nav-item"><a class="nav-link py-1 px-3" href="#" data-filter="Approved">Approved</a></li>
+                <li class="nav-item"><a class="nav-link py-1 px-3" href="#" data-filter="Rejected">Rejected</a></li>
             </ul>
         </div>
         <div class="card-body p-0">
@@ -43,109 +42,84 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-
-                    <tr>
-                        <td class="text-muted">01</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="tbl-avatar bg-success bg-opacity-10 text-success">K</div>
-                                Karan Mehta
-                            </div>
-                        </td>
-                        <td class="text-muted">karan.mehta@email.com</td>
-                        <td>DevOps & Cloud</td>
-                        <td>5 years</td>
-                        <td><span class="badge bg-warning text-dark">2 days ago</span></td>
-                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
-                                <button class="btn btn-sm btn-success">Approve</button>
-                                <button class="btn btn-sm btn-outline-danger">Reject</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">02</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="tbl-avatar bg-primary bg-opacity-10 text-primary">T</div>
-                                Tanvi Joshi
-                            </div>
-                        </td>
-                        <td class="text-muted">tanvi.joshi@email.com</td>
-                        <td>Machine Learning</td>
-                        <td>3 years</td>
-                        <td><span class="badge bg-warning text-dark">4 days ago</span></td>
-                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
-                                <button class="btn btn-sm btn-success">Approve</button>
-                                <button class="btn btn-sm btn-outline-danger">Reject</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="text-muted">03</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="tbl-avatar bg-secondary bg-opacity-10 text-secondary">V</div>
-                                Vijay Raut
-                            </div>
-                        </td>
-                        <td class="text-muted">vijay.raut@email.com</td>
-                        <td>Cybersecurity</td>
-                        <td>7 years</td>
-                        <td><span class="badge bg-warning text-dark">1 week ago</span></td>
-                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
-                                <button class="btn btn-sm btn-success">Approve</button>
-                                <button class="btn btn-sm btn-outline-danger">Reject</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Already approved — for reference -->
-                    <tr>
-                        <td class="text-muted">04</td>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="tbl-avatar" style="background:var(--orange-soft);color:var(--orange);">S</div>
-                                Suresh Kumar
-                            </div>
-                        </td>
-                        <td class="text-muted">suresh.k@email.com</td>
-                        <td>Full Stack Dev</td>
-                        <td>8 years</td>
-                        <td><span class="badge bg-light text-muted">2 weeks ago</span></td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a href="admin-instructor-profile.html" class="btn btn-sm btn-outline-secondary">Profile</a>
-                                <button class="btn btn-sm btn-outline-danger">Revoke</button>
-                            </div>
-                        </td>
-                    </tr>
-
+                <tbody id="applicationTableBody">
+                    @{
+                        int index = 1;
+                    }
+                    @foreach (var app in Model)
+                    {
+                        <tr data-status="@app.Status">
+                            <td class="text-muted">@(index++.ToString("D2"))</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="tbl-avatar bg-success bg-opacity-10 text-success">
+                                        @(string.IsNullOrEmpty(app.InstructorName) ? "?" : app.InstructorName.Substring(0, 1).ToUpper())
+                                    </div>
+                                    @app.InstructorName
+                                </div>
+                            </td>
+                            <td class="text-muted">@app.Email</td>
+                            <td>@app.Expertise</td>
+                            <td>@app.Experience years</td>
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    @app.AppliedDate.ToString("MMM dd, yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                @if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger">Rejected</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    @if (!string.IsNullOrEmpty(app.ResumePath))
+                                    {
+                                        <a href="@app.ResumePath" target="_blank" class="btn btn-sm btn-outline-info" title="View Resume">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+                                    }
+                                    
+                                    @if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
+                                    {
+                                        <form asp-action="ApproveApplication" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@app.Id" />
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="openRejectModal(@app.Id)">Reject</button>
+                                    }
+                                    else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
+                                    {
+                                         <form asp-action="RejectApplication" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@app.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
 
         <!-- pagination — Bootstrap component -->
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-            <small class="text-muted">Showing 4 of 4 applications</small>
+            <small class="text-muted">Showing @Model.Count() applications</small>
             <nav>
                 <ul class="pagination pagination-sm mb-0">
                     <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
                     <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
                 </ul>
             </nav>
         </div>
@@ -154,7 +128,55 @@
 
 </main>
 
-</div>
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-danger text-white">
+                <h6 class="modal-title fw-bold">Reject Application</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="RejectApplication" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="rejectAppId" />
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Reason for Rejection (Optional)</label>
+                        <textarea name="comment" class="form-control" rows="3" placeholder="Explain why the application was rejected..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-danger px-4">Confirm Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-</body>
+<script>
+    function openRejectModal(id) {
+        document.getElementById('rejectAppId').value = id;
+        new bootstrap.Modal(document.getElementById('rejectModal')).show();
+    }
+
+    document.querySelectorAll('#applicationFilters .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // UI toggle
+            document.querySelectorAll('#applicationFilters .nav-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const rows = document.querySelectorAll('#applicationTableBody tr');
+            
+            rows.forEach(row => {
+                if (filter === 'all' || row.getAttribute('data-status') === filter) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

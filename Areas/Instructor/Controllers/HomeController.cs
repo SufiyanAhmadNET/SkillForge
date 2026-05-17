@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using SkillForge.Areas.Instructor.Models;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Instructors;
-using SkillForge.Interfaces.Courses;
+using SkillForge.Interfaces;
+using SkillForge.Services.Instructors.Models;
 using System.Security.Claims;
 using SkillForge.Services.Courses.Models;
 
@@ -18,21 +18,24 @@ namespace SkillForge.Areas.Instructor.Controllers
         private readonly IInstructorService _instructorService;
         private readonly ICourseManagementService _courseManagementService;
         private readonly ICourseContentService _courseContentService;
-        private readonly SkillForge.Interfaces.Auth.IAuthService _authService;
-        private readonly SkillForge.Interfaces.Auth.IOtpService _otpService;
+        private readonly IAuthService _authService;
+        private readonly IOtpService _otpService;
+        private readonly IMediaService _mediaService;
 
         public HomeController(SkillForgeDbContext context, 
             IInstructorService instructorService,
             ICourseManagementService courseManagementService,
             ICourseContentService courseContentService,
-            SkillForge.Interfaces.Auth.IAuthService authService,
-            SkillForge.Interfaces.Auth.IOtpService otpService) : base(context)
+            IAuthService authService,
+            IOtpService otpService,
+            IMediaService mediaService) : base(context)
         {
             _instructorService = instructorService;
             _courseManagementService = courseManagementService;
             _courseContentService = courseContentService;
             _authService = authService;
             _otpService = otpService;
+            _mediaService = mediaService;
         }
 
         // Instructor dashboard with stats
@@ -56,7 +59,7 @@ namespace SkillForge.Areas.Instructor.Controllers
 
         // Handle add course submission
         [HttpPost]
-        public IActionResult AddCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string action)
+        public IActionResult AddCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string submitAction)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var InstructorId))
@@ -77,7 +80,7 @@ namespace SkillForge.Areas.Instructor.Controllers
             }
 
             // Save course via service
-            var course = _courseManagementService.AddCourse(courseVM, InstructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
+            var course = _courseManagementService.AddCourse(courseVM, InstructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, submitAction);
             if (course.message == CourseMessage.EmptyFields)
             {
                 TempData["Alert"] = !string.IsNullOrWhiteSpace(course.TechnicalMessage)
@@ -91,11 +94,33 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("AddCourse", "Home");
             }
 
-            TempData["Alert"] = action?.ToLower() == "submit"
+            TempData["Alert"] = submitAction?.ToLower() == "submit"
                 ? "Course submitted successfully for review."
                 : "Course saved to draft successfully.";
             TempData["AlertType"] = "success";
             return RedirectToAction("MyCourses", "Home");
+        }
+
+        // Handle course submission for review
+        [HttpPost]
+        public IActionResult SubmitForReview(int id)
+        {
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
+                return RedirectToAction("InstructorLogin", "Auth");
+            }
+
+            var course = _context.Courses.FirstOrDefault(c => c.Id == id && c.instructor_id == instructorId);
+            if (course == null) return NotFound();
+
+            course.Status = CourseStatus.PendingReview;
+            course.UpdatedAt = DateTime.UtcNow;
+            _context.SaveChanges();
+
+            TempData["Alert"] = "Course submitted for review successfully.";
+            TempData["AlertType"] = "success";
+            return RedirectToAction("CourseDetails", new { id = id });
         }
 
         // List instructor's courses
@@ -145,7 +170,7 @@ namespace SkillForge.Areas.Instructor.Controllers
 
         // Handle edit course submission
         [HttpPost]
-        public IActionResult EditCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string action)
+        public IActionResult EditCourse(CourseVM courseVM, IFormFile thumbnail_url, IFormFile Video_File, string YouTubeUrl, string videoType, string OutcomesRaw, string submitAction)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
@@ -164,7 +189,7 @@ namespace SkillForge.Areas.Instructor.Controllers
             }
 
             // Update via service
-            var result = _courseManagementService.UpdateCourse(courseVM, instructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, action);
+            var result = _courseManagementService.UpdateCourse(courseVM, instructorId, thumbnail_url, Video_File, YouTubeUrl, videoType, submitAction);
             if (result.Success)
             {
                 TempData["Alert"] = "Course updated successfully.";
@@ -280,17 +305,19 @@ namespace SkillForge.Areas.Instructor.Controllers
 
             profile.InstructorId = instructorId;
 
-            // Handle photo upload
+            // Handle photo upload via MediaService
             if (PhotoFile != null && PhotoFile.Length > 0)
             {
-                var fileName = Guid.NewGuid() + Path.GetExtension(PhotoFile.FileName);
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "profiles", fileName);
-                
-                using (var stream = new FileStream(path, FileMode.Create))
+                try
                 {
-                    PhotoFile.CopyTo(stream);
+                    profile.PhotoPath = _mediaService.SaveProfilePhoto(PhotoFile);
                 }
-                profile.PhotoPath = "/images/profiles/" + fileName;
+                catch (Exception ex)
+                {
+                    TempData["Alert"] = ex.Message;
+                    TempData["AlertType"] = "danger";
+                    return RedirectToAction("Profile");
+                }
             }
             else
             {
@@ -363,29 +390,19 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("Profile", new { tab = "application" });
             }
 
-            // Handle resume upload
+            // Handle resume upload via MediaService
             if (ResumeFile != null && ResumeFile.Length > 0)
             {
-                if (Path.GetExtension(ResumeFile.FileName).ToLower() != ".pdf")
+                try
                 {
-                    TempData["Alert"] = "Only PDF resumes are allowed.";
+                    application.ResumePath = _mediaService.UploadResume(ResumeFile);
+                }
+                catch (Exception ex)
+                {
+                    TempData["Alert"] = ex.Message;
                     TempData["AlertType"] = "danger";
                     return RedirectToAction("Profile", new { tab = "application" });
                 }
-
-                var fileName = "Resume_" + instructorId + "_" + Guid.NewGuid().ToString().Substring(0, 8) + ".pdf";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "resumes", fileName);
-                
-                if (!Directory.Exists(Path.GetDirectoryName(path)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                }
-
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    ResumeFile.CopyTo(stream);
-                }
-                application.ResumePath = "/uploads/resumes/" + fileName;
             }
 
             application.InstructorId = instructorId;

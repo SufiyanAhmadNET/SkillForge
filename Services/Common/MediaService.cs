@@ -1,4 +1,4 @@
-using SkillForge.Interfaces.Common;
+using SkillForge.Interfaces;
 
 namespace SkillForge.Services.Common
 {
@@ -44,8 +44,10 @@ namespace SkillForge.Services.Common
             return "/uploads/thumbnails/" + fileName;
         }
         //save video 
+        // Handle video logic
         public string HandleVideo(IFormFile? file, string? youtubeUrl, string? videoType)
         {
+            // ... (rest of handle video logic)
             var normalizedVideoType = (videoType ?? string.Empty).Trim().ToLower();
             if (string.IsNullOrWhiteSpace(normalizedVideoType))
             {
@@ -93,6 +95,60 @@ namespace SkillForge.Services.Common
                 return "/uploads/videos/" + fileName;
             }
             throw new Exception("Please choose a valid video source.");
+        }
+
+        // Upload Resume logic
+        public string? UploadResume(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return null;
+
+            // limit size to 5MB and allow only PDF
+            long maxSize = 5 * 1024 * 1024;
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            if (extension != ".pdf")
+                throw new Exception("Only PDF resumes are allowed.");
+            
+            if (file.Length > maxSize)
+                throw new Exception("Resume file must be less than 5MB.");
+
+            string fileName = Guid.NewGuid().ToString() + extension;
+            string path = Path.Combine(_env.WebRootPath, "uploads", "resumes");
+            
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            string fullPath = Path.Combine(path, fileName);
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return "/uploads/resumes/" + fileName;
+        }
+
+        // Save Profile Photo
+        public string? SaveProfilePhoto(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return null;
+
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            if (!allowedExtensions.Contains(extension))
+                throw new Exception("Only images (.jpg, .jpeg, .png) are allowed.");
+
+            string fileName = Guid.NewGuid().ToString() + extension;
+            string path = Path.Combine(_env.WebRootPath, "images", "profiles");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            string fullPath = Path.Combine(path, fileName);
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return "/images/profiles/" + fileName;
         }
     }
 }

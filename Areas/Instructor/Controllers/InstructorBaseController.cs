@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using SkillForge.Data;
 using SkillForge.Controllers;
 using SkillForge.Areas.Instructor.Models;
+using SkillForge.Services.Instructors.Models;
 using System;
 using System.Linq;
 

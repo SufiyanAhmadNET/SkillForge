@@ -1,6 +1,6 @@
 using MailKit.Net.Smtp;
 using MimeKit;
-using SkillForge.Interfaces.Common;
+using SkillForge.Interfaces;
 
 namespace SkillForge.Services
 {

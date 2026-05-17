@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using SkillForge.Areas.Instructor.Models;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Instructors;
+using SkillForge.Interfaces;
+using SkillForge.Services.Instructors.Models;
+using SkillForge.Services.Courses.Models;
 
 namespace SkillForge.Services.Instructors
 {
@@ -13,6 +15,7 @@ namespace SkillForge.Services.Instructors
         {
             _context = context;
         }
+
         public InstructorDashboardVM GetInstructorDashboard(int instructorId)
         {
             var instructor = _context.instructors
@@ -89,6 +92,7 @@ namespace SkillForge.Services.Instructors
             };
             return vm;
         }
+
         public CourseDetailsVM? GetInstructorCourseDetails(int courseId, int instructorId)
         {
             var course = _context.Courses
@@ -126,6 +130,7 @@ namespace SkillForge.Services.Instructors
                 outcomes = course.CourseOutcomes?.ToList() ?? new List<CourseOutcomes>(),
                 SubTitle = course.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? string.Empty,
                 Status = course.Status.ToString(),
+                RejectionReason = course.Rejection_Reason,
                 Duration = course.CourseDetails?.Duration_Weeks ?? 0,
                 Difficulty = course.CourseDetails?.Difficulty.ToString(),
                 CategoryName = course.courseCategory?.Name,

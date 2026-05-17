@@ -1,3 +1,4 @@
+@using SkillForge.Services.Courses.Models
 @model IEnumerable<SkillForge.Models.MyCourseVM>? 
 @{
     ViewData["Title"] = "My Courses";
@@ -84,7 +85,12 @@
                          style="height:140px; object-fit:cover;">
 
                             <!-- Status Badge -->
-                            <span class="badge bg-success position-absolute top-0 start-0 m-2"
+                            @{
+                                var badgeClass = course.Status == CourseStatus.Approved || course.Status == CourseStatus.Published ? "bg-success" : 
+                                                 course.Status == CourseStatus.PendingReview ? "bg-warning text-dark" : 
+                                                 course.Status == CourseStatus.Rejected ? "bg-danger" : "bg-secondary";
+                            }
+                            <span class="badge @badgeClass position-absolute top-0 start-0 m-2"
                                   style="font-size:10px;">
                                @course.Status
                             </span>

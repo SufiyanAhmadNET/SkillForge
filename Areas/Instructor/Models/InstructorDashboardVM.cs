@@ -1,4 +1,5 @@
 using SkillForge.Models;
+using SkillForge.Services.Instructors.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 

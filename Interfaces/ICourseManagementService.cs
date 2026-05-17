@@ -2,16 +2,16 @@ using SkillForge.Models;
 using Microsoft.AspNetCore.Http;
 using SkillForge.Services.Courses.Models;
 
-namespace SkillForge.Interfaces.Courses
+namespace SkillForge.Interfaces
 {
     // Course management service interface
     public interface ICourseManagementService
     {
         // Add new course
-        CourseReturn AddCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string action = "draft");
+        CourseReturn AddCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string submitAction = "draft");
         
         // Update existing course
-        CourseReturn UpdateCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string action = "draft");
+        CourseReturn UpdateCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string submitAction = "draft");
         
         // Get instructor courses
         List<MyCourseVM> MyCourses(int instructorId);

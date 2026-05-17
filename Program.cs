@@ -1,17 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using SkillForge.Data;
-using SkillForge.Interfaces.Auth;
-using SkillForge.Interfaces.Courses;
-using SkillForge.Interfaces.Instructors;
-using SkillForge.Interfaces.Payments;
-using SkillForge.Interfaces.Students;
-using SkillForge.Interfaces.Common;
+using SkillForge.Interfaces;
 using SkillForge.Services.Auth;
 using SkillForge.Services.Courses;
 using SkillForge.Services.Instructors;
 using SkillForge.Services.Payments;
 using SkillForge.Services.Students;
 using SkillForge.Services.Common;
+using SkillForge.Services.Admin;
 using SkillForge.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 
@@ -50,6 +46,7 @@ builder.Services.AddScoped<ICourseProgressService, CourseProgressService>();
 // Register Student & Instructor Services
 builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
 builder.Services.AddScoped<IInstructorService, InstructorService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // Register Enrollment Service
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();

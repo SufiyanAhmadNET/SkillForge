@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Courses;
+using SkillForge.Interfaces;
 using SkillForge.Services.Courses.Models;
 
 namespace SkillForge.Services.Courses
@@ -16,7 +16,7 @@ namespace SkillForge.Services.Courses
         public CoursePageVM GetPublishedCoursePage(int studentId = 0)
         {
             var published = _context.Courses
-                .Where(c => c.Status == CourseStatus.Published || c.Status == CourseStatus.Approved || c.Status == CourseStatus.PendingReview)
+                .Where(c => c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published)
                 .Include(c => c.CourseDetails)
                 .Include(c => c.courseCategory)
                 .ToList();

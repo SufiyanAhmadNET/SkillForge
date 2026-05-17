@@ -1,0 +1,12 @@
+namespace SkillForge.Areas.Admin.Models
+{
+    public class StudentListVM
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string EnrolledCourses { get; set; } = string.Empty;
+        public DateTime JoinedDate { get; set; }
+        public string Status { get; set; } = "Active";
+    }
+}

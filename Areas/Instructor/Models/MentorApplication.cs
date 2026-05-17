@@ -1,16 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SkillForge.Services.Instructors.Models;
 
 namespace SkillForge.Areas.Instructor.Models
 {
-    public enum MentorApplicationStatus
-    {
-        NotApplied,
-        Pending,
-        Approved,
-        Rejected
-    }
-
     public class MentorApplication
     {
         [Key]

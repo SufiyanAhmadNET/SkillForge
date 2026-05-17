@@ -48,7 +48,10 @@
           <a asp-area="Admin" asp-controller="Home" asp-action="Pending_Approvals"
              class="nav-link sidebar-link d-flex align-items-center">
             <i class="bi bi-person-check me-2"></i>Pending Approvals
-            <span class="badge bg-danger ms-auto">3</span>
+            @if (ViewBag.PendingCount != null && ViewBag.PendingCount > 0)
+            {
+                <span class="badge bg-danger ms-auto">@ViewBag.PendingCount</span>
+            }
           </a>
         </li>
 
@@ -105,7 +108,7 @@
 
     
     <header class="admin-header d-flex align-items-center justify-content-between px-4 bg-white border-bottom">
-      <span class="fw-semibold">@ViewData["Title"]</span>
+     
       <div class="d-flex align-items-center gap-3">
         <div class="input-group input-group-sm" style="width:210px;">
           <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SkillForge.Data;
 using SkillForge.Models;
 using SkillForge.Areas.User.Models;
-using SkillForge.Interfaces.Students;
+using SkillForge.Interfaces;
 using SkillForge.Services.Courses.Models;
 
 namespace SkillForge.Services.Students

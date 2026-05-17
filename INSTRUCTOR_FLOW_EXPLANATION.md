@@ -29,14 +29,14 @@ Modified the dashboard to act as an onboarding hub. Approved instructors see sta
 public override void OnActionExecuting(ActionExecutingContext context)
 {
     // 1. Identify the instructor and their latest application status
-    var status = application?.Status ?? MentorApplicationStatus.NotApplied;
+    var status = application?.Status ?? SkillForge.Services.Instructors.Models.MentorApplicationStatus.NotApplied;
     ViewBag.ApplicationStatus = status;
 
     // 2. Define features that require approval
     var restrictedActions = new[] { "AddCourse", "MyCourses", "CourseDetails", "EditCourse", "DeleteCourse", "Earning" };
 
     // 3. The Restriction Logic
-    if (status != MentorApplicationStatus.Approved && restrictedActions.Contains(actionName))
+    if (status != SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved && restrictedActions.Contains(actionName))
     {
         // Redirect non-approved users to the application tab with a warning
         context.Result = new RedirectToActionResult("Profile", "Home", new { tab = "application" });
@@ -68,7 +68,7 @@ if (urlParams.get('tab') === 'application') {
 We use conditional Razor logic to change the entire layout based on the `ApplicationStatus`.
 
 ```razor
-@if (Model.ApplicationStatus != MentorApplicationStatus.Approved)
+@if (Model.ApplicationStatus != SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
 {
     <!-- Show "Become a Mentor" CTA Card -->
 }
@@ -87,7 +87,7 @@ We don't ask the instructor for their "Role" or "Experience" again in the applic
 ```csharp
 // When applying, we only ask for specific application questions
 application.InstructorId = instructorId;
-application.Status = MentorApplicationStatus.Pending; // Force pending state
+application.Status = SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending; // Force pending state
 _context.MentorApplications.Add(application);
 ```
 **Logic:** This keeps the data structure clean and reduces "form fatigue" for the instructor.

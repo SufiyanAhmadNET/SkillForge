@@ -1,6 +1,6 @@
 using SkillForge.Data;
 using SkillForge.Models;
-using SkillForge.Interfaces.Courses;
+using SkillForge.Interfaces;
 
 namespace SkillForge.Services.Courses
 {

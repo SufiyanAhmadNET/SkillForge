@@ -23,6 +23,9 @@ namespace SkillForge.Models
         public CourseStatus Status { get; set; } = CourseStatus.Draft;
         public string? Rejection_Reason { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
         //Navigation Props
        // public Instructor instructor { get; set; }
         public Course_Category courseCategory { get; set; }

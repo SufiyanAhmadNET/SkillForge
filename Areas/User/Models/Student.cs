@@ -16,7 +16,7 @@ namespace SkillForge.Areas.User.Models
         public string? GoogleId { get; set; }
         //Navigation Property
         public StudentProfile? Profile { get; set; }
-
+        public DateTime CreatedAt { get; internal set; }
     }
 
 }

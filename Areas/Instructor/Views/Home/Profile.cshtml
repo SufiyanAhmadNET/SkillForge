@@ -195,7 +195,7 @@
             <div class="section-card shadow-sm p-4 border-purple-soft" style="background:#fff; border-radius:12px;">
                 <div class="form-section-title">Mentor Application</div>
 
-                @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.NotApplied || Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected)
+                @if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.NotApplied || Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected)
                 {
                     <div id="appCtaView">
                         <div class="text-center py-4">
@@ -210,7 +210,7 @@
                                 Share your expertise with students around the globe.
                             </p>
 
-                            @if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected)
+                            @if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected)
                             {
                                 <div class="alert alert-danger mb-4 mx-auto" style="max-width: 600px;">
                                     <div class="fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Application Rejected</div>
@@ -220,7 +220,7 @@
                             }
 
                             <button type="button" class="btn btn-purple px-5 py-2 shadow-sm rounded-pill" onclick="toggleApplicationView('form')">
-                                @(Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Rejected ? "Reapply as Mentor" : "Apply as Mentor")
+                                @(Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected ? "Reapply as Mentor" : "Apply as Mentor")
                             </button>
                         </div>
                     </div>
@@ -275,7 +275,7 @@
                         </form>
                     </div>
                 }
-                else if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Pending)
+                else if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
                 {
                     <div class="text-center py-5">
                         <div class="mb-4">
@@ -291,7 +291,7 @@
                         <div class="badge bg-primary px-4 py-2 rounded-pill shadow-sm">Review in Progress</div>
                     </div>
                 }
-                else if (Model.ApplicationStatus == SkillForge.Areas.Instructor.Models.MentorApplicationStatus.Approved)
+                else if (Model.ApplicationStatus == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
                 {
                     <div class="text-center py-5">
                         <div class="mb-4">
