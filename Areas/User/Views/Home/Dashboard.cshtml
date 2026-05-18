@@ -3,7 +3,10 @@
 @{
     Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
     ViewData["Title"] = "Dashboard";
+    ViewData["Subtitle"] = "Manage your learning activity";
 }
+
+<partial name="_PageTitleBanner" />
 
 @* email not verified *@
 @if (TempData["Verify"] != null)

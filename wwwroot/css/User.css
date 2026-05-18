@@ -670,29 +670,6 @@
     border-radius: 6px;
 }
 
-/* ─── PAGE TITLE BANNER ─── */
-.sf-page-title-banner {
-    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
-    width: 100%;
-    padding: 18px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.sf-page-title-content {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 32px;
-}
-
-.sf-page-title-content h1 {
-    color: #fff;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.45rem;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: -0.2px;
-}
-
 /* ==========================================================================
    MOBILE-FIRST RESPONSIVE ADJUSTMENTS
    ========================================================================== */
@@ -712,19 +689,6 @@
 @media (max-width: 768px) {
     .sf-page-body {
         padding: 20px 16px;
-    }
-}
-
-/* ─── Page Title Banner Scaling ─── */
-@media (max-width: 768px) {
-    .sf-page-title-banner {
-        padding: 12px 0;
-    }
-    .sf-page-title-content {
-        padding: 0 16px;
-    }
-    .sf-page-title-content h1 {
-        font-size: 1.15rem !important;
     }
 }
 
