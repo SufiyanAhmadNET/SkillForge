@@ -54,17 +54,20 @@ namespace SkillForge.Areas.Instructor.Controllers
             {
                 TempData["Alert"] = "This Email Already Registered, You can Login";
                 TempData["AlertType"] = "warning";
+                return View();
             }
             if (result.status == AuthMessage.EmailRegisteredAsStudent)
             {
                 TempData["Alert"] = "This email is registered as Student. Please login as Student.";
                 TempData["AlertType"] = "warning";
+                return View();
             }
             // password mismatch
             if (result.status == AuthMessage.PassNotMatch)
             {
                 TempData["Alert"] = "Password and Confirm Password doesn't Match!";
                 TempData["AlertType"] = "danger";
+                return View();
             }
             // email sent
             if (result.status == AuthMessage.VerifyEmail)
@@ -99,6 +102,11 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin");
             }
             
+            if (TempData["Alert"] == null)
+            {
+                TempData["Alert"] = "Something went wrong during registration. Please try again.";
+                TempData["AlertType"] = "danger";
+            }
             return View();
         }
 
@@ -111,6 +119,7 @@ namespace SkillForge.Areas.Instructor.Controllers
         [HttpPost]
         public async Task<IActionResult> InstructorLogin(string Email, string Password)
         {
+            ViewBag.Email = Email;
             var result = _authService.Login(Email, Password, "Instructor");
             // new user
             if (result.status == AuthMessage.NewUser)
@@ -143,7 +152,12 @@ namespace SkillForge.Areas.Instructor.Controllers
                 await SigninUser(result.Id.ToString(), result.Email, "Instructor", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
                 return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
             }
-            TempData["Alert"] = TempData["Alert"] ?? "Something went wrong"; 
+            
+            if (TempData["Alert"] == null)
+            {
+                TempData["Alert"] = "Something went wrong. Please try again.";
+                TempData["AlertType"] = "danger";
+            }
             return View();
         }
             

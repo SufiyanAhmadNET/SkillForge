@@ -46,17 +46,22 @@ namespace SkillForge.Areas.User.Controllers
             if (result.status == AuthMessage.EmailExist)
             {
                 TempData["Alert"] = "This Email Already Registered, You can Login";
+                TempData["AlertType"] = "warning";
+                return View();
             }
             
             if (result.status == AuthMessage.EmailRegisteredAsInstructor)
             {
                 TempData["Alert"] = "This email is registered as Instructor. Please login as Instructor.";
                 TempData["AlertType"] = "warning";
+                return View();
             }
             
             if (result.status == AuthMessage.PassNotMatch)
             {
                 TempData["Alert"] = "Password and Confirm Password doesn't Match!";
+                TempData["AlertType"] = "danger";
+                return View();
             }
             
             if (result.status == AuthMessage.VerifyEmail)
@@ -65,23 +70,37 @@ namespace SkillForge.Areas.User.Controllers
                 TempData["AlertType"] = "success";
                 TempData["VerifyMessage"] = "We’ve sent a OTP on email.";
                 TempData["VerifyEmail"] = result.Email;
+                return View();
             }
             
             if (result.status == AuthMessage.EmailNotSent)
             {
                 TempData["Alert"] = "Registered! Email sending failed";
+                TempData["AlertType"] = "danger";
                 TempData["VerifyMessage"] = "Email not sent. Try again.";
+                return View();
             }
             
             if (result.status == AuthMessage.EmailVerified)
             {
                 TempData["Alert"] = "Email verified! You can now login.";
+                TempData["AlertType"] = "success";
                 return RedirectToAction("StudentLogin");
             }
 
-            TempData["Alert"] = "Registration successful. Login and Start Shaping Your Career in Right Path";
-            TempData["AlertType"] = "success";
-            return RedirectToAction("StudentLogin");
+            if (result.Success)
+            {
+                TempData["Alert"] = "Registration successful. Login and Start Shaping Your Career in Right Path";
+                TempData["AlertType"] = "success";
+                return RedirectToAction("StudentLogin");
+            }
+
+            if (TempData["Alert"] == null)
+            {
+                TempData["Alert"] = "Something went wrong during registration. Please try again.";
+                TempData["AlertType"] = "danger";
+            }
+            return View();
         }
 
         // Show student login page
@@ -94,30 +113,36 @@ namespace SkillForge.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> StudentLogin(string Email, string Password)
         {
+            ViewBag.Email = Email;
             var result = _authService.Login(Email, Password, "Student");
 
             // Handle login status
             if (result.status == AuthMessage.NewUser)
             {
                 TempData["Alert"] = "This Email Doesn't Registered, Please Create Account";
+                TempData["AlertType"] = "warning";
             }
             if (result.status == AuthMessage.EmailRegisteredAsInstructor)
             {
                 TempData["Alert"] = "This email is registered as Instructor. Please login from Instructor panel.";
+                TempData["AlertType"] = "warning";
             }
             if (result.status == AuthMessage.VerifyEmail)
             {
                 _otpService.SendEmailOtp(Email, "Student");
                 TempData["VerifyEmail"] = Email;
                 TempData["Alert"] = "OTP sent. Please verify your email.";
+                TempData["AlertType"] = "info";
             }
             if (result.status == AuthMessage.WrongPassword)
             {
                 TempData["Alert"] = "Incorrect Password";
+                TempData["AlertType"] = "danger";
             }
             if (result.status == AuthMessage.LoginFailed)
             {
                 TempData["Alert"] = "Login failed. If you signed up with Google, please use the 'Login with Google' button.";
+                TempData["AlertType"] = "danger";
             }
             
             // Sign in on success
@@ -127,7 +152,11 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("Courses", "Home", new { area = "User" });
             }
 
-            TempData["Alert"] = "Something went wrong. Please try again.";
+            if (TempData["Alert"] == null)
+            {
+                TempData["Alert"] = "Something went wrong. Please try again.";
+                TempData["AlertType"] = "danger";
+            }
             return View();
         }
 

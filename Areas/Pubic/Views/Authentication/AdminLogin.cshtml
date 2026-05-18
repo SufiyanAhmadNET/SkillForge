@@ -5,24 +5,6 @@
 }
 
 
-@* Alert Box for Admin Login *@
-@* If Fields are empty *@
-
-@if (ViewBag.Error != null)
-{
-    <div class=" alert alert-danger">
-        @ViewBag.Error
-    </div>
-}
-@* If Wrong Details *@
-@if (ViewBag.InvalidDetails != null)
-{
-    <div class=" alert alert-danger">
-        @ViewBag.InvalidDetails
-    </div>
-}
-
-
 <!-- auth card  -->
 <section class="d-flex align-items-center justify-content-center py-5 flex-grow-1">
     <div class="auth-card">
@@ -43,7 +25,7 @@
             <div class="mb-3">
                 <label class="form-label">Admin Email</label>
                 <input type="email" class="form-control" name="email"
-                       placeholder="admin@skillforge.com" autocomplete="email">
+                       placeholder="admin@skillforge.com" autocomplete="email" value="@ViewBag.Email">
             </div>
 
             <!-- Password + toggle -->

@@ -18,14 +18,14 @@
 /* Container for floating alerts */
 .alert-container {
     position: fixed;
-    top: 24px;
+    top: 90px;
     right: 24px;
-    z-index: 2100; /* Over everything */
+    z-index: 9999; /* Over everything */
     display: flex;
     flex-direction: column;
     gap: 12px;
     pointer-events: none; /* Let clicks pass through to background when empty */
-    width: 380px;
+    width: 420px;
     max-width: calc(100vw - 48px);
 }
 
@@ -33,16 +33,17 @@
 .alert {
     pointer-events: auto; /* Re-enable clicks for the alert itself */
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 14px 20px;
     border-radius: 12px;
     border: 1px solid;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
     background-color: #fff;
     font-size: 14px;
     font-weight: 500;
-    line-height: 1.5;
+    line-height: 1.4;
+    margin-bottom: 0; /* Override bootstrap default */
     opacity: 0;
     transform: translateX(30px);
     animation: alert-slide-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;

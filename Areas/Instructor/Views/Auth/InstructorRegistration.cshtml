@@ -43,19 +43,8 @@
 
             <!-- Title -->
             <h2 class="text-center fw-bold mb-3">Create Account</h2>
-            <div id="instructor-register-alert" class="alert-container alert-inline"></div>
 
-            @*  Alert Messages *@
-            @if (TempData["Alert"] != null)
-            {
-                <script>
-                    window.addEventListener("load", function () {
-                        showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")", 3800, "instructor-register-alert");
-                    });
-                </script>
-            }
-
-            @* otp *@
+            @* otp trigger *@
             @if (TempData["VerifyEmail"] != null)
             {
                 <script>
@@ -65,15 +54,6 @@
                 </script>
             }
 
-            @* VerifyMessage *@
-            @if (TempData["VerifyMessage"] != null)
-            {
-                <script>
-                    window.addEventListener("load", function () {
-                        showAlert("@TempData["VerifyMessage"]", "warning", 4000, "otp-alert-container");
-                    });
-                </script>
-            }
             @* ALert Messages *@
 
 

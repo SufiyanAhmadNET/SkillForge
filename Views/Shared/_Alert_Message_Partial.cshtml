@@ -1,26 +1,68 @@
-@* Global Alert Container - Toasts will be appended here *@
-<div id="alert-container" class="alert-container"></div>
+@{
+    var rawAlert = TempData["Alert"]?.ToString();
+    var alertMsg = rawAlert;
+    var alertType = TempData["AlertType"]?.ToString() ?? "info";
 
-@if (TempData["Alert"] != null)
-{
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Check if showAlert exists (it should be in Alert.js)
-            if (typeof showAlert === "function") {
-                showAlert("@TempData["Alert"]", "@(TempData["AlertType"] ?? "info")");
-            }
-        });
-    </script>
+    // Handle legacy "type:message" format (e.g., "success:Message", "error:Message")
+    if (!string.IsNullOrEmpty(alertMsg) && alertMsg.Contains(":"))
+    {
+        var colonIndex = alertMsg.IndexOf(':');
+        var prefix = alertMsg.Substring(0, colonIndex).ToLower().Trim();
+        var possibleTypes = new[] { "success", "error", "warning", "info", "danger" };
+
+        if (possibleTypes.Contains(prefix))
+        {
+            alertType = (prefix == "error") ? "danger" : prefix;
+            alertMsg = alertMsg.Substring(colonIndex + 1).Trim();
+        }
+    }
+
+    // Fallback to ViewBag if TempData is empty (common in some modules)
+    if (string.IsNullOrEmpty(alertMsg))
+    {
+        if (ViewBag.Error != null)
+        {
+            alertMsg = ViewBag.Error.ToString();
+            alertType = "danger";
+        }
+        else if (ViewBag.InvalidDetails != null)
+        {
+            alertMsg = ViewBag.InvalidDetails.ToString();
+            alertType = "danger";
+        }
+    }
+
+    // Normalize type to match standard Bootstrap classes
+    if (alertType == "error") alertType = "danger";
+    if (alertType == "sent") alertType = "success";
+    if (alertType == "warn") alertType = "warning";
 }
 
-@* Handle other specific TempData messages if needed *@
-@if (TempData["LoginSuccess"] != null)
+@if (!string.IsNullOrEmpty(alertMsg) || TempData["LoginSuccess"] != null || TempData["VerifyMessage"] != null)
 {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (typeof showAlert === "function") {
-                showAlert("@TempData["LoginSuccess"]", "success");
-            }
-        });
-    </script>
+    <div class="alert-container">
+        @if (!string.IsNullOrEmpty(alertMsg))
+        {
+            <div class="alert alert-@alertType alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 12px; font-weight: 500;">
+                <div class="alert-message">@alertMsg</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["LoginSuccess"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 12px; font-weight: 500;">
+                <div class="alert-message">@TempData["LoginSuccess"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["VerifyMessage"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 12px; font-weight: 500;">
+                <div class="alert-message">@TempData["VerifyMessage"]</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
 }

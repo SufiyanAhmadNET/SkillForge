@@ -29,15 +29,6 @@
                 </script>
             }
 
-            @* VerifyMessage *@
-            @if (TempData["VerifyMessage"] != null)
-            {
-                <script>
-                    window.addEventListener("load", function () {
-                        showAlert("@TempData["VerifyMessage"]", "warning", 4000, "otp-alert-container");
-                    });
-                </script>
-            }
             @* ALert Messages *@
 
 

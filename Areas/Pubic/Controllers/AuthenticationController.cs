@@ -18,6 +18,7 @@ namespace SkillForge.Areas.Pubic.Controllers
         [HttpPost]
         public IActionResult AdminLogin(string email, string password)
         {
+            ViewBag.Email = email;
             if(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 ViewBag.Error = "Please Enter Credential";
