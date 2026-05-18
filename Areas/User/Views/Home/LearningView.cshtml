@@ -1,77 +1,106 @@
 @model CourseDetailsVM
 @{
     Layout = "/Areas/User/Views/Shared/_StudentLayout.cshtml";
-    ViewData["Title"] = "Learning: " + Model.Title;
+    ViewData["Title"] = Model.Title;
     var completedLessons = ViewBag.CompletedLessons as List<int> ?? new List<int>();
 }
 
-<div class="container-fluid p-0 bg-white" style="margin-top: -1.5rem;">
-    <div class="row g-0">
-        @* player & details *@
-        <div class="col-lg-8 border-end bg-white">
-            <div class="video-section bg-black p-0 position-relative shadow-sm" style="min-height: 480px; background-color: #000 !important;">
-                <div id="videoContainer" class="ratio ratio-16x9 h-100">
-                    <div class="d-flex align-items-center justify-content-center text-white flex-column h-100 bg-dark bg-gradient">
-                        <i class="bi bi-play-circle display-1 opacity-25 mb-3"></i>
-                        <h5 class="fw-light opacity-75">Select a lesson to start learning</h5>
+<div class="container-fluid py-3 px-lg-4 bg-light min-vh-100">
+    <div class="row g-4">
+        
+        <!-- LEFT: Video & Course Details -->
+        <div class="col-lg-8 col-xl-9">
+            
+            <!-- Video Player Section -->
+            <div class="card border-0 shadow-sm overflow-hidden mb-4 rounded-3 bg-dark">
+                <div id="videoContainer" class="ratio ratio-16x9 mx-auto" style="max-height: 540px;">
+                    <div class="d-flex flex-column align-items-center justify-content-center text-white h-100 bg-dark opacity-75">
+                        <i class="bi bi-play-circle mb-3" style="font-size: 4rem; color: var(--orange);"></i>
+                        <h5 class="fw-bold">Select a lesson to begin your journey</h5>
+                        <p class="text-white-50 small">Your progress is automatically saved as you learn.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="content-section p-4">
-                <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div class="flex-grow-1">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                             <a asp-action="EnrolledCourses" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;">
-                                <i class="bi bi-arrow-left me-1"></i>Back
-                             </a>
-                             <span class="badge bg-light text-dark border fw-normal" style="font-size: 11px;">@Model.CategoryName</span>
-                        </div>
-                        <h4 class="fw-bold mb-1">@Model.Title</h4>
-                        <div class="text-muted small d-flex align-items-center flex-wrap gap-3">
-                            <span class="d-flex align-items-center"><i class="bi bi-journal-text me-1"></i>@Model.modules?.Count Modules</span>
-                            <span class="d-flex align-items-center"><i class="bi bi-bar-chart me-1"></i>@Model.Difficulty</span>
-                            <span class="d-flex align-items-center"><i class="bi bi-clock me-1"></i>@Model.Duration Weeks</span>
-                        </div>
+            <!-- Course Meta & Progress -->
+            <div class="card border-0 shadow-sm p-3 mb-4 rounded-3">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <a asp-action="EnrolledCourses" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
+                            <i class="bi bi-arrow-left me-1"></i> My Courses
+                        </a>
+                        <span class="badge rounded-pill px-3 py-2" style="background: #fff3e6; color: var(--orange); border: 1px solid #ffe5d4;">
+                            @Model.CategoryName
+                        </span>
                     </div>
-                    <div class="text-end ms-3">
-                        <div class="progress mb-1" style="height: 6px; width: 120px; background-color: #eee; border-radius: 10px;">
-                            <div id="courseProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%; border-radius: 10px;"></div>
+
+                    <div class="d-flex align-items-center gap-3 flex-grow-1 justify-content-end" style="max-width: 400px;">
+                        <div class="flex-grow-1">
+                            <div class="progress" style="height: 8px; background-color: #eee;">
+                                <div id="courseProgressBar" class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--orange);" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
                         </div>
-                        <span id="courseProgressText" class="text-muted d-block" style="font-size: 11px;">0% Complete</span>
+                        <span id="courseProgressText" class="fw-bold text-dark small" style="min-width: 90px;">0% Complete</span>
                     </div>
                 </div>
+            </div>
 
-                <ul class="nav nav-tabs border-bottom mb-4" id="courseTab" role="tablist">
-                    <li class="nav-item">
-                        <button class="nav-link active fw-bold border-0 bg-transparent text-dark" data-bs-toggle="tab" data-bs-target="#description">Description</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link fw-bold border-0 bg-transparent text-dark" data-bs-toggle="tab" data-bs-target="#outcomes">Outcomes</button>
-                    </li>
-                </ul>
-
-                <div class="tab-content pt-2">
-                    <div class="tab-pane fade show active" id="description">
-                        <p class="text-muted" style="line-height: 1.7; font-size: 15px; white-space: pre-line;">@Model.Desciption</p>
+            <!-- Course Info & Tabs -->
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                <div class="card-body p-4">
+                    <h2 class="fw-bold text-dark mb-3">@Model.Title</h2>
+                    
+                    <div class="d-flex flex-wrap gap-4 mb-4 text-muted small border-bottom pb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-collection-play text-orange"></i>
+                            <span class="fw-semibold">@Model.modules?.Count Modules</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-bar-chart-steps text-orange"></i>
+                            <span class="fw-semibold">@Model.Difficulty</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-orange"></i>
+                            <span class="fw-semibold">@Model.Duration Weeks Access</span>
+                        </div>
                     </div>
-                    <div class="tab-pane fade" id="outcomes">
-                        <div class="row g-3">
+
+                    <!-- Tabs -->
+                    <ul class="nav nav-pills custom-pills mb-4" id="courseTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold px-4 py-2 me-2" data-bs-toggle="tab" data-bs-target="#description" type="button">About Course</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold px-4 py-2" data-bs-toggle="tab" data-bs-target="#outcomes" type="button">What You'll Learn</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="courseTabContent">
+                        <div class="tab-pane fade show active" id="description" role="tabpanel">
+                            <div class="lh-lg text-dark" style="font-size: 0.95rem; white-space: pre-line;">
+                                @Model.Desciption
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="outcomes" role="tabpanel">
                             @if (Model.outcomes != null && Model.outcomes.Any())
                             {
-                                @foreach (var outcome in Model.outcomes)
-                                {
-                                    <div class="col-md-6">
-                                        <div class="d-flex gap-2">
-                                            <i class="bi bi-check-circle-fill text-success" style="font-size: 14px;"></i>
-                                            <span class="text-muted small">@outcome.Outcome</span>
+                                <div class="row g-3">
+                                    @foreach (var outcome in Model.outcomes)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-start gap-3 p-2 rounded-3 bg-light border border-white h-100 shadow-sm">
+                                                <i class="bi bi-check2-circle text-success fs-5"></i>
+                                                <span class="small fw-medium text-dark mt-1">@outcome.Outcome</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             }
                             else
                             {
-                                <div class="col-12 text-muted small">No specific learning outcomes listed for this course.</div>
+                                <div class="text-center py-4 text-muted small bg-light rounded-3 border border-dashed">
+                                    <i class="bi bi-info-circle me-1"></i> No specific learning outcomes listed.
+                                </div>
                             }
                         </div>
                     </div>
@@ -79,186 +108,248 @@
             </div>
         </div>
 
-        @* syllabus sidebar *@
-        <div class="col-lg-4 bg-light border-start syllabus-col">
-            <div class="syllabus-header p-3 bg-white border-bottom sticky-top" style="top: 0; z-index: 10;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold mb-0">Course Content</h6>
-                    <span class="badge bg-dark rounded-pill" style="font-size: 10px;">@Model.modules?.SelectMany(m => m.Lessons).Count() Lessons</span>
+        <!-- RIGHT: Syllabus Sidebar -->
+        <div class="col-lg-4 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 sticky-top learning-sidebar" style="top: 85px; max-height: calc(100vh - 120px);">
+                <div class="card-header bg-white border-bottom p-3 d-flex align-items-center justify-content-between sticky-top top-0 z-3">
+                    <h6 class="fw-bold mb-0 text-dark">Course Content</h6>
+                    <span class="badge bg-dark rounded-pill px-2 py-1" style="font-size: 0.65rem;">
+                        @Model.modules?.SelectMany(m => m.Lessons).Count() Lessons
+                    </span>
                 </div>
-            </div>
-            <div class="syllabus-body overflow-auto" style="height: calc(100vh - 120px); max-height: calc(100vh - 120px);">
-                <div class="accordion accordion-flush" id="syllabusAccordion">
-                    @if (Model.modules != null && Model.modules.Any())
-                    {
-                        @for (int i = 0; i < Model.modules.Count; i++)
+                
+                <div class="card-body p-0 overflow-auto">
+                    <div class="accordion accordion-flush" id="syllabusAccordion">
+                        @if (Model.modules != null && Model.modules.Any())
                         {
-                            var module = Model.modules[i];
-                            <div class="accordion-item border-bottom">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button @(i == 0 ? "" : "collapsed") bg-white py-3 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#module-@module.Id">
-                                        <div class="w-100">
-                                            <div class="fw-bold small text-dark" style="font-size: 13px;">Module @(i + 1): @module.ModuleName</div>
-                                            <div class="text-muted mt-1" style="font-size: 11px;">@module.Lessons?.Count Lessons</div>
-                                        </div>
-                                    </button>
-                                </h2>
-                                <div id="module-@module.Id" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#syllabusAccordion">
-                                    <div class="accordion-body p-0">
-                                        <div class="list-group list-group-flush">
+                            @for (int i = 0; i < Model.modules.Count; i++)
+                            {
+                                var module = Model.modules[i];
+                                <div class="accordion-item border-bottom border-light">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button @(i == 0 ? "" : "collapsed") shadow-none py-3" 
+                                                type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#module-@module.Id">
+                                            <div class="d-flex flex-column gap-1">
+                                                <span class="fw-bold text-dark" style="font-size: 0.85rem;">Module @(i+1): @module.ModuleName</span>
+                                                <span class="text-muted" style="font-size: 0.72rem;">@module.Lessons?.Count Lessons</span>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="module-@module.Id" class="accordion-collapse collapse @(i == 0 ? "show" : "")" data-bs-parent="#syllabusAccordion">
+                                        <div class="accordion-body p-0 bg-white">
                                             @if (module.Lessons != null && module.Lessons.Any())
                                             {
                                                 @foreach (var lesson in module.Lessons.OrderBy(l => l.Order))
                                                 {
                                                     var isCompleted = completedLessons.Contains(lesson.Id);
-                                                    <div class="list-group-item list-group-item-action border-0 lesson-item d-flex align-items-center gap-3 p-3 bg-white" 
-                                                            style="cursor: pointer;" onclick="loadVideo('@lesson.VideoUrl', @lesson.Id, this)">
-                                                        <div class="lesson-status flex-shrink-0">
+                                                    <div class="lp-lesson d-flex align-items-center gap-3 py-3 px-3 @(isCompleted ? "lp-lesson--done" : "")" 
+                                                         onclick="loadVideo('@lesson.VideoUrl', @lesson.Id, this)">
+                                                        
+                                                        <div class="lp-lesson-icon flex-shrink-0">
                                                             @if (isCompleted)
                                                             {
-                                                                <i class="bi bi-check-circle-fill text-success lesson-check-@lesson.Id" style="font-size: 18px;"></i>
+                                                                <i class="bi bi-check-circle-fill text-success lesson-check-@lesson.Id"></i>
                                                             }
                                                             else
                                                             {
-                                                                <i class="bi bi-play-circle text-muted lesson-check-@lesson.Id" style="font-size: 18px;"></i>
+                                                                <i class="bi bi-play-circle text-muted lesson-check-@lesson.Id"></i>
                                                             }
                                                         </div>
+
                                                         <div class="flex-grow-1 min-w-0">
-                                                            <div class="small fw-medium text-dark text-truncate lesson-title" style="font-size: 13px;">@lesson.Title</div>
-                                                            <div class="text-muted d-flex align-items-center mt-1" style="font-size: 10px;">
-                                                                <i class="bi bi-youtube me-1 text-danger"></i>Video · YouTube
+                                                            <div class="lp-lesson-title text-truncate fw-medium" style="font-size: 0.82rem;">@lesson.Title</div>
+                                                            <div class="d-flex align-items-center gap-2 mt-1">
+                                                                <i class="bi bi-youtube text-danger" style="font-size: 0.75rem;"></i>
+                                                                <span class="text-muted" style="font-size: 0.7rem;">YouTube</span>
                                                             </div>
                                                         </div>
-                                                        <div class="form-check m-0" onclick="event.stopPropagation();">
-                                                            <input class="form-check-input lesson-checkbox" type="checkbox" @(isCompleted ? "checked" : "") 
-                                                                   onchange="toggleCompletion(@lesson.Id, @Model.CourseId, event, this)" style="cursor: pointer; border-color: #ddd;">
+
+                                                        <div class="flex-shrink-0 ms-2" onclick="event.stopPropagation();">
+                                                            <input class="form-check-input lesson-checkbox rounded-1 border-secondary-subtle" 
+                                                                   type="checkbox" 
+                                                                   @(isCompleted ? "checked" : "")
+                                                                   onchange="toggleCompletion(@lesson.Id, @Model.CourseId, event, this)"
+                                                                   style="width: 1.1rem; height: 1.1rem; cursor: pointer;">
                                                         </div>
                                                     </div>
                                                 }
                                             }
                                             else
                                             {
-                                                <div class="p-3 text-center text-muted small">No lessons in this module.</div>
+                                                <div class="py-3 px-4 text-muted italic small">No lessons in this module.</div>
                                             }
                                         </div>
                                     </div>
                                 </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-5 px-3 text-muted">
+                                <i class="bi bi-journals d-block mb-2 fs-1 opacity-25"></i>
+                                <p class="small">Course syllabus will be available soon.</p>
                             </div>
                         }
-                    }
-                    else
-                    {
-                        <div class="p-5 text-center">
-                            <i class="bi bi-journal-x display-4 text-muted opacity-25 d-block mb-3"></i>
-                            <div class="text-muted small">Syllabus details coming soon.</div>
-                        </div>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        function loadVideo(url, lessonId, element) {
-            if (!url) {
-                showAlert("No video link available for this lesson.", "info");
-                return;
-            }
+<script>
+    // load youtube video in player
+    function loadVideo(url, lessonId, element) {
+        if (!url) { showAlert("No video for this lesson.", "info"); return; }
 
-            // extract youtube id
-            let videoId = '';
-            if (url.includes('youtube.com/watch?v=')) {
-                videoId = url.split('v=')[1].split('&')[0];
-            } else if (url.includes('youtu.be/')) {
-                videoId = url.split('youtu.be/')[1].split('?')[0];
-            } else if (url.includes('embed/')) {
-                 videoId = url.split('embed/')[1].split('?')[0];
-            }
+        let videoId = '';
+        if (url.includes('youtube.com/watch?v='))    videoId = url.split('v=')[1].split('&')[0];
+        else if (url.includes('youtu.be/'))          videoId = url.split('youtu.be/')[1].split('?')[0];
+        else if (url.includes('embed/'))             videoId = url.split('embed/')[1].split('?')[0];
 
-            if (videoId) {
-                const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
-                document.getElementById('videoContainer').innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            } else {
-                document.getElementById('videoContainer').innerHTML = `<div class='p-5 text-center text-white'>Invalid YouTube Link</div>`;
-            }
-
-            // ui feedback
-            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('bg-light-orange', 'border-start-orange'));
-            element.classList.add('bg-light-orange', 'border-start-orange');
+        const container = document.getElementById('videoContainer');
+        if (videoId) {
+            container.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        } else {
+            container.innerHTML = `<div class='p-5 h-100 d-flex align-items-center justify-content-center text-center text-white bg-dark'>
+                <div><i class="bi bi-exclamation-triangle mb-2 d-block fs-2 text-warning"></i>Invalid or missing YouTube video link</div>
+            </div>`;
         }
 
-        function toggleCompletion(lessonId, courseId, event, checkbox) {
-            event.stopPropagation(); // prevent video trigger
-            
-            $.ajax({
-                url: '/User/Home/MarkLessonComplete',
-                type: 'POST',
-                data: { lessonId: lessonId, courseId: courseId },
-                success: function (res) {
-                    if (res.success) {
-                        const icon = document.querySelector(`.lesson-check-${lessonId}`);
-                        if (checkbox.checked) {
-                            icon.className = `bi bi-check-circle-fill text-success lesson-check-${lessonId}`;
-                        } else {
-                            icon.className = `bi bi-play-circle text-muted lesson-check-${lessonId}`;
-                        }
-                        
-                        // update progress
-                        document.getElementById('courseProgressBar').style.width = res.progress + '%';
-                        document.getElementById('courseProgressText').innerText = res.progress + '% Complete';
-                    }
+        // highlight active lesson
+        document.querySelectorAll('.lp-lesson').forEach(el => el.classList.remove('lp-lesson--active'));
+        element.classList.add('lp-lesson--active');
+    }
+
+    // mark lesson complete via ajax — backend untouched
+    function toggleCompletion(lessonId, courseId, event, checkbox) {
+        event.stopPropagation();
+        $.ajax({
+            url: '/User/Home/MarkLessonComplete',
+            type: 'POST',
+            data: { lessonId, courseId },
+            success: function (res) {
+                if (res.success) {
+                    const icon = document.querySelector(`.lesson-check-${lessonId}`);
+                    icon.className = checkbox.checked
+                        ? `bi bi-check-circle-fill text-success lesson-check-${lessonId}`
+                        : `bi bi-play-circle text-muted lesson-check-${lessonId}`;
+
+                    // toggle done state on row
+                    const row = checkbox.closest('.lp-lesson');
+                    row.classList.toggle('lp-lesson--done', checkbox.checked);
+
+                    // update progress bar
+                    const progress = parseInt(res.progress);
+                    const progressBar = document.getElementById('courseProgressBar');
+                    progressBar.style.width = progress + '%';
+                    progressBar.setAttribute('aria-valuenow', progress);
+                    document.getElementById('courseProgressText').innerText = progress + '% Complete';
                 }
-            });
-        }
-
-        // init progress
-        $(document).ready(function() {
-            const totalLessons = @(Model.modules?.SelectMany(m => m.Lessons).Count() ?? 0);
-            const completedLessons = @completedLessons.Count;
-            const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-            
-            document.getElementById('courseProgressBar').style.width = progress + '%';
-            document.getElementById('courseProgressText').innerText = progress + '% Complete';
+            },
+            error: function() {
+                checkbox.checked = !checkbox.checked; // revert if failed
+                showAlert("Could not update progress. Please try again.", "danger");
+            }
         });
-    </script>
+    }
+
+    // init progress on load
+    $(document).ready(function () {
+        const total     = @(Model.modules?.SelectMany(m => m.Lessons).Count() ?? 0);
+        const completed = @completedLessons.Count;
+        const pct       = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        const progressBar = document.getElementById('courseProgressBar');
+        if(progressBar) {
+            progressBar.style.width = pct + '%';
+            progressBar.setAttribute('aria-valuenow', pct);
+        }
+        const progressText = document.getElementById('courseProgressText');
+        if(progressText) progressText.innerText  = pct + '% Complete';
+    });
+</script>
 }
 
 <style>
-    /* custom learning page styles */
-    .ls-1 { letter-spacing: 0.5px; }
-    .nav-tabs .nav-link { border-bottom: 2px solid transparent !important; }
-    .nav-tabs .nav-link.active {
-        color: #ff6600 !important;
-        border-bottom: 2px solid #ff6600 !important;
+    :root {
+        --text-orange: var(--orange);
     }
-    .lesson-item {
-        transition: all 0.2s;
-        border-left: 3px solid transparent !important;
+
+    .text-orange { color: var(--orange); }
+
+    /* Custom nav pills */
+    .custom-pills .nav-link {
+        color: #666;
+        border-radius: 8px;
+        transition: all 0.2s ease;
     }
-    .lesson-item:hover {
-        background-color: #fff8f5 !important;
+    .custom-pills .nav-link:hover {
+        color: var(--orange);
+        background-color: #fff3e6;
     }
-    .bg-light-orange {
-        background-color: #fff8f5 !important;
+    .custom-pills .nav-link.active {
+        background-color: var(--orange) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(255, 107, 0, 0.2);
     }
-    .border-start-orange {
-        border-left: 3px solid #ff6600 !important;
+
+    /* Lesson row styling */
+    .lp-lesson {
+        cursor: pointer;
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
     }
+    .lp-lesson:hover {
+        background-color: #f8f9fa;
+    }
+    .lp-lesson--active {
+        background-color: #fff3e6 !important;
+        border-left-color: var(--orange) !important;
+    }
+    .lp-lesson--done {
+        background-color: #f0fff4;
+    }
+    .lp-lesson--done .lp-lesson-title {
+        color: #28a745;
+    }
+
+    /* Accordion Customization */
     .accordion-button:not(.collapsed) {
-        background-color: #fff;
-        color: #ff6600;
+        background-color: #fffaf5;
+        color: var(--orange);
     }
-    #videoContainer iframe {
-        width: 100%;
-        height: 100%;
+    .accordion-button::after {
+        background-size: 0.8rem;
     }
-    .syllabus-body::-webkit-scrollbar {
-        width: 4px;
+
+    /* Sticky Sidebar Scrollbar */
+    .learning-sidebar .card-body::-webkit-scrollbar {
+        width: 6px;
     }
-    .syllabus-body::-webkit-scrollbar-thumb {
-        background: #ddd;
+    .learning-sidebar .card-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .learning-sidebar .card-body::-webkit-scrollbar-thumb {
+        background: #ccc;
         border-radius: 10px;
     }
+    .learning-sidebar .card-body::-webkit-scrollbar-thumb:hover {
+        background: #aaa;
+    }
+
+    /* Responsiveness tweaks */
+    media (max-width: 991.98px) {
+        .learning-sidebar {
+            position: static !important;
+            max-height: 500px !important;
+            margin-top: 1.5rem;
+        }
+    }
 </style>
+
