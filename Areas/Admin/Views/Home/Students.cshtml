@@ -35,47 +35,53 @@
     <!-- STUDENTS TABLE -->
     <div class="card border-0 admin-card">
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Student</th>
-                        <th>Email</th>
-                        <th>Enrolled Courses</th>
-                        <th>Joined</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="studentTableBody">
-                    @{
-                        int index = 1;
-                    }
-                    @foreach (var student in Model)
-                    {
-                        <tr data-name="@student.Name.ToLower()" data-email="@student.Email.ToLower()">
-                            <td class="text-muted">@index++</td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="tbl-avatar bg-success bg-opacity-10 text-success">
-                                        @student.Name.Substring(0, 1).ToUpper()
-                                    </div>
-                                    @student.Name
-                                </div>
-                            </td>
-                            <td class="text-muted">@student.Email</td>
-                            <td>@(string.IsNullOrEmpty(student.EnrolledCourses) ? "—" : student.EnrolledCourses)</td>
-                            <td class="text-muted small">@student.JoinedDate.ToString("MMM dd, yyyy")</td>
-                            <td><span class="badge bg-success">@student.Status</span></td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-outline-secondary">View</button>
-                                </div>
-                            </td>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
+                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
+                        <tr>
+                            <th class="ps-3">#</th>
+                            <th>Student</th>
+                            <th>Email</th>
+                            <th>Enrolled Courses</th>
+                            <th>Joined</th>
+                            <th>Status</th>
+                            <th class="pe-3">Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var student in Model)
+                        {
+                            <tr data-name="@student.Name.ToLower()" data-email="@student.Email.ToLower()">
+                                <td class="ps-3 text-muted">@index++</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="tbl-avatar bg-success bg-opacity-10 text-success fw-bold" style="width: 28px; height: 28px; font-size: 11px;">
+                                            @student.Name.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <span class="fw-medium text-dark">@student.Name</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted small">@student.Email</td>
+                                <td class="text-muted small">
+                                    <div class="text-truncate" style="max-width: 200px;" title="@student.EnrolledCourses">
+                                        @(string.IsNullOrEmpty(student.EnrolledCourses) ? "—" : student.EnrolledCourses)
+                                    </div>
+                                </td>
+                                <td class="text-muted small">@student.JoinedDate.ToString("MMM dd, yyyy")</td>
+                                <td><span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2">@student.Status</span></td>
+                                <td class="pe-3">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 12px;">View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">

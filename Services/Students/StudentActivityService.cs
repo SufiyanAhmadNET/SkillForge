@@ -46,7 +46,8 @@ namespace SkillForge.Services.Students
                     {
                         courseId = e.Course.Id,
                         Title = e.Course.Title,
-                        SubTitle = e.Course.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? string.Empty,
+                        ShortSummary = !string.IsNullOrWhiteSpace(e.Course.CourseDetails?.ShortSummary) ? e.Course.CourseDetails.ShortSummary : e.Course.CourseDetails?.Description,
+                        SubTitle = !string.IsNullOrWhiteSpace(e.Course.CourseDetails?.ShortSummary) ? e.Course.CourseDetails.ShortSummary : e.Course.CourseDetails?.Description,
                         CategoryName = e.Course.courseCategory?.Name ?? "Uncategorized",
                         Difficulty = e.Course.CourseDetails?.Difficulty.ToString() ?? "None",
                         Total_Price = e.Course.CourseDetails?.Total_Price ?? 0,
@@ -94,7 +95,8 @@ namespace SkillForge.Services.Students
             {
                 courseId = w.Course.Id,
                 Title = w.Course.Title,
-                SubTitle = w.Course.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? string.Empty,
+                ShortSummary = !string.IsNullOrWhiteSpace(w.Course.CourseDetails?.ShortSummary) ? w.Course.CourseDetails.ShortSummary : w.Course.CourseDetails?.Description,
+                SubTitle = !string.IsNullOrWhiteSpace(w.Course.CourseDetails?.ShortSummary) ? w.Course.CourseDetails.ShortSummary : w.Course.CourseDetails?.Description,
                 CategoryName = w.Course.courseCategory?.Name ?? "Uncategorized",
                 Difficulty = w.Course.CourseDetails?.Difficulty.ToString() ?? "None",
                 Total_Price = w.Course.CourseDetails?.Total_Price ?? 0,
@@ -129,6 +131,8 @@ namespace SkillForge.Services.Students
                 {
                     courseId = c.Id,
                     Title = c.Title,
+                    ShortSummary = !string.IsNullOrWhiteSpace(c.CourseDetails.ShortSummary) ? c.CourseDetails.ShortSummary : c.CourseDetails.Description,
+                    SubTitle = !string.IsNullOrWhiteSpace(c.CourseDetails.ShortSummary) ? c.CourseDetails.ShortSummary : c.CourseDetails.Description,
                     CategoryName = c.courseCategory != null ? c.courseCategory.Name : "Uncategorized",
                     Total_Price = c.CourseDetails != null ? c.CourseDetails.Total_Price : 0,
                     Thumbnail_Url = c.CourseDetails != null ? c.CourseDetails.Thumbnail_Url : string.Empty
@@ -153,7 +157,8 @@ namespace SkillForge.Services.Students
                     courseId = e.Course.Id,
                     Title = e.Course.Title,
                     Thumbnail_Url = e.Course.CourseDetails?.Thumbnail_Url,
-                    SubTitle = e.Course.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? ""
+                    ShortSummary = !string.IsNullOrWhiteSpace(e.Course.CourseDetails?.ShortSummary) ? e.Course.CourseDetails.ShortSummary : e.Course.CourseDetails?.Description,
+                    SubTitle = !string.IsNullOrWhiteSpace(e.Course.CourseDetails?.ShortSummary) ? e.Course.CourseDetails.ShortSummary : e.Course.CourseDetails?.Description
                 }).Take(4).ToList(),
                 RecommendedCourses = recommended
             };
@@ -215,7 +220,8 @@ namespace SkillForge.Services.Students
                 {
                     courseId = c.CourseId,
                     Title = c.Course.Title,
-                    SubTitle = (c.Course.CourseDetails.Description ?? "").Split('.', StringSplitOptions.None).FirstOrDefault() ?? string.Empty,
+                    ShortSummary = !string.IsNullOrWhiteSpace(c.Course.CourseDetails.ShortSummary) ? c.Course.CourseDetails.ShortSummary : c.Course.CourseDetails.Description,
+                    SubTitle = !string.IsNullOrWhiteSpace(c.Course.CourseDetails.ShortSummary) ? c.Course.CourseDetails.ShortSummary : c.Course.CourseDetails.Description,
                     CategoryName = c.Course.courseCategory.Name,
                     Total_Price = c.Course.CourseDetails.Total_Price,
                     Actual_Price = c.Course.CourseDetails.Actual_Price,

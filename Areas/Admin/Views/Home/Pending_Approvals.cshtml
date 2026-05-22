@@ -18,10 +18,10 @@
 
     <!-- APPROVALS TABLE -->
     <div class="card border-0 admin-card mb-4">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold"><i class="bi bi-person-check me-2 text-success"></i>Instructor Applications</h6>
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+            <h6 class="mb-0 fw-bold small"><i class="bi bi-person-check me-2 text-success"></i>Instructor Applications</h6>
             <!-- filter tabs using Bootstrap nav pills -->
-            <ul class="nav nav-pills nav-sm" style="font-size:13px;" id="applicationFilters">
+            <ul class="nav nav-pills nav-sm" style="font-size:12px;" id="applicationFilters">
                 <li class="nav-item"><a class="nav-link py-1 px-3 active" href="#" data-filter="all">All</a></li>
                 <li class="nav-item"><a class="nav-link py-1 px-3" href="#" data-filter="Pending">Pending</a></li>
                 <li class="nav-item"><a class="nav-link py-1 px-3" href="#" data-filter="Approved">Approved</a></li>
@@ -29,87 +29,89 @@
             </ul>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Instructor</th>
-                        <th>Email</th>
-                        <th>Specialisation</th>
-                        <th>Experience</th>
-                        <th>Applied</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="applicationTableBody">
-                    @{
-                        int index = 1;
-                    }
-                    @foreach (var app in Model)
-                    {
-                        <tr data-status="@app.Status">
-                            <td class="text-muted">@(index++.ToString("D2"))</td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="tbl-avatar bg-success bg-opacity-10 text-success">
-                                        @(string.IsNullOrEmpty(app.InstructorName) ? "?" : app.InstructorName.Substring(0, 1).ToUpper())
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
+                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
+                        <tr>
+                            <th class="ps-3">#</th>
+                            <th>Instructor</th>
+                            <th>Email</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Applied</th>
+                            <th>Status</th>
+                            <th class="pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationTableBody">
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var app in Model)
+                        {
+                            <tr data-status="@app.Status">
+                                <td class="ps-3 text-muted">@(index++.ToString("D2"))</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="tbl-avatar bg-success bg-opacity-10 text-success fw-bold" style="width: 28px; height: 28px; font-size: 11px;">
+                                            @(string.IsNullOrEmpty(app.InstructorName) ? "?" : app.InstructorName.Substring(0, 1).ToUpper())
+                                        </div>
+                                        <span class="fw-medium text-dark">@app.InstructorName</span>
                                     </div>
-                                    @app.InstructorName
-                                </div>
-                            </td>
-                            <td class="text-muted">@app.Email</td>
-                            <td>@app.Expertise</td>
-                            <td>@app.Experience years</td>
-                            <td>
-                                <span class="badge bg-light text-dark">
-                                    @app.AppliedDate.ToString("MMM dd, yyyy")
-                                </span>
-                            </td>
-                            <td>
-                                @if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
-                                {
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                }
-                                else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
-                                {
-                                    <span class="badge bg-success">Approved</span>
-                                }
-                                else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected)
-                                {
-                                    <span class="badge bg-danger">Rejected</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    @if (!string.IsNullOrEmpty(app.ResumePath))
-                                    {
-                                        <a href="@app.ResumePath" target="_blank" class="btn btn-sm btn-outline-info" title="View Resume">
-                                            <i class="bi bi-file-earmark-pdf"></i>
-                                        </a>
-                                    }
-                                    
+                                </td>
+                                <td class="text-muted small">@app.Email</td>
+                                <td class="fw-medium">@app.Expertise</td>
+                                <td class="text-muted small">@app.Experience yrs</td>
+                                <td>
+                                    <span class="text-muted small">
+                                        @app.AppliedDate.ToString("MMM dd, yyyy")
+                                    </span>
+                                </td>
+                                <td>
                                     @if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
                                     {
-                                        <form asp-action="ApproveApplication" method="post" style="display:inline;">
-                                            <input type="hidden" name="id" value="@app.Id" />
-                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                                        </form>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="openRejectModal(@app.Id)">Reject</button>
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2">Pending</span>
                                     }
                                     else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
                                     {
-                                         <form asp-action="RejectApplication" method="post" style="display:inline;">
-                                            <input type="hidden" name="id" value="@app.Id" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
-                                        </form>
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2">Approved</span>
                                     }
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                                    else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Rejected)
+                                    {
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2">Rejected</span>
+                                    }
+                                </td>
+                                <td class="pe-3">
+                                    <div class="d-flex gap-1">
+                                        @if (!string.IsNullOrEmpty(app.ResumePath))
+                                        {
+                                            <a href="@app.ResumePath" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2" style="font-size: 12px;" title="View Resume">
+                                                <i class="bi bi-file-earmark-pdf"></i>
+                                            </a>
+                                        }
+                                        
+                                        @if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending)
+                                        {
+                                            <form asp-action="ApproveApplication" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@app.Id" />
+                                                <button type="submit" class="btn btn-sm btn-success py-0 px-2" style="font-size: 12px;">Approve</button>
+                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 12px;" onclick="openRejectModal(@app.Id)">Reject</button>
+                                        }
+                                        else if (app.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Approved)
+                                        {
+                                             <form asp-action="RejectApplication" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@app.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 12px;">Revoke</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- pagination — Bootstrap component -->

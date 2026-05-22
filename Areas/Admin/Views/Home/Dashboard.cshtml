@@ -1,4 +1,4 @@
-﻿@using SkillForge.Areas.Admin.Models
+@using SkillForge.Areas.Admin.Models
 @model AdminDashboardVM
 @{
     ViewData["Title"] = "Dashboard";
@@ -131,43 +131,50 @@
             </div>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr><th>Instructor</th><th>Specialisation</th><th>Applied</th><th>Actions</th></tr>
-                </thead>
-                <tbody>
-                    @foreach (var app in Model.RecentApplications.Where(a => a.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending).Take(3))
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 13px;">
+                    <thead class="table-light text-muted" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.03rem;">
                         <tr>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="tbl-avatar bg-success bg-opacity-10 text-success">
-                                        @app.InstructorName.Substring(0, 1).ToUpper()
+                            <th class="ps-3">Instructor</th>
+                            <th>Specialisation</th>
+                            <th>Applied</th>
+                            <th class="pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.RecentApplications.Where(a => a.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending).Take(3))
+                        {
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="tbl-avatar bg-success bg-opacity-10 text-success fw-bold" style="width: 26px; height: 26px; font-size: 10px;">
+                                            @app.InstructorName.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <span class="fw-medium">@app.InstructorName</span>
                                     </div>
-                                    @app.InstructorName
-                                </div>
-                            </td>
-                            <td class="text-muted">@app.Expertise</td>
-                            <td><span class="badge bg-warning text-dark">@app.AppliedDate.ToString("MMM dd")</span></td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <a asp-action="Pending_Approvals" class="btn btn-sm btn-outline-secondary">Review</a>
-                                    <form asp-action="ApproveApplication" method="post" style="display:inline;">
-                                        <input type="hidden" name="id" value="@app.Id" />
-                                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                    @if (!Model.RecentApplications.Any(a => a.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending))
-                    {
-                        <tr>
-                            <td colspan="4" class="text-center py-3 text-muted">No pending applications</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                                </td>
+                                <td class="text-muted small">@app.Expertise</td>
+                                <td><span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2" style="font-size: 11px;">@app.AppliedDate.ToString("MMM dd")</span></td>
+                                <td class="pe-3">
+                                    <div class="d-flex gap-1">
+                                        <a asp-action="Pending_Approvals" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;">Review</a>
+                                        <form asp-action="ApproveApplication" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@app.Id" />
+                                            <button type="submit" class="btn btn-sm btn-success py-0 px-2" style="font-size: 11px;">Approve</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.RecentApplications.Any(a => a.Status == SkillForge.Services.Instructors.Models.MentorApplicationStatus.Pending))
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-3 text-muted small">No pending applications</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -176,46 +183,52 @@
     <div class="row g-3">
         <div class="col-lg-12">
             <div class="card border-0 admin-card h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 fw-bold"><i class="bi bi-person-video3 me-2 text-success"></i>Instructor Overview</h6>
-                    <a asp-action="Instructors" class="small" style="color:var(--orange);">View All →</a>
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                    <h6 class="mb-0 fw-bold small"><i class="bi bi-person-video3 me-2 text-success"></i>Instructor Overview</h6>
+                    <a asp-action="Instructors" class="small text-decoration-none" style="color:var(--orange); font-size: 12px;">View All →</a>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr><th>Instructor</th><th>Courses</th><th>Students</th><th>Status</th><th></th></tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var ins in Model.RecentInstructors)
-                            {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm align-middle mb-0" style="font-size: 13px;">
+                            <thead class="table-light text-muted" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.03rem;">
                                 <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="tbl-avatar" style="background:var(--orange-soft);color:var(--orange);">@ins.Name.Substring(0, 1).ToUpper()</div>
-                                            @ins.Name
-                                        </div>
-                                    </td>
-                                    <td class="text-muted small">@ins.TotalCourses</td>
-                                    <td class="text-muted small">@ins.TotalStudents</td>
-                                    <td>
-                                        @if (ins.Status == "Approved")
-                                        {
-                                            <span class="badge bg-success">Approved</span>
-                                        }
-                                        else if (ins.Status == "Pending")
-                                        {
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">@ins.Status</span>
-                                        }
-                                    </td>
-                                    <td><a asp-action="Instructors" class="btn btn-sm btn-outline-secondary">View</a></td>
+                                    <th class="ps-3">Instructor</th>
+                                    <th>Courses</th>
+                                    <th>Students</th>
+                                    <th>Status</th>
+                                    <th class="pe-3"></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var ins in Model.RecentInstructors)
+                                {
+                                    <tr>
+                                        <td class="ps-3">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="tbl-avatar fw-bold" style="background:var(--orange-soft);color:var(--orange); width: 26px; height: 26px; font-size: 10px;">@ins.Name.Substring(0, 1).ToUpper()</div>
+                                                <span class="fw-medium">@ins.Name</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-muted small">@ins.TotalCourses</td>
+                                        <td class="text-muted small">@ins.TotalStudents</td>
+                                        <td>
+                                            @if (ins.Status == "Approved")
+                                            {
+                                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2" style="font-size: 10px;">Approved</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-2" style="font-size: 10px;">@ins.Status</span>
+                                            }
+                                        </td>
+                                        <td class="pe-3 text-end">
+                                            <a href="#" class="btn btn-sm btn-link p-0 text-decoration-none" style="font-size: 11px; color: var(--orange);">Profile</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

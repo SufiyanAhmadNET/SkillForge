@@ -1,13 +1,12 @@
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using SkillForge.Areas.User.Models;
 using SkillForge.Interfaces;
 using SkillForge.Services.Auth.Models;
 
 namespace SkillForge.Areas.User.Controllers
 {
-    // User area authentication controller
+    
     [Area("User")]
     public class AuthController : UserBaseController
     {
@@ -28,17 +27,17 @@ namespace SkillForge.Areas.User.Controllers
             return View();
         }
 
-        // Handle student registration submission
+        // Post- student registration 
         [HttpPost]
         public IActionResult StudentRegistration(string Email, string Password, string ConfirmPassword)
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             var result = _authService.Register(Email, Password, ConfirmPassword, "Student", baseUrl);
 
-            // Handle various registration results
+            // Handle  registration results
             if (result.status == AuthMessage.EmptyFields)
             {
-                TempData["Alert"] = "Enter All Required Details";
+                TempData["Alert"] = "Please enter all details";
                 TempData["AlertType"] = "danger";
                 return RedirectToAction("StudentRegistration");
             }
@@ -59,7 +58,7 @@ namespace SkillForge.Areas.User.Controllers
             
             if (result.status == AuthMessage.PassNotMatch)
             {
-                TempData["Alert"] = "Password and Confirm Password doesn't Match!";
+                TempData["Alert"] = "Password and Confirm Password doesn't Match!,Try Again";
                 TempData["AlertType"] = "danger";
                 return View();
             }
@@ -95,11 +94,6 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("StudentLogin");
             }
 
-            if (TempData["Alert"] == null)
-            {
-                TempData["Alert"] = "Something went wrong during registration. Please try again.";
-                TempData["AlertType"] = "danger";
-            }
             return View();
         }
 
@@ -117,6 +111,13 @@ namespace SkillForge.Areas.User.Controllers
             var result = _authService.Login(Email, Password, "Student");
 
             // Handle login status
+            if (result.status == AuthMessage.EmptyFields)
+            {
+                TempData["Alert"] = "Please enter all details";
+                TempData["AlertType"] = "danger";
+                return View();
+            }
+
             if (result.status == AuthMessage.NewUser)
             {
                 TempData["Alert"] = "This Email Doesn't Registered, Please Create Account";
@@ -152,11 +153,6 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("Courses", "Home", new { area = "User" });
             }
 
-            if (TempData["Alert"] == null)
-            {
-                TempData["Alert"] = "Something went wrong. Please try again.";
-                TempData["AlertType"] = "danger";
-            }
             return View();
         }
 
@@ -198,8 +194,8 @@ namespace SkillForge.Areas.User.Controllers
                     TempData["Alert"] = "This email is registered as Instructor. Please login as Instructor.";
                     TempData["AlertType"] = "warning";
                     return RedirectToAction("StudentLogin");
+
                 }
-                
                 if (result == null || !result.Success)
                 {
                     TempData["Alert"] = "Google login failed. Please try again.";
@@ -209,11 +205,12 @@ namespace SkillForge.Areas.User.Controllers
 
                 // Sign in user
                 await SigninUser(result.Id.ToString(), result.Email ?? string.Empty, "Student", result.PhotoPath ?? "/images/DefaultProfilePhoto.jfif");
-                
-                TempData["Alert"] = "Welcome! Logged in with Google.";
+
+                TempData["Alert"] = "Welcome! \"You Logged in with Google.\"";
                 TempData["AlertType"] = "success";
                 return RedirectToAction("Courses", "Home", new { area = "User" });
             }
+
             catch (Exception)
             {
                 TempData["Alert"] = "Something went wrong during Google login.";
@@ -300,7 +297,7 @@ namespace SkillForge.Areas.User.Controllers
                 TempData["AlertType"] = "success";
                 TempData["OtpVerified"] = true;
                 TempData["VerifiedOtp"] = otp;
-                TempData["ForgotEmail"] = email; // Use ForgotEmail to match partial
+                TempData["ForgotEmail"] = email; 
                 TempData["EmailSent"] = true;
             }
             else
@@ -327,7 +324,7 @@ namespace SkillForge.Areas.User.Controllers
                 return RedirectToAction("ForgotPassword");
             }
             
-            if (string.IsNullOrEmpty(otp))
+            if (string.IsNullOrEmpty(otp)) 
             {
                 TempData["Alert"] = "OTP is missing. Please restart recovery.";
                 TempData["AlertType"] = "danger";
@@ -345,7 +342,7 @@ namespace SkillForge.Areas.User.Controllers
                 TempData["VerifiedOtp"] = otp;
                 TempData["ForgotEmail"] = email;
                 TempData["EmailSent"] = true;
-                return RedirectToAction("ForgotPassword");
+                return RedirectToAction("ForgotPassword");   
             }
 
             // Reset password via service
@@ -379,7 +376,7 @@ namespace SkillForge.Areas.User.Controllers
                     TempData["EmailSent"] = true;
                     TempData["ForgotEmail"] = email;
                 }
-                
+                  
                 return RedirectToAction("ForgotPassword");
             }
         }
@@ -394,3 +391,4 @@ namespace SkillForge.Areas.User.Controllers
         }
     }
 }
+  

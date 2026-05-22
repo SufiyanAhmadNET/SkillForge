@@ -69,6 +69,15 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin", "Auth");
             }
 
+            // Check ModelState
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["Alert"] = string.Join(" ", errors);
+                TempData["AlertType"] = "danger";
+                return RedirectToAction("AddCourse");
+            }
+
             // Parse outcomes from textarea
             if (!string.IsNullOrWhiteSpace(OutcomesRaw))
             {
@@ -176,6 +185,16 @@ namespace SkillForge.Areas.Instructor.Controllers
             if (!int.TryParse(instructorIdClaim, out var instructorId))
             {
                 return RedirectToAction("InstructorLogin", "Auth");
+            }
+
+            // Check ModelState
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                TempData["Alert"] = string.Join(" ", errors);
+                TempData["AlertType"] = "danger";
+                // For Edit, we return the View with the VM so user doesn't lose data
+                return View(courseVM);
             }
 
             // Parse outcomes

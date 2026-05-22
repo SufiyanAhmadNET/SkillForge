@@ -1,7 +1,10 @@
-﻿@{
+﻿@model SkillForge.Models.CoursePageVM
+@{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<link rel="stylesheet" href="~/css/courses.css" />
 
 
     <!-- ========================
@@ -171,375 +174,74 @@
 
             <!-- scrollable row + arrows wrapper -->
             <div class="course-row-wrap mb-5">
-                <button class="scroll-arrow left" onclick="scroll('popular',-1)"><i class="bi bi-chevron-left"></i></button>
-                <button class="scroll-arrow right" onclick="scroll('popular', 1)"><i class="bi bi-chevron-right"></i></button>
+                <button class="arr left" onclick="scroll('popular',-1)"><i class="bi bi-chevron-left"></i></button>
+                <button class="arr right" onclick="scroll('popular', 1)"><i class="bi bi-chevron-right"></i></button>
 
                 <div class="course-scroll" id="popular">
-
-                    <!-- Card 1 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Beginner</span>
-                                <span class="badge-tag">12 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Full Stack Web Development</h6>
-                            <p class="text-muted small mb-2">HTML, CSS, JavaScript, Node.js & React in one track.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.9) · 3,240 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="price-main">₹4,999</span>
-                                    <span class="price-old ms-1">₹9,999</span>
-                                </div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">8 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Python for Data Science</h6>
-                            <p class="text-muted small mb-2">Pandas, NumPy, visualization and beyond.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.8) · 2,870 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="price-main">₹3,999</span>
-                                    <span class="price-old ms-1">₹7,999</span>
-                                </div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 3 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Beginner</span>
-                                <span class="badge-tag">6 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">UI/UX Design Fundamentals</h6>
-                            <p class="text-muted small mb-2">Figma, design systems, prototyping from scratch.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="small text-muted">(4.7) · 1,980 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="price-main">₹2,999</span>
-                                    <span class="price-old ms-1">₹5,999</span>
-                                </div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 (hidden, scroll reveals) -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">10 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">React & Next.js Masterclass</h6>
-                            <p class="text-muted small mb-2">Build production-grade React apps with Next.js.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.9) · 2,100 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="price-main">₹5,499</span>
-                                    <span class="price-old ms-1">₹10,999</span>
-                                </div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 5 -->
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Advanced</span>
-                                <span class="badge-tag">14 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">System Design & Architecture</h6>
-                            <p class="text-muted small mb-2">Scalable systems, microservices, interviews.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.8) · 1,560 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="price-main">₹6,999</span>
-                                    <span class="price-old ms-1">₹13,999</span>
-                                </div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
+                    @foreach (var course in Model.PopularCourses)
+                    {
+                        <partial name="_CourseCardPartial" model="course" />
+                    }
                 </div><!-- /popular scroll -->
             </div>
 
 
             <!-- ---- ROW 2: AI Courses ---- -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <span class="section-label">🤖 AI & ML</span>
-                    <h4 class="fw-bold mb-0">Artificial Intelligence Courses</h4>
-                </div>
-                <a href="#" class="text-decoration-none" style="color:var(--orange);font-weight:600">
-                    See all <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-
-            <div class="course-row-wrap mb-5">
-                <button class="scroll-arrow left" onclick="scroll('ai',-1)"><i class="bi bi-chevron-left"></i></button>
-                <button class="scroll-arrow right" onclick="scroll('ai', 1)"><i class="bi bi-chevron-right"></i></button>
-
-                <div class="course-scroll" id="ai">
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">12 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Machine Learning A–Z</h6>
-                            <p class="text-muted small mb-2">Supervised, unsupervised, reinforcement learning.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.9) · 4,100 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹5,999</span><span class="price-old ms-1">₹11,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
+            @{
+                var aiSection = Model.CategorySections.FirstOrDefault(c => c.CategoryName.Contains("AI") || c.CategoryName.Contains("ML"));
+                if (aiSection != null && aiSection.Courses.Any())
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="section-label">🤖 AI & ML</span>
+                            <h4 class="fw-bold mb-0">Artificial Intelligence Courses</h4>
                         </div>
+                        <a href="/User/Home/Courses" class="text-decoration-none" style="color:var(--orange);font-weight:600">
+                            See all <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
 
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1555255707-c07966088b7b?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Advanced</span>
-                                <span class="badge-tag">16 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Deep Learning & Neural Networks</h6>
-                            <p class="text-muted small mb-2">CNNs, RNNs, transformers with TensorFlow.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.8) · 2,650 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹7,999</span><span class="price-old ms-1">₹15,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
+                    <div class="course-row-wrap mb-5">
+                        <button class="arr left" onclick="scroll('ai',-1)"><i class="bi bi-chevron-left"></i></button>
+                                        <button class="arr right" onclick="scroll('ai', 1)"><i class="bi bi-chevron-right"></i></button>
+                        <div class="course-scroll" id="ai">
+                            @foreach (var course in aiSection.Courses)
+                            {
+                                <partial name="_CourseCardPartial" model="course" />
+                            }
+                        </div><!-- /ai scroll -->
                     </div>
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Beginner</span>
-                                <span class="badge-tag">6 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Prompt Engineering for LLMs</h6>
-                            <p class="text-muted small mb-2">ChatGPT, Claude, Gemini — master prompt design.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="small text-muted">(4.7) · 3,200 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹2,499</span><span class="price-old ms-1">₹4,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">10 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">NLP with Python & Hugging Face</h6>
-                            <p class="text-muted small mb-2">Text classification, sentiment, transformers.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.9) · 1,890 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹6,499</span><span class="price-old ms-1">₹12,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Advanced</span>
-                                <span class="badge-tag">20 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Computer Vision with PyTorch</h6>
-                            <p class="text-muted small mb-2">Object detection, segmentation, real-time video.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.8) · 1,240 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹8,999</span><span class="price-old ms-1">₹17,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div><!-- /ai scroll -->
-            </div>
+                }
+            }
 
 
             <!-- ---- ROW 3: Cloud & DevOps ---- -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <span class="section-label">☁️ CLOUD</span>
-                    <h4 class="fw-bold mb-0">Cloud & DevOps Courses</h4>
-                </div>
-                <a href="#" class="text-decoration-none" style="color:var(--orange);font-weight:600">
-                    See all <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-
-            <div class="course-row-wrap mb-2">
-                <button class="scroll-arrow left" onclick="scroll('cloud',-1)"><i class="bi bi-chevron-left"></i></button>
-                <button class="scroll-arrow right" onclick="scroll('cloud', 1)"><i class="bi bi-chevron-right"></i></button>
-
-                <div class="course-scroll" id="cloud">
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Beginner</span>
-                                <span class="badge-tag">8 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">AWS Cloud Practitioner</h6>
-                            <p class="text-muted small mb-2">Certification prep + hands-on AWS labs.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.9) · 3,800 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹4,499</span><span class="price-old ms-1">₹8,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
+            @{
+                var cloudSection = Model.CategorySections.FirstOrDefault(c => c.CategoryName.Contains("Cloud") || c.CategoryName.Contains("DevOps"));
+                if (cloudSection != null && cloudSection.Courses.Any())
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="section-label">☁️ CLOUD</span>
+                            <h4 class="fw-bold mb-0">Cloud & DevOps Courses</h4>
                         </div>
+                        <a href="/User/Home/Courses" class="text-decoration-none" style="color:var(--orange);font-weight:600">
+                            See all <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
 
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">10 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Docker & Kubernetes</h6>
-                            <p class="text-muted small mb-2">Containers, orchestration, production deploy.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.8) · 2,450 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹5,999</span><span class="price-old ms-1">₹11,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
+                    <div class="course-row-wrap mb-2">
+                        <button class="arr left" onclick="scroll('cloud',-1)"><i class="bi bi-chevron-left"></i></button>
+                                        <button class="arr right" onclick="scroll('cloud', 1)"><i class="bi bi-chevron-right"></i></button>
+                        <div class="course-scroll" id="cloud">
+                            @foreach (var course in cloudSection.Courses)
+                            {
+                                <partial name="_CourseCardPartial" model="course" />
+                            }
+                        </div><!-- /cloud scroll -->
                     </div>
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">8 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">CI/CD with GitHub Actions</h6>
-                            <p class="text-muted small mb-2">Automate pipelines, testing, deployments.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★☆</span>
-                                <span class="small text-muted">(4.7) · 1,620 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹3,999</span><span class="price-old ms-1">₹7,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Advanced</span>
-                                <span class="badge-tag">12 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Azure Solutions Architect</h6>
-                            <p class="text-muted small mb-2">AZ-305 exam prep with real project labs.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.8) · 1,890 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹7,499</span><span class="price-old ms-1">₹14,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="course-card">
-                        <img src="https://images.unsplash.com/photo-1527430253228-e93688616381?w=600" alt="">
-                        <div class="p-3">
-                            <div class="d-flex gap-1 mb-2">
-                                <span class="badge-level">Intermediate</span>
-                                <span class="badge-tag">6 weeks</span>
-                            </div>
-                            <h6 class="fw-bold mb-1">Terraform & Infrastructure as Code</h6>
-                            <p class="text-muted small mb-2">Provision cloud infra with Terraform & Ansible.</p>
-                            <div class="d-flex align-items-center gap-1 mb-2">
-                                <span class="rating-stars">★★★★★</span>
-                                <span class="small text-muted">(4.9) · 1,340 students</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div><span class="price-main">₹4,999</span><span class="price-old ms-1">₹9,999</span></div>
-                                <button class="btn-orange" style="padding:6px 16px;font-size:.82rem">Enroll</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div><!-- /cloud scroll -->
-            </div>
+                }
+            }
 
 
         </div><!-- /container -->
@@ -771,6 +473,8 @@
     function scroll(rowId, direction) {
         const el = document.getElementById(rowId);
         if (!el) return;
-        el.scrollBy({ left: direction * 320, behavior: 'smooth' });
+        const card = el.querySelector('.c-card');
+        const scrollAmount = card ? (card.offsetWidth + 20) : 320;
+        el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
     </script>

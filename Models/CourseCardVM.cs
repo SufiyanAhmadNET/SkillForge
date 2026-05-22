@@ -6,6 +6,7 @@ namespace SkillForge.Models
     {
         public string? Title { get; set; }
         public string? SubTitle { get; set; }
+        public string? ShortSummary { get; set; }
         public string? CategoryName { get; set; }
         public string? Difficulty { get; set; }
 

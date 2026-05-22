@@ -66,12 +66,18 @@
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Course Title *</label>
                                 <input type="text" class="form-control" asp-for="Title" placeholder="e.g. Complete Web Development 2026" required>
-                                <span asp-validation-for="Title" class="text-danger small"></span>
+                                
                             </div>
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Description *</label>
                                 <textarea class="form-control" asp-for="Description" rows="4" placeholder="Tell students what this course is about..." required></textarea>
-                                <span asp-validation-for="Description" class="text-danger small"></span>
+                                
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Short Summary (for course card) *</label>
+                                <textarea class="form-control" asp-for="ShortSummary" rows="2" maxlength="120" placeholder="A brief 1-2 line catchphrase or summary..." required></textarea>
+                                <div class="form-text small">Maximum 120 characters. This appears on the course preview card.</div>
+                                
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
@@ -84,7 +90,7 @@
                                         <option value="4">DevOps & Cloud</option>
                                         <option value="5">Cybersecurity</option>
                                     </select>
-                                    <span asp-validation-for="Category_Id" class="text-danger small"></span>
+                                    
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label small fw-bold">Difficulty *</label>
@@ -94,24 +100,24 @@
                                         <option value="Intermediate">Intermediate</option>
                                         <option value="Advanced">Advanced</option>
                                     </select>
-                                    <span asp-validation-for="Difficulty" class="text-danger small"></span>
+                                    
                                 </div>
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Duration (weeks)</label>
                                     <input type="number" class="form-control" asp-for="Duration_Weeks" placeholder="12" min="1">
-                                    <span asp-validation-for="Duration_Weeks" class="text-danger small"></span>
+                                    
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Original Price (₹)</label>
                                     <input type="number" class="form-control" asp-for="Actual_Price" id="originalPrice" placeholder="999" min="0">
-                                    <span asp-validation-for="Actual_Price" class="text-danger small"></span>
+                                    
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label small fw-bold">Discount (%)</label>
                                     <input type="number" class="form-control" asp-for="Discount_Percent" id="discountPct" placeholder="20" min="0" max="100">
-                                    <span asp-validation-for="Discount_Percent" class="text-danger small"></span>
+                                    
                                 </div>
                             </div>
                         </div>

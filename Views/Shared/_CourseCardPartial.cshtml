@@ -1,0 +1,34 @@
+@model SkillForge.Models.CourseCardVM
+
+<div class="c-card">
+    <div class="c-thumb">
+        <img src="@(Model.Thumbnail_Url ?? "https://via.placeholder.com/300")" alt="@Model.Title">
+        <span class="diff-tag">@Model.Difficulty</span>
+
+        @* heart — white circle, red border, fills red on click *@
+        <button class="wish-btn @(Model.IsWishListed == true ? "wishlisted" : "")" 
+                onclick="toggleWishlist(event, this, @Model.courseId)" 
+                title="@(Model.IsWishListed == true ? "Remove from wishlist" : "Add to wishlist")">
+            <i class="bi @(Model.IsWishListed == true ? "bi-heart-fill" : "bi-heart")"></i>
+        </button>
+    </div>
+
+    <div class="c-body">
+        <div class="c-cat">@Model.CategoryName</div>
+        <div class="c-title">@Model.Title</div>
+        <div class="c-sub">@Model.ShortSummary</div>
+
+        <div class="c-price-row">
+            <div>
+                <span class="c-price">₹@Model.Total_Price</span>
+                <span class="c-original">₹@Model.Actual_Price</span>
+            </div>
+            <span class="c-off">@Model.Discount_Percent% OFF</span>
+        </div>
+
+        @* pass courseId to details page *@
+        <a href="/User/Home/CourseDetails?id=@Model.courseId" class="c-btn d-block text-center text-decoration-none">
+            Check Course →
+        </a>
+    </div>
+</div>

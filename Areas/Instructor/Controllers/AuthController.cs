@@ -41,11 +41,11 @@ namespace SkillForge.Areas.Instructor.Controllers
             //pass paramters to Auth Service CLass
             var result = _authService.Register(Email, Password, ConfirmPassword, "Instructor", baseUrl);
             
-            //Check Invalid or Valid
+            // Check Invalid or Valid
             // empty fields
             if (result.status == AuthMessage.EmptyFields)
             {
-                TempData["Alert"] = "Enter All Required Details";
+                TempData["Alert"] = "Please enter all details";
                 TempData["AlertType"] = "danger";
                 return RedirectToAction("InstructorRegistration");
             }
@@ -102,11 +102,6 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin");
             }
             
-            if (TempData["Alert"] == null)
-            {
-                TempData["Alert"] = "Something went wrong during registration. Please try again.";
-                TempData["AlertType"] = "danger";
-            }
             return View();
         }
 
@@ -121,6 +116,15 @@ namespace SkillForge.Areas.Instructor.Controllers
         {
             ViewBag.Email = Email;
             var result = _authService.Login(Email, Password, "Instructor");
+
+            // Handle login status
+            if (result.status == AuthMessage.EmptyFields)
+            {
+                TempData["Alert"] = "Please enter all details";
+                TempData["AlertType"] = "danger";
+                return View();
+            }
+
             // new user
             if (result.status == AuthMessage.NewUser)
             {
@@ -153,11 +157,6 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("Dashboard", "Home", new { area = "Instructor" });
             }
             
-            if (TempData["Alert"] == null)
-            {
-                TempData["Alert"] = "Something went wrong. Please try again.";
-                TempData["AlertType"] = "danger";
-            }
             return View();
         }
             

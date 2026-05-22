@@ -8,6 +8,7 @@ namespace SkillForge.Models
         public int Id { get; set; }
         public int CourseId { get; set; }
         public string Description { get; set; }
+        public string? ShortSummary { get; set; }
         public decimal Actual_Price { get; set; }
         public int Discount_Percent { get; set; }
         public decimal Total_Price { get; set; }

@@ -81,6 +81,9 @@
     flex-direction: column;
     cursor: pointer;
     transition: transform .22s, box-shadow .22s;
+    height: 410px; /* Adjusted height to reduce whitespace */
+    width: 100%;
+    position: relative;
 }
 
     .c-card:hover {
@@ -93,9 +96,10 @@
 /* thumbnail */
 .c-thumb {
     width: 100%;
-    aspect-ratio: 16/9;
+    height: 190px; /* Fixed image height */
     position: relative;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
     .c-thumb img {
@@ -134,6 +138,7 @@
     cursor: pointer;
     transition: .2s;
     text-shadow: 0 1px 4px rgba(0,0,0,0.25); /* soft shadow */
+    z-index: 5;
 }
 
     .wish-btn:hover,
@@ -148,6 +153,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    overflow: hidden;
 }
 
 .c-cat {
@@ -156,6 +162,8 @@
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 4px;
+    height: 1rem;
+    overflow: hidden;
 }
 
 .c-title {
@@ -163,6 +171,7 @@
     font-weight: 700;
     line-height: 1.35;
     margin-bottom: 4px;
+    height: 2.6rem; /* Fixed height for 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -173,6 +182,7 @@
     font-size: .8rem;
     color: var(--muted);
     margin-bottom: 8px;
+    height: 2.2rem; /* Fixed height for 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -198,8 +208,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: auto;
-    margin-bottom: 10px;
+    margin-top: auto; /* Push to bottom of body area */
+    margin-bottom: 12px;
 }
 
 .c-price {
@@ -237,6 +247,7 @@
     font-size: .85rem;
     font-weight: 600;
     transition: .2s;
+    flex-shrink: 0;
 }
 
     .c-btn:hover {
@@ -245,22 +256,23 @@
 
 
 /* ===== HORIZONTAL SCROLL ROW ===== */
-.course-row {
+.course-row, .course-scroll {
     display: flex;
-    gap: 14px;
+    gap: 20px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding: 0 30px 14px;
-    padding-bottom: 10px;
+    padding: 10px 30px 20px;
+    scrollbar-width: none;
 }
 
-    .course-row > * {
-        flex: 0 0 calc(31% - 10px);
-        max-width: calc(31% - 10px);
+    .course-row::-webkit-scrollbar, .course-scroll::-webkit-scrollbar {
+        display: none;
     }
 
-    .course-row::-webkit-scrollbar {
-        display: none;
+    .course-row > *, .course-scroll > * {
+        flex: 0 0 340px;
+        max-width: 340px;
+        width: 340px;
     }
 
 
@@ -443,15 +455,17 @@
    RESPONSIVE
    ========================= */
 @media (max-width: 992px) {
-    .course-row > * {
-        flex: 0 0 calc(33.33% - 10px);
-        max-width: calc(33.33% - 10px);
+    .course-row > *, .course-scroll > * {
+        flex: 0 0 calc(50% - 15px);
+        max-width: calc(50% - 15px);
+        width: auto;
     }
 }
 
 @media (max-width: 768px) {
-    .course-row > * {
+    .course-row > *, .course-scroll > * {
         flex: 0 0 85%;
         max-width: 85%;
+        width: auto;
     }
 }

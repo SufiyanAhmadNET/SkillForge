@@ -220,99 +220,12 @@ body {
     }
 
 /* =====================
-   COURSE ROWS — 3 cards visible, horizontal scroll
+   COURSE ROWS
 ===================== */
 .course-row-wrap {
     position: relative;
     padding: 0 40px; /* space for arrows */
 }
-
-/* scrollable track — hides scrollbar, shows 3 cards */
-.course-scroll {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE */
-    padding-bottom: 8px;
-}
-
-    .course-scroll::-webkit-scrollbar {
-        display: none; /* Chrome/Safari */
-    }
-
-/* each card — fixed width so exactly 3 fit */
-.course-card {
-    min-width: calc(33.333% - 14px); /* 3 per row with gap */
-    max-width: calc(33.333% - 14px);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    background: #fff;
-    flex-shrink: 0;
-    transition: box-shadow .2s, transform .2s;
-}
-
-    .course-card:hover {
-        box-shadow: 0 8px 28px rgba(0,0,0,.09);
-        transform: translateY(-3px);
-    }
-
-    .course-card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-        display: block;
-    }
-
-/* price text */
-.price-main {
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--dark);
-}
-
-.price-old {
-    font-size: .82rem;
-    color: var(--muted);
-    text-decoration: line-through;
-}
-
-/* left/right scroll arrows */
-.scroll-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    transition: .2s;
-    font-size: .85rem;
-    color: var(--dark);
-}
-
-    .scroll-arrow:hover {
-        background: var(--orange);
-        color: #fff;
-        border-color: var(--orange);
-    }
-
-    .scroll-arrow.left {
-        left: 0;
-    }
-
-    .scroll-arrow.right {
-        right: 0;
-    }
 
 /* rating stars */
 .rating-stars {
@@ -513,42 +426,4 @@ body {
     .nav-link {
         font-size: 14px;
     }
-
-    /* 1 card visible on mobile */
-    /* fixed width — 3 cards fit in standard container */
-    .course-card {
-        min-width: 300px;
-        max-width: 300px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        overflow: hidden;
-        background: #fff;
-        flex-shrink: 0;
-        transition: box-shadow .2s, transform .2s;
-    }
-
-        .course-card:hover {
-            box-shadow: 0 8px 28px rgba(0,0,0,.09);
-            transform: translateY(-3px);
-        }
-
-        .course-card img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            display: block;
-        }
-
-    .course-scroll {
-        display: flex;
-        gap: 20px;
-        overflow-x: auto;
-        scroll-behavior: smooth;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding-bottom: 8px;
-    }
-
-        .course-scroll::-webkit-scrollbar {
-            display: none;
-        }
+}

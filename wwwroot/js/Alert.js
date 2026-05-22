@@ -1,6 +1,5 @@
 /**
- * Modern Alert System
- * Handles floating toast notifications with auto-dismiss
+ Alert System
  */
 
 const MAX_ALERTS = 3;
@@ -10,7 +9,7 @@ const DEFAULT_DURATION = 4000; // 4 seconds
  * Main function to show an alert
  * @param {string} message - The text to display
  * @param {string} type - success, danger, warning, info
- * @param {number} duration - ms to show before auto-dismiss
+ * @param {number} duration - msg to show before auto-dismiss
  * @param {string} containerId - Target container ID
  */
 function showAlert(message, type = "info", duration = DEFAULT_DURATION, containerId = "alert-container") {

@@ -85,105 +85,123 @@
     <!-- /STAT CARDS -->
     <!-- EARNINGS PER COURSE -->
     <div class="card border-0 inst-card mb-4">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold"><i class="bi bi-journal-bookmark me-2" style="color:var(--purple);"></i>Earnings by Course</h6>
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+            <h6 class="mb-0 fw-bold small"><i class="bi bi-journal-bookmark me-2" style="color:var(--purple);"></i>Earnings by Course</h6>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Course</th>
-                        <th>Price/Student</th>
-                        <th>Students</th>
-                        <th>Gross</th>
-                        <th>Platform Fee (20%)</th>
-                        <th>Your Earnings</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="fw-semibold">Full Stack Web Development</td>
-                        <td>₹1,500</td>
-                        <td>840</td>
-                        <td>₹12,60,000</td>
-                        <td class="text-muted">₹2,52,000</td>
-                        <td class="text-success fw-bold">₹1,26,000</td>
-                    </tr>
-                    <tr>
-                        <td class="fw-semibold">React & Node.js Bootcamp</td>
-                        <td>₹1,000</td>
-                        <td>280</td>
-                        <td>₹2,80,000</td>
-                        <td class="text-muted">₹56,000</td>
-                        <td class="text-success fw-bold">₹42,000</td>
-                    </tr>
-                    <tr>
-                        <td class="fw-semibold">DSA with JavaScript</td>
-                        <td>₹800</td>
-                        <td>120</td>
-                        <td>₹96,000</td>
-                        <td class="text-muted">₹19,200</td>
-                        <td class="text-success fw-bold">₹12,000</td>
-                    </tr>
-                </tbody>
-                <!-- total row -->
-                <tfoot class="table-light">
-                    <tr>
-                        <td colspan="5" class="fw-bold text-end">Total Earnings</td>
-                        <td class="fw-bold text-success">₹1,80,000</td>
-                    </tr>
-                </tfoot>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
+                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
+                        <tr>
+                            <th class="ps-3">Course</th>
+                            <th>Price/Student</th>
+                            <th>Students</th>
+                            <th>Gross</th>
+                            <th>Platform Fee (20%)</th>
+                            <th class="pe-3">Your Earnings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-3 fw-semibold text-dark">Full Stack Web Development</td>
+                            <td class="text-muted">₹1,500</td>
+                            <td>840</td>
+                            <td class="text-muted">₹12,60,000</td>
+                            <td class="text-muted small">₹2,52,000</td>
+                            <td class="pe-3 text-success fw-bold">₹1,26,000</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 fw-semibold text-dark">React & Node.js Bootcamp</td>
+                            <td class="text-muted">₹1,000</td>
+                            <td>280</td>
+                            <td class="text-muted">₹2,80,000</td>
+                            <td class="text-muted small">₹56,000</td>
+                            <td class="pe-3 text-success fw-bold">₹42,000</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 fw-semibold text-dark">DSA with JavaScript</td>
+                            <td class="text-muted">₹800</td>
+                            <td>120</td>
+                            <td class="text-muted">₹96,000</td>
+                            <td class="text-muted small">₹19,200</td>
+                            <td class="pe-3 text-success fw-bold">₹12,000</td>
+                        </tr>
+                    </tbody>
+                    <!-- total row -->
+                    <tfoot class="table-light" style="font-size: 13px;">
+                        <tr>
+                            <td colspan="5" class="ps-3 fw-bold text-end">Total Earnings</td>
+                            <td class="pe-3 fw-bold text-success">₹1,80,000</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
     </div>
 
 
     <!-- MONTHLY BREAKDOWN -->
     <div class="card border-0 inst-card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold"><i class="bi bi-calendar3 me-2" style="color:var(--purple);"></i>Monthly Breakdown</h6>
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+            <h6 class="mb-0 fw-bold small"><i class="bi bi-calendar3 me-2" style="color:var(--purple);"></i>Monthly Breakdown</h6>
             <!-- date filter — wired to controller later -->
-            <select class="form-select form-select-sm" style="max-width:140px;">
+            <select class="form-select form-select-sm" style="max-width:110px; font-size: 12px;">
                 <option>2026</option>
                 <option>2025</option>
             </select>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr><th>Month</th><th>New Students</th><th>Gross</th><th>Your Earnings</th><th>Status</th></tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>March 2026</td>
-                        <td>42</td>
-                        <td>₹54,600</td>
-                        <td class="text-success fw-semibold">₹18,000</td>
-                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                    </tr>
-                    <tr>
-                        <td>February 2026</td>
-                        <td>58</td>
-                        <td>₹67,400</td>
-                        <td class="text-success fw-semibold">₹16,700</td>
-                        <td><span class="badge bg-success">Paid</span></td>
-                    </tr>
-                    <tr>
-                        <td>January 2026</td>
-                        <td>65</td>
-                        <td>₹75,200</td>
-                        <td class="text-success fw-semibold">₹15,300</td>
-                        <td><span class="badge bg-success">Paid</span></td>
-                    </tr>
-                    <tr>
-                        <td>December 2025</td>
-                        <td>48</td>
-                        <td>₹57,600</td>
-                        <td class="text-success fw-semibold">₹12,800</td>
-                        <td><span class="badge bg-success">Paid</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
+                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
+                        <tr>
+                            <th class="ps-3">Month</th>
+                            <th>New Students</th>
+                            <th>Gross</th>
+                            <th>Your Earnings</th>
+                            <th class="pe-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-3 fw-medium text-dark">March 2026</td>
+                            <td class="text-muted">42</td>
+                            <td class="text-muted">₹54,600</td>
+                            <td class="text-success fw-semibold">₹18,000</td>
+                            <td class="pe-3">
+                                <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2" style="font-size: 11px;">Pending</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 fw-medium text-dark">February 2026</td>
+                            <td class="text-muted">58</td>
+                            <td class="text-muted">₹67,400</td>
+                            <td class="text-success fw-semibold">₹16,700</td>
+                            <td class="pe-3">
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2" style="font-size: 11px;">Paid</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 fw-medium text-dark">January 2026</td>
+                            <td class="text-muted">65</td>
+                            <td class="text-muted">₹75,200</td>
+                            <td class="text-success fw-semibold">₹15,300</td>
+                            <td class="pe-3">
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2" style="font-size: 11px;">Paid</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 fw-medium text-dark">December 2025</td>
+                            <td class="text-muted">48</td>
+                            <td class="text-muted">₹57,600</td>
+                            <td class="text-success fw-semibold">₹12,800</td>
+                            <td class="pe-3">
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2" style="font-size: 11px;">Paid</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

@@ -31,6 +31,8 @@ namespace SkillForge.Services.Courses
                     return new CourseReturn { Success = false, message = CourseMessage.EmptyFields, TechnicalMessage = "Course title is required." };
                 if (string.IsNullOrWhiteSpace(courseVM.Description))
                     return new CourseReturn { Success = false, message = CourseMessage.EmptyFields, TechnicalMessage = "Course description is required." };
+                if (string.IsNullOrWhiteSpace(courseVM.ShortSummary))
+                    return new CourseReturn { Success = false, message = CourseMessage.EmptyFields, TechnicalMessage = "Short summary is required." };
                 if (!courseVM.Duration_Weeks.HasValue || courseVM.Duration_Weeks.Value <= 0)
                     return new CourseReturn { Success = false, message = CourseMessage.EmptyFields, TechnicalMessage = "Duration must be greater than 0 weeks." };
                 if (courseVM.Actual_Price < 0)
@@ -74,6 +76,7 @@ namespace SkillForge.Services.Courses
                 course.CourseDetails = new CourseDetails
                 {
                     Description = courseVM.Description,
+                    ShortSummary = courseVM.ShortSummary,
                     Actual_Price = courseVM.Actual_Price,
                     Discount_Percent = courseVM.Discount_Percent,
                     Total_Price = courseVM.Actual_Price - (courseVM.Actual_Price * courseVM.Discount_Percent / 100),
@@ -171,6 +174,7 @@ namespace SkillForge.Services.Courses
                 
                 // Update pricing and specs
                 course.CourseDetails.Description = courseVM.Description;
+                course.CourseDetails.ShortSummary = courseVM.ShortSummary;
                 course.CourseDetails.Actual_Price = courseVM.Actual_Price;
                 course.CourseDetails.Discount_Percent = courseVM.Discount_Percent;
                 course.CourseDetails.Total_Price = courseVM.Actual_Price - (courseVM.Actual_Price * courseVM.Discount_Percent / 100);
@@ -278,6 +282,7 @@ namespace SkillForge.Services.Courses
                 Id = course.Id,
                 Title = course.Title,
                 Description = course.CourseDetails?.Description ?? string.Empty,
+                ShortSummary = course.CourseDetails?.ShortSummary ?? string.Empty,
                 Category_Id = course.category_id.ToString(),
                 Actual_Price = course.CourseDetails?.Actual_Price ?? 0,
                 Discount_Percent = course.CourseDetails?.Discount_Percent ?? 0,

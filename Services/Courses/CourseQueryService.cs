@@ -29,7 +29,8 @@ namespace SkillForge.Services.Courses
                 .Select(c => new CourseCardVM
                 {
                     Title = c.Title,
-                    SubTitle = c.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? string.Empty,
+                    SubTitle = !string.IsNullOrWhiteSpace(c.CourseDetails?.ShortSummary) ? c.CourseDetails.ShortSummary : c.CourseDetails?.Description,
+                    ShortSummary = !string.IsNullOrWhiteSpace(c.CourseDetails?.ShortSummary) ? c.CourseDetails.ShortSummary : c.CourseDetails?.Description,
                     CategoryName = c.courseCategory?.Name ?? "Uncategorized",
                     Difficulty = c.CourseDetails?.Difficulty.ToString() ?? "None",
                     Total_Price = c.CourseDetails?.Total_Price ?? 0,
@@ -47,7 +48,8 @@ namespace SkillForge.Services.Courses
                     Courses = g.Select(c => new CourseCardVM
                     {
                         Title = c.Title,
-                        SubTitle = c.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? string.Empty,
+                        SubTitle = !string.IsNullOrWhiteSpace(c.CourseDetails?.ShortSummary) ? c.CourseDetails.ShortSummary : c.CourseDetails?.Description,
+                        ShortSummary = !string.IsNullOrWhiteSpace(c.CourseDetails?.ShortSummary) ? c.CourseDetails.ShortSummary : c.CourseDetails?.Description,
                         CategoryName = c.courseCategory?.Name ?? "Uncategorized",
                         Difficulty = c.CourseDetails?.Difficulty.ToString() ?? "None",
                         Total_Price = c.CourseDetails?.Total_Price ?? 0,
@@ -88,12 +90,13 @@ namespace SkillForge.Services.Courses
                 CourseId = course.Id,
                 Title = course.Title,
                 Desciption = course.CourseDetails?.Description,
+                ShortSummary = course.CourseDetails?.ShortSummary,
                 VideoUrl = course.CourseDetails?.Intro_Video_Url,
                 ActualPrice = course.CourseDetails?.Actual_Price ?? 0,
                 TotalPrice = course.CourseDetails?.Total_Price ?? 0,
                 DiscountPercent = (float)(course.CourseDetails?.Discount_Percent ?? 0),
                 outcomes = course.CourseOutcomes?.ToList() ?? new List<CourseOutcomes>(),
-                SubTitle = course.CourseDetails?.Description?.Split('.').FirstOrDefault() ?? string.Empty,
+                SubTitle = course.CourseDetails?.ShortSummary ?? string.Empty,
                 IsWishlisted = isWishlisted,
                 modules = modules,
                 Duration = course.CourseDetails?.Duration_Weeks ?? 0,

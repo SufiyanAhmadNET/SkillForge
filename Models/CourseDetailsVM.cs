@@ -5,6 +5,7 @@
         public int CourseId { get; set; }
         public string Title { get; set; }
         public string? SubTitle { get; set; }
+        public string? ShortSummary { get; set; }
         public string? Desciption { get; set; }
         public string? VideoUrl { get; set; }
         public decimal ActualPrice { get; set; }

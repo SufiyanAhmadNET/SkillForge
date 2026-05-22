@@ -3,7 +3,7 @@
     var alertMsg = rawAlert;
     var alertType = TempData["AlertType"]?.ToString() ?? "info";
 
-    // Handle legacy "type:message" format (e.g., "success:Message", "error:Message")
+    // legacy "type:message" 
     if (!string.IsNullOrEmpty(alertMsg) && alertMsg.Contains(":"))
     {
         var colonIndex = alertMsg.IndexOf(':');

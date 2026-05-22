@@ -21,6 +21,10 @@ namespace SkillForge.Models
         [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
         public string Description { get; set; }
 
+        [Required(ErrorMessage = "Short summary is required")]
+        [StringLength(120, ErrorMessage = "Short summary cannot exceed 120 characters")]
+        public string? ShortSummary { get; set; }
+
         public IEnumerable<string>? outcome { get; set; }
 
         [Range(0, double.MaxValue, ErrorMessage = "Actual price must be 0 or more")]

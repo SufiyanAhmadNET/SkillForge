@@ -21,7 +21,7 @@ namespace SkillForge.Areas.Pubic.Controllers
             ViewBag.Email = email;
             if(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                ViewBag.Error = "Please Enter Credential";
+                ViewBag.Error = "Please enter all details";
                 return View();
             }
             

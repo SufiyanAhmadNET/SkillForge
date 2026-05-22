@@ -118,12 +118,6 @@
             <partial name="_Alert_Message_Partial" />
             <partial name="_ConfirmModal" />
 
-            @* display validation summary only when model has errors *@
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div id="validationSummary" asp-validation-summary="All" class="alert alert-danger validation-summary"></div>
-            }
-
             @RenderBody()
             @RenderSection("Scripts", required: false)
 
