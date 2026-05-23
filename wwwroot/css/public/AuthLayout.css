@@ -21,8 +21,15 @@
     width: 100%;
     max-width: 420px;
     border-radius: 16px;
-    border: 1px solid #e9ecef;
+    border: 1px solid rgba(0,0,0,.05);
     background: #fff;
+    padding: 1.75rem 2rem; /* Reduced padding for compactness */
+    box-shadow: 0 10px 40px rgba(0,0,0,.03);
+}
+
+/* Wide variant for 2-column registration */
+.auth-card-wide {
+    max-width: 800px;
     padding: 2rem;
 }
 
@@ -30,21 +37,25 @@
    INPUTS
 ===================== */
     .auth-card .form-control {
-        padding: 9px 13px;
+        padding: 9px 12px; /* Slightly tighter */
         border-radius: 10px;
         font-size: .9rem;
+        border: 1px solid #e0e0e0;
+        transition: all .2s ease;
     }
 
-        /* orange focus ring — works for all roles */
+        /* premium soft glow focus */
         .auth-card .form-control:focus {
             border-color: var(--role-color, var(--orange));
-            box-shadow: 0 0 0 .2rem rgba(var(--role-color-rgb, 255,122,0), .15);
+            box-shadow: 0 0 0 3px rgba(var(--role-color-rgb, 255,122,0), .08);
+            background-color: #fff;
         }
 
-    .auth-card label {
-        font-size: .88rem;
-        margin-bottom: .25rem;
-        font-weight: 500;
+    .auth-card .form-label {
+        font-size: .82rem; /* Slightly smaller label */
+        margin-bottom: .3rem;
+        font-weight: 600;
+        color: #555;
     }
 
 /* =====================
@@ -53,61 +64,128 @@
 ===================== */
 .btn-auth {
     width: 100%;
-    padding: 10px;
+    padding: 10px; /* Tighter button */
     border: none;
     border-radius: 10px;
-    font-weight: 600;
-    font-size: .95rem;
+    font-weight: 700;
+    font-size: .92rem;
     cursor: pointer;
-    transition: filter .2s;
+    transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--role-color, var(--orange));
     color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
 }
 
     .btn-auth:hover {
-        filter: brightness(.9);
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(var(--role-color-rgb, 255,122,0), .15);
     }
+
+/* loading spinner for buttons */
+.btn-auth .spinner-border {
+    width: 1rem;
+    height: 1.1rem;
+    border-width: 0.15em;
+    display: none;
+}
+
+.btn-auth.loading .spinner-border {
+    display: inline-block;
+}
+
+.btn-auth.loading .btn-text {
+    opacity: 0.8;
+}
 
 /* =====================
    ROLE BADGE — colored pill at top of card
-   shows which role this auth page is for
 ===================== */
 .role-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(var(--role-color-rgb, 255,122,0), .1);
+    background: rgba(var(--role-color-rgb, 255,122,0), .06);
     color: var(--role-color, var(--orange));
-    border: 1px solid rgba(var(--role-color-rgb, 255,122,0), .2);
-    border-radius: 20px;
-    padding: 4px 14px;
-    font-size: .78rem;
+    border: 1px solid rgba(var(--role-color-rgb, 255,122,0), .1);
+    border-radius: 50px;
+    padding: 3px 12px;
+    font-size: .72rem;
     font-weight: 700;
-    letter-spacing: .4px;
+    letter-spacing: .5px;
     margin-bottom: 12px;
+    text-transform: uppercase;
 }
-
-/* =====================
-   SOCIAL LOGIN BUTTON
-===================== */
-.auth-social {
-    text-decoration: none;
-    color: var(--dark);
-    font-weight: 500;
-    transition: background .2s;
-    font-size: .88rem;
-}
-
-    .auth-social:hover {
-        background: #f8f9fa;
-        color: var(--dark);
-    }
 
 /* =====================
    OR DIVIDER
 ===================== */
-.auth-card hr {
-    margin: .5rem 0;
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 1.25rem 0; /* Reduced margin */
+}
+
+.auth-divider hr {
+    flex-grow: 1;
+    border-top: 1px solid #f0f0f0;
+    margin: 0;
+    opacity: 1;
+}
+
+.auth-divider span {
+    padding: 0 10px;
+    color: #bbb;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* =====================
+   GOOGLE LOGIN WRAPPER
+===================== */
+.google-auth-container {
+    margin-bottom: .75rem;
+    min-height: 40px;
+}
+
+/* adjust google iframe branding alignment */
+.g_id_signin iframe {
+    margin: 0 auto !important;
+}
+
+/* Register 2-column styles */
+.auth-col-left {
+    padding-right: 2rem;
+    border-right: 1px solid #f0f0f0;
+}
+
+.auth-col-right {
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .auth-col-left {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .auth-col-right {
+        padding-left: 0;
+    }
+    .auth-card {
+        padding: 1.5rem;
+    }
 }
 
 /* =====================
@@ -184,13 +262,10 @@
         display: none;
     }
 
-/* =====================
-   MINIMAL TOPBAR — auth pages only
-===================== */
 .auth-topbar {
     background: #fff;
     border-bottom: 1px solid #eee;
-    padding: 14px 32px;
+    padding: 10px 24px; /* Tighter topbar */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -198,13 +273,29 @@
 
     .auth-topbar .brand {
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 0.95rem; /* Smaller brand */
         text-decoration: none;
         color: #1a1d23;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
+
+/* Heading scales */
+.auth-card h2 {
+    font-size: 1.2rem !important; /* Standardized compact heading */
+    font-weight: 800 !important;
+    margin-bottom: 0.15rem !important;
+}
+
+.auth-card p.text-muted.small {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.4;
+}
+
+.auth-card .mb-3 { margin-bottom: 0.75rem !important; }
+.auth-card .mb-4 { margin-bottom: 1rem !important; }
 
         .auth-topbar .brand i {
             color: var(--orange);

@@ -5,224 +5,195 @@
 }
 
 
-<section class="d-flex align-items-center justify-content-center py-4 flex-grow-1">
-    <div class="auth-card">
-        <form method="post"
-              asp-area="Instructor" asp-controller="Auth" asp-action="InstructorRegistration">
+@* ================= Registration Section ================= *@
 
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="role" value="Instructor" />
-            <div class="text-center mb-3">
-                <span class="role-badge">
-                    <i class="bi bi-person-video3"></i> INSTRUCTOR PORTAL
-                </span>
-                <h2 class="fw-bold mt-2 mb-0" style="font-size:1.3rem;">Start Teaching</h2>
-                <p class="text-muted mb-0" style="font-size:12px;">
-                    Contribute in Building SKill Based Nation
-                </p>
+<section class="d-flex align-items-center justify-content-center py-3 bg-light flex-grow-1">
+    <div class="card auth-card auth-card-wide shadow-sm">
+        <div class="text-center mb-3">
+            <span class="role-badge">
+                <i class="bi bi-person-video3"></i> INSTRUCTOR PORTAL
+            </span>
+            <h2 class="fw-bold mb-0">Start Teaching</h2>
+            <p class="text-muted small">Contribute in building a skill-based nation</p>
+        </div>
+
+        <!-- Modern Stepper -->
+        <div class="inst-steps-top">
+            <div class="inst-step-top active">
+                <div class="inst-step-circle">1</div>
+                <div class="step-label">Account</div>
             </div>
-
-            <div class="inst-steps-top">
-
-                <div class="inst-step-top active">
-                    <div class="inst-step-circle">1</div>
-                    <div>Account</div>
-                </div>
-
-                <div class="inst-step-top">
-                    <div class="inst-step-circle">2</div>
-                    <div>Profile</div>
-                </div>
-
-                <div class="inst-step-top">
-                    <div class="inst-step-circle">3</div>
-                    <div>Approval</div>
-                </div>
-
+            <div class="inst-step-top">
+                <div class="inst-step-circle">2</div>
+                <div class="step-label">Profile</div>
             </div>
-
-            <!-- Title -->
-            <h2 class="text-center fw-bold mb-3">Create Account</h2>
-
-            @* otp trigger *@
-            @if (TempData["VerifyEmail"] != null)
-            {
-                <script>
-                    window.addEventListener("load", function () {
-                        openOtpModal("@TempData["VerifyEmail"]");
-                    });
-                </script>
-            }
-
-            @* ALert Messages *@
-
-
-
-
-
-            <!-- Email -->
-            <div class="mb-2">
-                <label class="form-label mb-1" style="font-size:13px;">Email address</label>
-                <input type="email" class="form-control form-control-sm" name="email"
-                       placeholder="you@example.com" autocomplete="email">
+            <div class="inst-step-top">
+                <div class="inst-step-circle">3</div>
+                <div class="step-label">Approval</div>
             </div>
+        </div>
 
-            <!-- Password -->
-            <div class="mb-2">
-                <label class="form-label mb-1" style="font-size:13px;">Password</label>
-                <div class="input-group input-group-sm">
-                    <input type="password" class="form-control" name="password"
-                           id="instrPass" placeholder="Create a password">
-                    <button class="btn btn-outline-secondary pass-toggle" type="button"
-                            onclick="togglePass('instrPass','instrEye')">
-                        <i class="bi bi-eye" id="instrEye"></i>
+        <div class="row g-0">
+            <!-- Left Column: Main Form -->
+            <div class="col-md-7 auth-col-left">
+                <form method="post" id="instructorRegisterForm" onsubmit="return handleAuthSubmit('instructorRegisterForm', 'Register')"
+                      asp-area="Instructor" asp-controller="Auth" asp-action="InstructorRegistration">
+
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="role" value="Instructor" />
+
+                    @* otp trigger *@
+                    @if (TempData["VerifyEmail"] != null)
+                    {
+                        <script>
+                            window.addEventListener("load", function () {
+                                openOtpModal("@TempData["VerifyEmail"]");
+                            });
+                        </script>
+                    }
+
+                    <div class="mb-2">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" name="email"
+                               placeholder="you@example.com" autocomplete="email" required>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="password"
+                                   id="instrPass" placeholder="Create a strong password" required>
+                            <button class="btn btn-outline-secondary pass-toggle" style="border: 1px solid #e0e0e0; border-left: none; border-radius: 0 10px 10px 0;" type="button"
+                                    onclick="togglePass('instrPass','instrEye')">
+                                <i class="bi bi-eye" id="instrEye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" name="confirmpassword"
+                               placeholder="Repeat your password" required>
+                    </div>
+
+                    <button type="submit" class="btn-auth">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span class="btn-text">Create Account & Continue</span>
                     </button>
+                </form>
+            </div>
+
+            <!-- Right Column: Secondary Actions -->
+            <div class="col-md-5 auth-col-right">
+                <div class="text-center w-100">
+                    <p class="text-muted small fw-bold mb-2">SOCIAL SIGNUP</p>
+                    
+                    <div class="google-auth-container">
+                        <div id="g_id_onload"
+                             data-client_id="@Configuration["GoogleAuth:ClientId"]"
+                             data-login_uri="/Instructor/Auth/GoogleLogin"
+                             data-auto_prompt="false">
+                        </div>
+
+                        <div class="g_id_signin"
+                             data-type="standard"
+                             data-shape="rectangular"
+                             data-theme="outline"
+                             data-text="signup_with"
+                             data-size="large"
+                             data-width="100%">
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3 mb-3">
+                        Already registered?
+                        <a asp-area="Instructor" asp-controller="Auth" asp-action="InstructorLogin"
+                           class="text-decoration-none fw-bold ms-1" style="color:var(--role-color);">Log in here</a>
+                    </p>
+
+                    <div class="role-switcher border-0 pt-0">
+                        <div class="role-switcher-label">REGISTER AS</div>
+                        <div class="role-switcher-links">
+                            <a asp-area="User" asp-controller="Auth" asp-action="StudentRegistration" class="role-link">
+                                <i class="bi bi-mortarboard"></i> Student
+                            </a>
+                            <a asp-area="Pubic" asp-controller="Authentication" asp-action="AdminLogin" class="role-link">
+                                <i class="bi bi-shield-lock"></i> Admin
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Confirm Password -->
-            <div class="mb-3">
-                <label class="form-label mb-1" style="font-size:13px;">Confirm Password</label>
-                <input type="password" class="form-control form-control-sm" name="confirmpassword"
-                       placeholder="Repeat password">
-            </div>
-
-            <!-- submit -->
-            <button type="submit" class="btn-auth mb-2">
-                <i class="bi bi-arrow-right me-2"></i> Create Account & Continue
-            </button>
-
-            <!-- OR divider -->
-            <div class="d-flex align-items-center my-2">
-                <hr class="flex-grow-1 m-0"><span class="text-muted small px-2">OR</span><hr class="flex-grow-1 m-0">
-            </div>
-
-            <!-- Google Sign In -->
-            <div id="g_id_onload"
-                 data-client_id="@Configuration["GoogleAuth:ClientId"]"
-                 data-login_uri="/Instructor/Auth/GoogleLogin"
-                 data-auto_prompt="false">
-            </div>
-
-            <!-- Google button -->
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="rectangular"
-                 data-theme="outline"
-                 data-text="signin_with"
-                 data-size="large"
-                 data-width="100%">
-            </div>
-
-            <!-- already registered -->
-            <p class="text-center text-muted mb-2" style="font-size:12px;">
-                Already registered?
-                <a asp-area="Instructor" asp-controller="Auth" asp-action="InstructorLogin"
-                   class="text-decoration-none fw-semibold" style="color:var(--role-color);">Log in</a>
-            </p>
-
-            <!-- role switcher — Student / Instructor (current) / Admin Login -->
-            <div class="role-switcher">
-                <div class="role-switcher-label">REGISTER AS</div>
-                <div class="role-switcher-links">
-                    <a href="/Student/Register" class="role-link">
-                        <i class="bi bi-mortarboard"></i> Student
-                    </a>
-                    <a href="/Instructor/Register" class="role-link current">
-                        <i class="bi bi-person-video3"></i> Instructor
-                    </a>
-                    <!-- admin login -->
-                    <a href="/Admin/Login" class="role-link">
-                        <i class="bi bi-shield-lock"></i> Admin Login
-                    </a>
-                </div>
-            </div>
-
-        </form>
         @await Html.PartialAsync("_OtpModal")
     </div>
 </section>
 
-<script>
-    // Google login logic handled by data-login_uri
-
-
-    function togglePass(inputId, iconId) {
-      const input = document.getElementById(inputId);
-      const icon  = document.getElementById(iconId);
-      input.type  = input.type === 'password' ? 'text' : 'password';
-      icon.className = input.type === 'text' ? 'bi bi-eye-slash' : 'bi bi-eye';
-    }
-
-
-</script>
-
-
 @*    CSS  *@
 <style>
-    /* ===== Horizontal Step Bar ===== */
+    /* ===== Modern Horizontal Step Bar ===== */
     .inst-steps-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 18px;
+        margin-bottom: 2rem;
         position: relative;
+        padding: 0 10px;
     }
 
-        /* connecting line */
-        .inst-steps-top::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #e5e7eb;
-            z-index: 0;
-        }
+    .inst-steps-top::before {
+        content: '';
+        position: absolute;
+        top: 14px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: #f0f0f0;
+        z-index: 0;
+    }
 
     .inst-step-top {
         position: relative;
         z-index: 1;
         text-align: center;
         flex: 1;
-        font-size: 11px;
-        color: #999;
+        color: #adb5bd;
     }
 
-    /* circle */
     .inst-step-circle {
-        width: 20px;
-        height: 20px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
-        background: #e5e7eb;
-        margin: 0 auto 4px;
-        font-size: 11px;
+        background: #fff;
+        border: 2px solid #f0f0f0;
+        margin: 0 auto 8px;
+        font-size: 13px;
+        font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.3s ease;
     }
 
-    /* active */
-    .inst-step-top.active .inst-step-circle {
-        background: var(--role-color);
-        color: #fff;
-    }
-
-    .inst-step-top.active {
-        color: var(--role-color);
+    .step-label {
+        font-size: 11px;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    /* done */
+    /* active/done states */
+    .inst-step-top.active .inst-step-circle,
     .inst-step-top.done .inst-step-circle {
         background: var(--role-color);
+        border-color: var(--role-color);
         color: #fff;
+        box-shadow: 0 4px 10px rgba(var(--role-color-rgb), 0.2);
     }
 
-    /* tighten spacing inside card */
-    .auth-card.inst-register {
-        padding-top: 1.6rem;
+    .inst-step-top.active .step-label {
+        color: var(--role-color);
     }
 </style>
 

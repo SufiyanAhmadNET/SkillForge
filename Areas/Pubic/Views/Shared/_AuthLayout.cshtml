@@ -21,22 +21,20 @@
 
 <body class="auth-page @ViewData["RoleClass"]">
 
-    <header class="auth-topbar">
+    <header class="auth-topbar shadow-sm sticky-top">
         <a class="brand" href="/">
             <i class="bi bi-mortarboard-fill"></i> SkillForge
         </a>
-        <a href="/" class="text-muted small text-decoration-none">
+        <a href="/" class="text-muted small text-decoration-none fw-bold">
             <i class="bi bi-arrow-left me-1"></i> Back to Home
         </a>
     </header>
 
     <partial name="_Alert_Message_Partial" />
 
-    
-
-  
-
-    @RenderBody()
+    <div class="container-fluid d-flex flex-column flex-grow-1">
+        @RenderBody()
+    </div>
 
     <footer class="auth-footer">
         © 2026 SkillForge &nbsp;·&nbsp;
@@ -50,6 +48,27 @@
             const icon  = document.getElementById(iconId);
             input.type  = input.type === 'password' ? 'text' : 'password';
             icon.className = input.type === 'text' ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+
+        // Global handler for auth button loading states
+        function handleAuthSubmit(formId, baseText) {
+            const form = document.getElementById(formId);
+            if (!form.checkValidity()) {
+                return true; // Let browser handle validation
+            }
+
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.classList.add('loading');
+                btn.disabled = true;
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    if (baseText === 'Login') textSpan.innerText = 'Logging in...';
+                    else if (baseText === 'Register') textSpan.innerText = 'Creating account...';
+                    else textSpan.innerText = 'Processing...';
+                }
+            }
+            return true;
         }
 
 
