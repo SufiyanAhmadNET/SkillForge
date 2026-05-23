@@ -6,37 +6,58 @@
 }
 
 
-/*hero at top*/
+/* ===== HERO SECTION ===== */
 .course-hero {
-    padding: 32px 16px 20px;
-    margin-bottom: 20px;
+    /* Richer warm gradient for premium feel */
+    background: linear-gradient(180deg, rgba(255, 102, 0, 0.07) 0%, rgba(255, 255, 255, 0) 100%);
+    padding: 72px 0 40px;
+    margin-bottom: 0;
     text-align: center;
+    
+    /* Full width breakout */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: -28px; /* Remove top gap with navbar */
+    border-radius: 0 !important;
 }
 
-@media (max-width: 768px) {
-    .course-hero {
-        padding: 24px 12px 16px;
-    }
-    .course-hero h1 {
-        font-size: 1.35rem !important;
-    }
-    .course-hero p {
-        font-size: 0.85rem !important;
-    }
+.hero-inner {
+    max-width: 1216px; /* Align with sf-page-body content width */
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
-    .course-hero h1 {
-        font-size: 1.6rem;
-        font-weight: 800;
-        letter-spacing: -0.3px;
-        margin-bottom: 6px;
-        font-family: 'Poppins','Segoe UI',sans-serif;
-    }
+.course-hero h1.hero-title {
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    margin-bottom: 14px;
+    font-family: 'Inter', 'Poppins', 'Segoe UI', sans-serif;
+    color: #111827;
+    line-height: 1.15;
+}
 
-    .course-hero p {
-        font-size: .9rem;
-        color: var(--muted);
-    }
+.course-hero .text-highlight {
+    background: rgba(255, 102, 0, 0.08); /* Soft orange background accent */
+    color: var(--orange); /* Keep theme orange for the text */
+    padding: 2px 14px;
+    border-radius: 12px;
+    display: inline-block;
+    letter-spacing: -0.4px; /* Slightly tighter for premium feel */
+}
+
+.course-hero p.hero-subtitle {
+    font-size: 1.15rem;
+    color: #6b7280;
+    font-weight: 500;
+    max-width: 540px;
+    margin: 0 auto;
+    letter-spacing: -0.2px;
+}
 
 
 /* ===== Category Title ===== */
@@ -81,7 +102,8 @@
     flex-direction: column;
     cursor: pointer;
     transition: transform .22s, box-shadow .22s;
-    height: 410px; /* Adjusted height to reduce whitespace */
+    min-height: 410px;
+    height: 100%;
     width: 100%;
     position: relative;
 }
@@ -90,7 +112,6 @@
         transform: translateY(-4px);
         box-shadow: 0 10px 28px rgba(0,0,0,.10);
     }
-
 
 
 /* thumbnail */
@@ -261,7 +282,7 @@
     gap: 20px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding: 10px 30px 20px;
+    padding: 16px 24px 24px;
     scrollbar-width: none;
 }
 
@@ -321,10 +342,11 @@
     overflow-x: auto;
     white-space: nowrap;
     gap: 12px;
-    padding: 10px 4px;
-    margin: 10px 0 20px;
-    border-bottom: 1px solid #eee;
+    padding: 10px 4px 20px;
+    margin: 0 auto 36px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
     -webkit-overflow-scrolling: touch;
+    justify-content: center;
 }
 
     .cat-scroll::-webkit-scrollbar {
@@ -351,10 +373,29 @@
 }
 
 .category-section {
-    background: rgba(255, 102, 0, 0.035);
-    border: 1px solid rgba(255, 102, 0, 0.08);
-    padding: 16px 14px 14px;
-    margin-bottom: 28px;
+    /* Softer, more integrated row background */
+    background: linear-gradient(90deg, rgba(255, 102, 0, 0.015) 0%, rgba(255, 102, 0, 0.005) 100%);
+    padding: 32px 0;
+    margin-bottom: 24px;
+    border: none;
+    
+    /* Breakout for wider row appearance */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+/* Inner alignment for breakout rows */
+.category-section .sec-head, 
+.category-section .course-section-inner {
+    max-width: 1216px; /* Align with sf-page-body content width */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 
@@ -463,6 +504,22 @@
 }
 
 @media (max-width: 768px) {
+    .course-hero {
+        padding: 40px 16px 20px;
+    }
+    .course-hero h1.hero-title {
+        font-size: 1.85rem;
+        letter-spacing: -0.5px;
+    }
+    .course-hero p.hero-subtitle {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+    .cat-scroll {
+        justify-content: flex-start;
+        margin-bottom: 24px;
+        padding-left: 24px;
+    }
     .course-row > *, .course-scroll > * {
         flex: 0 0 85%;
         max-width: 85%;

@@ -33,6 +33,7 @@
     margin: 0 auto; /* center on wide screens */
     padding: 28px 32px; /* top breathing room + side gutter */
     min-height: calc(100vh - var(--hdr-h));
+    overflow-x: hidden; /* Prevent scrollbars from full-width breakout elements */
 }
 
 /* ─── LEFT: brand + explore ─── */
