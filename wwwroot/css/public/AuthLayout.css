@@ -272,6 +272,7 @@
 }
 
     .auth-topbar .brand {
+        font-family: 'Outfit', sans-serif;
         font-weight: 700;
         font-size: 0.95rem; /* Smaller brand */
         text-decoration: none;

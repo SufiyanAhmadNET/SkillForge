@@ -13,8 +13,25 @@ const DEFAULT_DURATION = 4000; // 4 seconds
  * @param {string} containerId - Target container ID
  */
 function showAlert(message, type = "info", duration = DEFAULT_DURATION, containerId = "alert-container") {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+    let container = document.getElementById(containerId);
+    
+    // Fallback to class selector if ID is not found
+    if (!container) {
+        container = document.querySelector('.alert-container');
+    }
+
+    // If still no container exists, create one and append to body
+    if (!container) {
+        container = document.createElement('div');
+        container.id = containerId;
+        container.className = 'alert-container';
+        // Basic positioning for dynamic container
+        container.style.position = 'fixed';
+        container.style.top = '20px';
+        container.style.right = '20px';
+        container.style.zIndex = '9999';
+        document.body.appendChild(container);
+    }
 
     // Normalize type to match CSS classes
     const normalizedType = normalizeAlertType(type);

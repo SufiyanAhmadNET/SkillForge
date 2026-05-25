@@ -6,8 +6,8 @@
         <span class="diff-tag">@Model.Difficulty</span>
 
         @* heart — white circle, red border, fills red on click *@
-        <button class="wish-btn @(Model.IsWishListed == true ? "wishlisted" : "")" 
-                onclick="toggleWishlist(event, this, @Model.courseId)" 
+        <button type="button" class="wish-btn @(Model.IsWishListed == true ? "wishlisted" : "")" 
+                data-course-id="@Model.courseId"
                 title="@(Model.IsWishListed == true ? "Remove from wishlist" : "Add to wishlist")">
             <i class="bi @(Model.IsWishListed == true ? "bi-heart-fill" : "bi-heart")"></i>
         </button>
@@ -26,9 +26,14 @@
             <span class="c-off">@Model.Discount_Percent% OFF</span>
         </div>
 
-        @* pass courseId to details page *@
-        <a href="/User/Home/CourseDetails?id=@Model.courseId" class="c-btn d-block text-center text-decoration-none">
-            Check Course →
+        @* Check if user is authenticated for proper redirection *@
+        @{
+            string detailsUrl = User.Identity.IsAuthenticated 
+                ? $"/User/Home/CourseDetails?id={Model.courseId}" 
+                : $"/Pubic/Home/CoursesDetails?id={Model.courseId}";
+        }
+        <a href="@detailsUrl" class="c-btn d-block text-center text-decoration-none">
+            Check 
         </a>
     </div>
 </div>

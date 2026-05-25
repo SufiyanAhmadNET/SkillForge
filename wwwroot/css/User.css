@@ -43,11 +43,17 @@
     gap: 10px;
     flex-shrink: 0;
 }
-
 .sf-brand {
+    font-family: 'Outfit', sans-serif;
     font-weight: 700;
-    font-size: 17px;
-    color: #1a1a2e !important;
+    font-size: 1.15rem;
+    color: #111827 !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.4px;
+}
     text-decoration: none;
     display: flex;
     align-items: center;
