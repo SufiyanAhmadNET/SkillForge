@@ -71,10 +71,10 @@
                 </div>
 
                 <!-- Header Search -->
-                <div class="header-search d-none d-md-flex align-items-center px-2 py-1 border rounded-3 ms-2 me-3" style="background: #f8f9fa; max-width: 240px;">
+                <form asp-area="Pubic" asp-controller="Home" asp-action="Search" method="get" class="header-search d-none d-md-flex align-items-center px-2 py-1 border rounded-3 ms-2 me-3" style="background: #f8f9fa; max-width: 240px;">
                     <i class="bi bi-search text-muted small me-2"></i>
-                    <input type="text" class="border-0 bg-transparent small" placeholder="Search courses..." style="outline: none; font-size: 0.85rem; width: 100%;">
-                </div>
+                    <input type="text" name="q" class="border-0 bg-transparent small" placeholder="Search courses..." style="outline: none; font-size: 0.85rem; width: 100%;">
+                </form>
 
                 <!-- Auth Actions -->
                 <div class="d-flex gap-2 align-items-center">
@@ -106,7 +106,7 @@
                         <i class="bi bi-mortarboard-fill me-2" style="color:var(--orange)"></i>SkillForge
                     </a>
                     <p class="text-muted small mt-2">
-                        Practical, structured learning for real-world careers. Made for India.
+                        Practical, structured learning for real-world careers.
                     </p>
                     <div class="d-flex gap-3 mt-3">
                         <i class="bi bi-facebook fs-5" style="cursor:pointer;color:var(--muted)"></i>
@@ -150,8 +150,7 @@
 
 
     <!-- ========================
-         JS — scroll arrows logic
-
+         JS — scroll arrows logi
     ======================== -->
     <script>
         // scroll left or right in a course row
@@ -167,7 +166,7 @@
         function filterCategory(el, cat) {
           document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
           el.classList.add('active');
-          // TODO: filter course rows by category when DB is connected
+          // filter course rows by category 
           console.log('filter:', cat);
         }
 

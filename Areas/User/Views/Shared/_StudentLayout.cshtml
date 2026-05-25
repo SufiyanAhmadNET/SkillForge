@@ -46,10 +46,10 @@
         </div>
 
         <!-- Center: search — hidden on mobile, shown on md+ -->
-        <div class="sf-search d-none d-md-flex @(isPreview ? "pe-none opacity-75" : "")" style="max-width:380px; width:100%;">
+        <form asp-area="User" asp-controller="Home" asp-action="Search" method="get" class="sf-search d-none d-md-flex @(isPreview ? "pe-none opacity-75" : "")" style="max-width:380px; width:100%;">
             <i class="bi bi-search" style="font-size:13px;"></i>
-            <input type="text" placeholder="Search courses..." style="font-size:13px;" />
-        </div>
+            <input type="text" name="q" placeholder="Search courses..." style="font-size:13px;" />
+        </form>
 
         <!-- Right: links + bell + apps + avatar -->
         <div class="sf-header-right @(isPreview ? "pe-none" : "")">

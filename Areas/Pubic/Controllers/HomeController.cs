@@ -9,15 +9,26 @@ namespace SkillForge.Areas.Pubic.Controllers
     public class HomeController : Controller
     {
         private readonly ICourseQueryService _courseQueryService;
+        private readonly ISearchService _searchService;
 
-        public HomeController(ICourseQueryService courseQueryService)
+        public HomeController(ICourseQueryService courseQueryService, ISearchService searchService)
         {
             _courseQueryService = courseQueryService;
+            _searchService = searchService;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        // Search courses
+        public IActionResult Search(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q)) return RedirectToAction("Courses");
+
+            var result = _searchService.SearchCourses(q);
+            return View(result);
         }
 
         public IActionResult Courses()

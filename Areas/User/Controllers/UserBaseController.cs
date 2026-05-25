@@ -17,7 +17,7 @@ namespace SkillForge.Areas.User.Controllers
             if (!string.IsNullOrEmpty(id))
             {
                 // query profile using string Id
-                var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId.ToString() == id);
+                 var profile = _context.StudentProfiles.FirstOrDefault(p => p.StudentId.ToString() == id);
 
                 ViewBag.Email = CurrentUserEmail();
                 ViewBag.FirstName = profile?.FirstName;

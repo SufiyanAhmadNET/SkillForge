@@ -39,6 +39,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Register Course Services
 builder.Services.AddScoped<ICourseQueryService, CourseQueryService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<ICourseContentService, CourseContentService>();
 builder.Services.AddScoped<ICourseManagementService, CourseManagementService>();
 builder.Services.AddScoped<ICourseProgressService, CourseProgressService>();

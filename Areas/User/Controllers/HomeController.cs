@@ -19,6 +19,7 @@ namespace SkillForge.Areas.User.Controllers
         private readonly IConfiguration _config;
         private readonly IAuthService _authService;
         private readonly IOtpService _otpService;
+        private readonly ISearchService _searchService;
 
         public HomeController(ICourseQueryService courseQueryService,
                               ICourseProgressService courseProgressService,
@@ -26,7 +27,8 @@ namespace SkillForge.Areas.User.Controllers
                               IEnrollmentService enrollmentService,
                               IConfiguration config,
                               IAuthService authService,
-                              IOtpService otpService)
+                              IOtpService otpService,
+                              ISearchService searchService)
         {
             _courseQueryService = courseQueryService;
             _courseProgressService = courseProgressService;
@@ -35,6 +37,17 @@ namespace SkillForge.Areas.User.Controllers
             _config = config;
             _authService = authService;
             _otpService = otpService;
+            _searchService = searchService;
+        }
+
+        // Search courses for logged in user
+        public IActionResult Search(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q)) return RedirectToAction("Courses");
+
+            var studentId = GetStudentId();
+            var result = _searchService.SearchCourses(q, studentId);
+            return View(result);
         }
 
         [Authorize(Roles = "Student")]
