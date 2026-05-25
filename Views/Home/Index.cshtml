@@ -32,7 +32,7 @@
 
                     <!-- CTA buttons -->
                     <div class="d-flex gap-3 justify-content-center flex-wrap">
-                        <a href="/User/Home/Courses" class="btn-orange btn-lg px-5 text-decoration-none">Explore Courses</a>
+                        <a href="/Pubic/Home/Courses" class="btn-orange btn-lg px-5 text-decoration-none">Explore Courses</a>
                         <a href="#" class="btn btn-outline-light btn-lg px-5" style="font-weight: 600; border-radius: 10px;">Watch Demo</a>
                     </div>
                     
@@ -45,7 +45,7 @@
     <!-- ========================
          STATS BAR
     ======================== -->
-    <section class="bg-light py-5 border-top border-bottom">
+    <section class="bg-light py-5 border-bottom">
         <div class="container-fluid px-5">
             <div class="row text-center g-3">
 
@@ -78,6 +78,8 @@
             </div>
         </div>
     </section>
+
+
 
 
     <!-- ========================
@@ -132,94 +134,94 @@
     <!-- ========================
          COURSE ROWS SECTION    
     ======================== -->
-    <section class="section-padding pt-4">
-        <div class="container-fluid px-5">
+    @{
+        // Gather all unique courses from the VM to find the latest
+        var allLandingCourses = Model.CategorySections
+            .Where(c => c.Courses != null)
+            .SelectMany(c => c.Courses)
+            .Concat(Model.PopularCourses ?? new List<CourseCardVM>())
+            .GroupBy(c => c.courseId)
+            .Select(g => g.First())
+            .ToList();
 
+        var recentlyAdded = allLandingCourses
+            .OrderByDescending(c => c.courseId)
+            .Take(8)
+            .ToList();
 
-            <!-- ---- ROW 1: Popular Courses ---- -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <span class="section-label">🔥 TRENDING</span>
-                    <h4 class="fw-bold mb-0">Most Popular Courses</h4>
+        var landingValidCategories = Model.CategorySections
+            .Where(c => c.Courses != null && c.Courses.Count >= 3)
+            .OrderByDescending(c => c.Courses.Count)
+            .Take(2)
+            .ToList();
+    }
+    
+    <section class="py-4">
+
+        <!-- ---- ROW 1: Recently Added ---- -->
+        @if (recentlyAdded.Any())
+        {
+            <div class="category-section border-0 shadow-none bg-transparent">
+                <div class="sec-head">
+                    <div class="cat-left">
+                        <span class="cat-bar"></span>
+                        <h2 class="fw-bold mb-0">Recently Added</h2>
+                    </div>
+                    <a href="/Pubic/Home/Courses" class="text-decoration-none small fw-bold" style="color:var(--orange);">
+                        See all <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
-                <a href="#" class="text-decoration-none" style="color:var(--orange);font-weight:600">
-                    See all <i class="bi bi-arrow-right"></i>
-                </a>
+
+                <div class="position-relative course-section-inner">
+                    <button type="button" class="arr left" onclick="scrollRow('recent',-1)"><i class="bi bi-chevron-left"></i></button>
+                    <button type="button" class="arr right" onclick="scrollRow('recent', 1)"><i class="bi bi-chevron-right"></i></button>
+
+                    <div class="course-scroll" id="recent">
+                        @foreach (var course in recentlyAdded)
+                        {
+                            <partial name="_CourseCardPartial" model="course" />
+                        }
+                    </div>
+                </div>
             </div>
+        }
 
-            <!-- scrollable row + arrows wrapper -->
-            <div class="course-row-wrap mb-5">
-                <button class="arr left" onclick="scroll('popular',-1)"><i class="bi bi-chevron-left"></i></button>
-                <button class="arr right" onclick="scroll('popular', 1)"><i class="bi bi-chevron-right"></i></button>
 
-                <div class="course-scroll" id="popular">
-                    @foreach (var course in Model.PopularCourses)
-                    {
-                        <partial name="_CourseCardPartial" model="course" />
-                    }
-                </div><!-- /popular scroll -->
+        <!-- ---- DYNAMIC CATEGORY ROWS (Max 2) ---- -->
+        @foreach (var category in landingValidCategories)
+        {
+            <div class="category-section border-0 shadow-none bg-transparent" data-cat="@category.CategoryName">
+                <div class="sec-head">
+                    <div class="cat-left">
+                        <span class="cat-bar"></span>
+                        <h2 class="fw-bold mb-0">@category.CategoryName</h2>
+                    </div>
+                    <a href="/Pubic/Home/Courses" class="text-decoration-none small fw-bold" style="color:var(--orange);">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="position-relative course-section-inner">
+                    @{ var rowId = "cat-" + category.CategoryName.Replace(" ", "-").ToLower(); }
+                    <button type="button" class="arr left" onclick="scrollRow('@rowId',-1)"><i class="bi bi-chevron-left"></i></button>
+                    <button type="button" class="arr right" onclick="scrollRow('@rowId', 1)"><i class="bi bi-chevron-right"></i></button>
+                    <div class="course-scroll" id="@rowId">
+                        @foreach (var course in category.Courses)
+                        {
+                            <partial name="_CourseCardPartial" model="course" />
+                        }
+                    </div>
+                </div>
             </div>
+        }
 
+        <!-- ---- EXPLORE ALL CTA ---- -->
+        <div class="container-fluid px-5 text-center mt-4">
+            <a href="/Pubic/Home/Courses" class="btn btn-orange btn-lg px-5 fw-bold shadow-sm" style="border-radius: 12px;">
+                Explore All Courses <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
 
-            <!-- ---- ROW 2: AI Courses ---- -->
-            @{
-                var aiSection = Model.CategorySections.FirstOrDefault(c => c.CategoryName.Contains("AI") || c.CategoryName.Contains("ML"));
-                if (aiSection != null && aiSection.Courses.Any())
-                {
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <span class="section-label">🤖 AI & ML</span>
-                            <h4 class="fw-bold mb-0">Artificial Intelligence Courses</h4>
-                        </div>
-                        <a href="/User/Home/Courses" class="text-decoration-none" style="color:var(--orange);font-weight:600">
-                            See all <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-
-                    <div class="course-row-wrap mb-5">
-                        <button class="arr left" onclick="scroll('ai',-1)"><i class="bi bi-chevron-left"></i></button>
-                                        <button class="arr right" onclick="scroll('ai', 1)"><i class="bi bi-chevron-right"></i></button>
-                        <div class="course-scroll" id="ai">
-                            @foreach (var course in aiSection.Courses)
-                            {
-                                <partial name="_CourseCardPartial" model="course" />
-                            }
-                        </div><!-- /ai scroll -->
-                    </div>
-                }
-            }
-
-
-            <!-- ---- ROW 3: Cloud & DevOps ---- -->
-            @{
-                var cloudSection = Model.CategorySections.FirstOrDefault(c => c.CategoryName.Contains("Cloud") || c.CategoryName.Contains("DevOps"));
-                if (cloudSection != null && cloudSection.Courses.Any())
-                {
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <span class="section-label">☁️ CLOUD</span>
-                            <h4 class="fw-bold mb-0">Cloud & DevOps Courses</h4>
-                        </div>
-                        <a href="/User/Home/Courses" class="text-decoration-none" style="color:var(--orange);font-weight:600">
-                            See all <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
-
-                    <div class="course-row-wrap mb-2">
-                        <button class="arr left" onclick="scroll('cloud',-1)"><i class="bi bi-chevron-left"></i></button>
-                                        <button class="arr right" onclick="scroll('cloud', 1)"><i class="bi bi-chevron-right"></i></button>
-                        <div class="course-scroll" id="cloud">
-                            @foreach (var course in cloudSection.Courses)
-                            {
-                                <partial name="_CourseCardPartial" model="course" />
-                            }
-                        </div><!-- /cloud scroll -->
-                    </div>
-                }
-            }
-
-
-        </div><!-- /container -->
     </section>
 
 
@@ -307,7 +309,7 @@
                 <div class="col-6 col-md-3">
                     <div class="instructor-card">
                         <img class="instructor-avatar"
-                             src="https://randomuser.me/api/portraits/men/32.jpg" alt="">
+                             src="https://randomuser.me/api/portraits/men/43.jpg" alt="">
                         <h6 class="fw-bold mb-0">Arjun Mehta</h6>
                         <p class="text-muted small mb-2">Full Stack Developer</p>
                         <span class="rating-stars">★★★★★</span>
@@ -318,7 +320,7 @@
                 <div class="col-6 col-md-3">
                     <div class="instructor-card">
                         <img class="instructor-avatar"
-                             src="https://randomuser.me/api/portraits/women/44.jpg" alt="">
+                             src="https://randomuser.me/api/portraits/women/43.jpg" alt="">
                         <h6 class="fw-bold mb-0">Priya Sharma</h6>
                         <p class="text-muted small mb-2">ML & AI Engineer</p>
                         <span class="rating-stars">★★★★★</span>
@@ -329,7 +331,7 @@
                 <div class="col-6 col-md-3">
                     <div class="instructor-card">
                         <img class="instructor-avatar"
-                             src="https://randomuser.me/api/portraits/men/55.jpg" alt="">
+                             src="https://randomuser.me/api/portraits/men/71.jpg" alt="">
                         <h6 class="fw-bold mb-0">Ravi Kumar</h6>
                         <p class="text-muted small mb-2">Cloud Architect (AWS)</p>
                         <span class="rating-stars">★★★★★</span>
@@ -340,7 +342,7 @@
                 <div class="col-6 col-md-3">
                     <div class="instructor-card">
                         <img class="instructor-avatar"
-                             src="https://randomuser.me/api/portraits/women/68.jpg" alt="">
+                             src="https://randomuser.me/api/portraits/women/30.jpg" alt="">
                         <h6 class="fw-bold mb-0">Sneha Patil</h6>
                         <p class="text-muted small mb-2">UI/UX Lead at Razorpay</p>
                         <span class="rating-stars">★★★★★</span>
@@ -374,7 +376,7 @@
                         </p>
                         <div class="d-flex align-items-center gap-2">
                             <img class="testimonial-avatar"
-                                 src="https://randomuser.me/api/portraits/men/21.jpg" alt="">
+                                 src="https://randomuser.me/api/portraits/men/75.jpg" alt="">
                             <div>
                                 <div class="fw-semibold small">Rahul Joshi</div>
                                 <div class="text-muted" style="font-size:.75rem">Software Engineer at Startup</div>
@@ -391,7 +393,7 @@
                         </p>
                         <div class="d-flex align-items-center gap-2">
                             <img class="testimonial-avatar"
-                                 src="https://randomuser.me/api/portraits/women/29.jpg" alt="">
+                                 src="https://randomuser.me/api/portraits/women/5.jpg" alt="">
                             <div>
                                 <div class="fw-semibold small">Ananya Reddy</div>
                                 <div class="text-muted" style="font-size:.75rem">Data Analyst at HCL</div>
@@ -408,7 +410,7 @@
                         </p>
                         <div class="d-flex align-items-center gap-2">
                             <img class="testimonial-avatar"
-                                 src="https://randomuser.me/api/portraits/men/37.jpg" alt="">
+                                 src="https://randomuser.me/api/portraits/men/11.jpg" alt="">
                             <div>
                                 <div class="fw-semibold small">Vikram Nair</div>
                                 <div class="text-muted" style="font-size:.75rem">Cloud Engineer at Infosys</div>
@@ -445,11 +447,11 @@
 
     <script>
             // scrolls the course row by roughly one card width
-    function scroll(rowId, direction) {
+    function scrollRow(rowId, direction) {
         const el = document.getElementById(rowId);
         if (!el) return;
         const card = el.querySelector('.c-card');
-        const scrollAmount = card ? (card.offsetWidth + 20) : 320;
+        const scrollAmount = card ? (card.offsetWidth + 24) : 340; // card width + gap
         el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
     </script>

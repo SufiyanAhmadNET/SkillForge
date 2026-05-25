@@ -19,8 +19,33 @@
         </div>
     </div>
 
-    @* ── category pills ── *@
+    @* ── DATA PREPARATION ── *@
     @{
+        var allCourses = Model.CategorySections
+            .Where(c => c.Courses != null)
+            .SelectMany(c => c.Courses)
+            .Concat(Model.PopularCourses ?? new List<CourseCardVM>())
+            .GroupBy(c => c.courseId)
+            .Select(g => g.First())
+            .ToList();
+
+        var recentlyAdded = allCourses
+            .OrderByDescending(c => c.courseId)
+            .Take(8)
+            .ToList();
+
+        var validCategories = Model.CategorySections
+            .Where(c => c.Courses != null && c.Courses.Count >= 3)
+            .OrderByDescending(c => c.Courses.Count)
+            .ToList();
+
+        var mixedCourses = Model.CategorySections
+            .Where(c => c.Courses != null && c.Courses.Count > 0 && c.Courses.Count < 3)
+            .SelectMany(c => c.Courses)
+            .GroupBy(c => c.courseId)
+            .Select(g => g.First())
+            .ToList();
+
         var fixedCategories = new List<string>
         {
             "Software Development", "Data Science",
@@ -33,6 +58,7 @@
             .ToList();
     }
 
+    @* ── category pills ── *@
     <div class="cat-scroll">
         @foreach (var cat in fixedCategories)
         {
@@ -45,108 +71,84 @@
                 <button class="cat-pill" onclick="moveCategory('@cat', this)">@cat</button>
             }
         }
+        <button class="cat-pill" onclick="moveCategory('explore-more', this)">Others</button>
     </div>
 
 
-    @* ── popular courses row ── *@
-    <div class="category-section">
-        <div class="sec-head">
-            <div class="cat-left">
-                <span class="cat-bar"></span>
-                <h2>Popular Courses</h2>
-            </div>
-        </div>
-
-        <div class="position-relative course-section-inner">
-            <span class="arr left" onclick="scrollRow(this, -1)">‹</span>
-
-            <div class="course-row">
-                @foreach (var course in Model.PopularCourses)
-                {
-                    <partial name="_CourseCardPartial" model="course" />
-                }
-            </div>
-
-            <span class="arr right" onclick="scrollRow(this, 1)">›</span>
-        </div>
-    </div>
-
-
-    @* ── category-wise rows ── *@
-    @foreach (var category in Model.CategorySections)
+    @* ── ROW 1: Recently Added ── *@
+    @if (recentlyAdded.Any())
     {
-        if (category.Courses != null && category.Courses.Any())
-        {
-            <div class="category-section" data-cat="@category.CategoryName">
-                <div class="sec-head">
-                    <div class="cat-left">
-                        <span class="cat-bar"></span>
-                        <h2>@category.CategoryName</h2>
-                    </div>
-                </div>
-
-                <div class="position-relative course-section-inner">
-                    <span class="arr left" onclick="scrollRow(this, -1)">‹</span>
-
-                    <div class="course-row">
-                        @foreach (var course in category.Courses)
-                        {
-                            <partial name="_CourseCardPartial" model="course" />
-                        }
-                    </div>
-
-                    <span class="arr right" onclick="scrollRow(this, 1)">›</span>
+        <div class="category-section">
+            <div class="sec-head">
+                <div class="cat-left">
+                    <span class="cat-bar"></span>
+                    <h2 class="fw-bold">Recently Added</h2>
                 </div>
             </div>
-        }
+
+            <div class="position-relative course-section-inner">
+                <span class="arr left" onclick="scrollRow(this, -1)">‹</span>
+                <div class="course-row">
+                    @foreach (var course in recentlyAdded)
+                    {
+                        <partial name="_CourseCardPartial" model="course" />
+                    }
+                </div>
+                <span class="arr right" onclick="scrollRow(this, 1)">›</span>
+            </div>
+        </div>
+    }
+
+
+    @* ── LARGE CATEGORIES (>= 3 courses) ── *@
+    @foreach (var category in validCategories)
+    {
+        <div class="category-section" data-cat="@category.CategoryName">
+            <div class="sec-head">
+                <div class="cat-left">
+                    <span class="cat-bar"></span>
+                    <h2 class="fw-bold">@category.CategoryName</h2>
+                </div>
+            </div>
+
+            <div class="position-relative course-section-inner">
+                <span class="arr left" onclick="scrollRow(this, -1)">‹</span>
+                <div class="course-row">
+                    @foreach (var course in category.Courses)
+                    {
+                        <partial name="_CourseCardPartial" model="course" />
+                    }
+                </div>
+                <span class="arr right" onclick="scrollRow(this, 1)">›</span>
+            </div>
+        </div>
+    }
+
+    @* ── MIXED SECTION: Explore More (< 3 courses) ── *@
+    @if (mixedCourses.Any())
+    {
+        <div class="category-section mt-5" data-cat="explore-more">
+            <div class="sec-head">
+                <div class="cat-left">
+                    <span class="cat-bar" style="background: var(--orange)"></span>
+                    <h2 class="fw-bold">Explore More Courses</h2>
+                </div>
+            </div>
+
+            <div class="course-section-inner">
+                <div class="course-grid">
+                    @foreach (var course in mixedCourses)
+                    {
+                        <div class="course-grid-item">
+                            <partial name="_CourseCardPartial" model="course" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     }
 
 </main>
-
-
-@* ── heart toggle + scroll scripts ── *@
-<style>
-    /* heart button base — white circle, pink stroke */
-    .wish-btn {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: #fff;
-        border: none;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        z-index: 2;
-        padding: 0;
-        line-height: 0;
-    }
-
-    .wish-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
-
-    .wish-btn i {
-        font-size: 18px;
-        color: #ff69b4; /* Pink */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: .2s ease;
-    }
-
-    /* filled state when wishlisted */
-    .wish-btn.wishlisted i::before {
-        content: "\f415"; /* bi-heart-fill unicode */
-        font-family: "bootstrap-icons";
-    }
-</style>
 
 <script>
     // ── horizontal scroll ──

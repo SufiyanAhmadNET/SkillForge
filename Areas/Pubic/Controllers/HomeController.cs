@@ -1,10 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SkillForge.Interfaces;
+using SkillForge.Models;
+using System.Security.Claims;
 
 namespace SkillForge.Areas.Pubic.Controllers
 {
     [Area("Pubic")]
     public class HomeController : Controller
     {
+        private readonly ICourseQueryService _courseQueryService;
+
+        public HomeController(ICourseQueryService courseQueryService)
+        {
+            _courseQueryService = courseQueryService;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -12,13 +22,35 @@ namespace SkillForge.Areas.Pubic.Controllers
 
         public IActionResult Courses()
         {
-            return View();
+            // studentId is 0 for guest users
+            int studentId = 0;
+            if (User.Identity.IsAuthenticated)
+            {
+                var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int.TryParse(claim, out studentId);
+            }
+
+            var vm = _courseQueryService.GetPublishedCoursePage(studentId);
+            return View(vm);
         }
 
         //Course Details
-        public IActionResult CoursesDetails()
+        public IActionResult CoursesDetails(int id)
         {
-            return View();
+            if (id <= 0) return RedirectToAction("Courses");
+
+            int studentId = 0;
+            if (User.Identity.IsAuthenticated)
+            {
+                var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                int.TryParse(claim, out studentId);
+            }
+
+            var vm = _courseQueryService.GetCourseDetails(id, studentId);
+            if (vm == null) return NotFound();
+
+            ViewBag.IsPreview = false;
+            return View(vm);
         }
     }
 }
