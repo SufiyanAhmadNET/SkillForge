@@ -7,3 +7,17 @@ GEMINI.md
 *.log
 appsettings.secret.json					
 	
+
+# app configs
+appsettings.*.json
+!appsettings.json
+
+# env
+.env
+
+# secrets
+Secrets/
+
+# user-specific
+*.user
+*.suo
