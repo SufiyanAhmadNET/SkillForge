@@ -20,7 +20,7 @@
                 Download Report
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="font-size: 13px;">
-                <li><a class="dropdown-item py-2" href="javascript:void(0)"><i class="bi bi-file-earmark-bar-graph me-2 text-success"></i>Course Wise Report</a></li>
+                <li><a class="dropdown-item py-2" asp-action="DownloadAllCoursesFinancialReport"><i class="bi bi-file-earmark-bar-graph me-2 text-success"></i>Course Wise Report</a></li>
                 <li><a class="dropdown-item py-2" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#monthlyReportModal"><i class="bi bi-calendar3 me-2 text-primary"></i>Monthly Report</a></li>
             </ul>
         </div>
@@ -239,35 +239,37 @@
                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" style="font-size: 10px;"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Year</label>
-                    <select class="form-select form-select-sm" id="reportYear">
-                        @foreach (var y in Model.AvailableYears)
-                        {
-                            <option value="@y">@y</option>
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Month</label>
-                    <select class="form-select form-select-sm" id="reportMonth">
-                        @for (int m = 1; m <= 12; m++)
-                        {
-                            var monthName = new DateTime(2000, m, 1).ToString("MMMM");
-                            if (DateTime.UtcNow.Month == m)
+                <form asp-action="DownloadMonthlyEarningsReport" method="get">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Year</label>
+                        <select name="year" class="form-select form-select-sm" id="reportYear">
+                            @foreach (var y in Model.AvailableYears)
                             {
-                                <option value="@m" selected>@monthName</option>
+                                <option value="@y">@y</option>
                             }
-                            else
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Month</label>
+                        <select name="month" class="form-select form-select-sm" id="reportMonth">
+                            @for (int m = 1; m <= 12; m++)
                             {
-                                <option value="@m">@monthName</option>
+                                var monthName = new DateTime(2000, m, 1).ToString("MMMM");
+                                if (DateTime.UtcNow.Month == m)
+                                {
+                                    <option value="@m" selected>@monthName</option>
+                                }
+                                else
+                                {
+                                    <option value="@m">@monthName</option>
+                                }
                             }
-                        }
-                    </select>
-                </div>
-                <button class="btn btn-purple btn-sm w-100 rounded-pill fw-bold py-2 shadow-sm" onclick="bootstrap.Modal.getInstance(document.getElementById('monthlyReportModal')).hide()">
-                    Generate Report
-                </button>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-purple btn-sm w-100 rounded-pill fw-bold py-2 shadow-sm">
+                        Generate Report
+                    </button>
+                </form>
             </div>
         </div>
     </div>

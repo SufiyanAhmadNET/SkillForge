@@ -10,9 +10,14 @@ using SkillForge.Services.Common;
 using SkillForge.Services.Admin;
 using SkillForge.Services;
 using SkillForge.Services.Analytics;
+using SkillForge.Services.Reports;
 using Microsoft.AspNetCore.Authentication.Google;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// QuestPDF community license
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Load optional secret configuration
 var secretConfigPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.secret.json");
@@ -50,6 +55,7 @@ builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
 builder.Services.AddScoped<IInstructorService, InstructorService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+builder.Services.AddScoped<IReportDownloadService, ReportDownloadService>();
 
 // Register Enrollment Service
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();

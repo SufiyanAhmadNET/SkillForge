@@ -22,6 +22,7 @@ namespace SkillForge.Areas.Instructor.Controllers
         private readonly IOtpService _otpService;
         private readonly IMediaService _mediaService;
         private readonly IAnalyticsService _analyticsService;
+        private readonly IReportDownloadService _reportDownloadService;
 
         public HomeController(SkillForgeDbContext context, 
             IInstructorService instructorService,
@@ -30,7 +31,8 @@ namespace SkillForge.Areas.Instructor.Controllers
             IAuthService authService,
             IOtpService otpService,
             IMediaService mediaService,
-            IAnalyticsService analyticsService) : base(context)
+            IAnalyticsService analyticsService,
+            IReportDownloadService reportDownloadService) : base(context)
         {
             _instructorService = instructorService;
             _courseManagementService = courseManagementService;
@@ -39,6 +41,65 @@ namespace SkillForge.Areas.Instructor.Controllers
             _otpService = otpService;
             _mediaService = mediaService;
             _analyticsService = analyticsService;
+            _reportDownloadService = reportDownloadService;
+        }
+
+        // ... existing actions ...
+
+        // ==========================================
+        // REPORT DOWNLOAD ACTIONS
+        // ==========================================
+
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DownloadCourseFinancialReport(int id)
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var instructorId)) return RedirectToAction("InstructorLogin", "Auth");
+
+            var data = await _analyticsService.GetCourseFinancialReportAsync(id, instructorId);
+            if (data == null) return NotFound();
+
+            var pdf = await _reportDownloadService.GenerateCourseFinancialReportPdfAsync(data);
+            string fileName = $"{data.CourseTitle.Replace(" ", "_")}_Financial_Report.pdf";
+            return File(pdf, "application/pdf", fileName);
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DownloadStudentRoster(int id)
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var instructorId)) return RedirectToAction("InstructorLogin", "Auth");
+
+            var data = await _analyticsService.GetCourseStudentListReportAsync(id, instructorId);
+            if (data == null) return NotFound();
+
+            var pdf = await _reportDownloadService.GenerateStudentListPdfAsync(data);
+            string fileName = $"Student_Roster_{data.CourseTitle.Replace(" ", "_")}.pdf";
+            return File(pdf, "application/pdf", fileName);
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DownloadMonthlyEarningsReport(int year, int month)
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var instructorId)) return RedirectToAction("InstructorLogin", "Auth");
+
+            var data = await _analyticsService.GetMonthlyFinancialReportAsync(instructorId, year, month);
+            var pdf = await _reportDownloadService.GenerateMonthlyFinancialReportPdfAsync(data);
+            string fileName = $"{data.ReportMonth.Replace(" ", "_")}_Financial_Report.pdf";
+            return File(pdf, "application/pdf", fileName);
+        }
+
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> DownloadAllCoursesFinancialReport()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(idClaim, out var instructorId)) return RedirectToAction("InstructorLogin", "Auth");
+
+            var data = await _analyticsService.GetInstructorGlobalCourseReportAsync(instructorId);
+            var pdf = await _reportDownloadService.GenerateInstructorGlobalCourseReportPdfAsync(data);
+            string fileName = "Lifetime_Course_Performance_Report.pdf";
+            return File(pdf, "application/pdf", fileName);
         }
 
         // Instructor dashboard with stats
