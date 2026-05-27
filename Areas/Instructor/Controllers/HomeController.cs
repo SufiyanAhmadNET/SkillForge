@@ -145,18 +145,19 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin", "Auth");
             }
             var mycourse = _courseManagementService.MyCourses(InstructorId);
+            ViewBag.DeletedCourses = _courseManagementService.GetDeletedCourses(InstructorId);
             return View(mycourse);
         }
 
         // Detailed course overview for instructor
-        public IActionResult CourseDetails(int id)
+        public async Task<IActionResult> CourseDetails(int id)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
             {
                 return RedirectToAction("InstructorLogin", "Auth");
             }
-            var courseDetails = _instructorService.GetInstructorCourseDetails(id, instructorId);
+            var courseDetails = await _instructorService.GetInstructorCourseDetails(id, instructorId);
             if (courseDetails == null)
             {
                 return NotFound();

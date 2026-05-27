@@ -15,6 +15,9 @@ namespace SkillForge.Interfaces
         
         // Get instructor courses
         List<MyCourseVM> MyCourses(int instructorId);
+
+        // Get instructor deleted courses
+        List<MyCourseVM> GetDeletedCourses(int instructorId);
         
         // Get course for editing
         CourseVM? GetCourseForEdit(int courseId, int instructorId);

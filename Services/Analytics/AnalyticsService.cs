@@ -100,6 +100,14 @@ namespace SkillForge.Services.Analytics
                                  && e.Status == EnrollmentStatus.Active);
         }
 
+        public async Task<decimal> GetCourseRevenueAsync(int courseId)
+        {
+            return await _context.Payments
+                .AsNoTracking()
+                .Where(p => p.Enrollment.CourseId == courseId && p.Status == PaymentStatus.Success)
+                .SumAsync(p => (decimal?)p.Amount) ?? 0;
+        }
+
         // Admin Analytics Implementation
         public async Task<int> GetTotalStudentsCountAsync()
         {

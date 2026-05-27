@@ -11,12 +11,15 @@ namespace SkillForge.Services.Instructors
     public class InstructorService : IInstructorService
     {
         private readonly SkillForgeDbContext _context;
-        public InstructorService(SkillForgeDbContext context)
+        private readonly IAnalyticsService _analyticsService;
+
+        public InstructorService(SkillForgeDbContext context, IAnalyticsService analyticsService)
         {
             _context = context;
+            _analyticsService = analyticsService;
         }
 
-        public CourseDetailsVM? GetInstructorCourseDetails(int courseId, int instructorId)
+        public async Task<CourseDetailsVM?> GetInstructorCourseDetails(int courseId, int instructorId)
         {
             var course = _context.Courses
                 .Where(c => c.Id == courseId && c.instructor_id == instructorId)
@@ -41,6 +44,8 @@ namespace SkillForge.Services.Instructors
                 .Where(p => studentIds.Contains(p.StudentId) && p.IsCompleted)
                 .ToList();
 
+            var earnings = await _analyticsService.GetCourseRevenueAsync(courseId);
+
             return new CourseDetailsVM
             {
                 CourseId = course.Id,
@@ -58,6 +63,7 @@ namespace SkillForge.Services.Instructors
                 Difficulty = course.CourseDetails?.Difficulty.ToString(),
                 CategoryName = course.courseCategory?.Name,
                 ThumbnailUrl = course.CourseDetails?.Thumbnail_Url,
+                CourseEarnings = earnings,
                 modules = _context.CourseModules.Where(m => m.CourseId == courseId).Include(m => m.Lessons).ToList(),
                 EnrolledStudents = enrollments.Select(e => {
                     var studentCompleted = allProgress.Count(p => p.StudentId == e.StudentId && courseLessons.Any(cl => cl.Id == p.LessonId));

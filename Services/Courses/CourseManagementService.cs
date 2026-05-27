@@ -236,7 +236,25 @@ namespace SkillForge.Services.Courses
         public List<MyCourseVM> MyCourses(int instructorId)
         {
             return _context.Courses
-                .Where(c => c.instructor_id == instructorId)
+                .Where(c => c.instructor_id == instructorId && c.Status != CourseStatus.Deleted)
+                .Include(c => c.CourseDetails)
+                .Include(c => c.courseCategory)
+                .Select(c => new MyCourseVM
+                {
+                    CourseId = c.Id,
+                    Thumbnail_Url = c.CourseDetails != null ? c.CourseDetails.Thumbnail_Url : string.Empty,
+                    Status = c.Status,
+                    CategoryName = c.courseCategory != null ? c.courseCategory.Name : "Uncategorized",
+                    Title = c.Title,
+                    Total_Price = c.CourseDetails != null ? c.CourseDetails.Total_Price : 0
+                }).ToList();
+        }
+
+        // Get soft-deleted courses for instructor
+        public List<MyCourseVM> GetDeletedCourses(int instructorId)
+        {
+            return _context.Courses
+                .Where(c => c.instructor_id == instructorId && c.Status == CourseStatus.Deleted)
                 .Include(c => c.CourseDetails)
                 .Include(c => c.courseCategory)
                 .Select(c => new MyCourseVM
@@ -254,7 +272,7 @@ namespace SkillForge.Services.Courses
         public CourseVM? GetCourseForEdit(int courseId, int instructorId)
         {
             var course = _context.Courses
-                .Where(c => c.Id == courseId && c.instructor_id == instructorId)
+                .Where(c => c.Id == courseId && c.instructor_id == instructorId && c.Status != CourseStatus.Deleted)
                 .Include(c => c.CourseDetails)
                 .Include(c => c.CourseOutcomes)
                 .FirstOrDefault();
@@ -297,26 +315,21 @@ namespace SkillForge.Services.Courses
             };
         }
 
-        // Delete course and related data
+        // Delete course and related data (Soft delete)
         public bool DeleteCourse(int courseId, int instructorId)
         {
             try
             {
                 var course = _context.Courses
                     .Where(c => c.Id == courseId && c.instructor_id == instructorId)
-                    .Include(c => c.CourseDetails)
-                    .Include(c => c.CourseOutcomes)
                     .FirstOrDefault();
                 
                 if (course == null) return false;
                 
-                // Remove related details and outcomes
-                if (course.CourseDetails != null)
-                    _context.CourseDetails.Remove(course.CourseDetails);
-                if (course.CourseOutcomes != null)
-                    _context.CourseOutcomes.RemoveRange(course.CourseOutcomes);
+                course.Status = CourseStatus.Deleted;
+                course.UpdatedAt = DateTime.UtcNow;
                 
-                _context.Courses.Remove(course);
+                _context.Courses.Update(course);
                 _context.SaveChanges();
                 return true;
             }

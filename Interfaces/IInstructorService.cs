@@ -5,6 +5,6 @@ namespace SkillForge.Interfaces
 {
     public interface IInstructorService
     {
-        CourseDetailsVM? GetInstructorCourseDetails(int courseId, int instructorId);
+        Task<CourseDetailsVM?> GetInstructorCourseDetails(int courseId, int instructorId);
     }
 }

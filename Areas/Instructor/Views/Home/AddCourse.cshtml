@@ -13,7 +13,7 @@
             <p class="text-muted small mb-0">Fill in the details to publish your course</p>
         </div>
         <a asp-action="MyCourses" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-            <i class="bi bi-arrow-left me-1"></i>Back to Courses
+            Back to Courses
         </a>
     </div>
 
@@ -96,6 +96,27 @@
                                     <input type="number" class="form-control" name="Discount_Percent" id="discountPct" placeholder="20" min="0" max="100">
                                 </div>
                             </div>
+
+                            @* Live price preview - Updated by Discount.js *@
+                            <div class="mt-3 p-3 rounded-3 border" id="pricePreview" style="display:none; background:#f9f8ff;">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div class="text-center">
+                                        <div class="text-muted" style="font-size:11px; letter-spacing:.5px;">ORIGINAL</div>
+                                        <div class="fw-semibold" id="displayOriginal">₹0</div>
+                                    </div>
+                                    <i class="bi bi-dash text-muted"></i>
+                                    <div class="text-center">
+                                        <div class="text-muted" style="font-size:11px; letter-spacing:.5px;">DISCOUNT</div>
+                                        <div class="fw-semibold" id="displayDiscount" style="color:var(--purple);">₹0</div>
+                                    </div>
+                                    <i class="bi bi-equals text-muted"></i>
+                                    <div class="text-center">
+                                        <div class="text-muted" style="font-size:11px; letter-spacing:.5px;">FINAL</div>
+                                        <div class="fw-bold fs-5" id="displayFinal" style="color:var(--purple);">₹0</div>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill px-3" id="displayBadge"></span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="card border-0 shadow-sm rounded-4 p-4">
@@ -130,7 +151,7 @@
                     </div>
                 </div>
                 <div class="mt-4 text-end">
-                    <button type="button" class="btn btn-orange px-4 fw-semibold rounded-pill shadow-sm" onclick="document.getElementById('content-tab').click()">Next: Build Syllabus →</button>
+                    <button type="button" class="btn btn-purple px-4 fw-semibold rounded-pill shadow-sm" onclick="document.getElementById('content-tab').click()">Next: Build Syllabus</button>
                 </div>
             </div>
 
@@ -148,8 +169,8 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="button" class="btn btn-light px-4 fw-semibold rounded-pill" onclick="document.getElementById('basic-tab').click()">← Back</button>
-                    <button type="button" class="btn btn-orange px-4 fw-semibold rounded-pill shadow-sm" onclick="document.getElementById('additional-tab').click()">Next: Outcomes & Publish →</button>
+                    <button type="button" class="btn btn-light px-4 fw-semibold rounded-pill" onclick="document.getElementById('basic-tab').click()">Back</button>
+                    <button type="button" class="btn btn-purple px-4 fw-semibold rounded-pill shadow-sm" onclick="document.getElementById('additional-tab').click()">Next: Outcomes & Publish</button>
                 </div>
             </div>
 
@@ -166,12 +187,12 @@
 
                 @* final actions *@
                 <div class="d-flex gap-2 justify-content-between align-items-center mt-3">
-                    <button type="button" class="btn btn-light px-4 fw-semibold rounded-pill" onclick="document.getElementById('content-tab').click()">← Back</button>
+                    <button type="button" class="btn btn-light px-4 fw-semibold rounded-pill" onclick="document.getElementById('content-tab').click()">Back</button>
                     <div class="d-flex gap-2">
                         <button type="submit" name="submitAction" value="draft" class="btn btn-outline-secondary px-4 fw-semibold rounded-pill">
                             <i class="bi bi-floppy me-1"></i>Save as Draft
                         </button>
-                        <button type="submit" name="submitAction" value="submit" class="btn btn-orange fw-semibold px-4 rounded-pill shadow-sm">
+                        <button type="submit" name="submitAction" value="submit" class="btn btn-purple fw-semibold px-4 rounded-pill shadow-sm">
                             <i class="bi bi-send me-1"></i>Submit for Review
                         </button>
                     </div>
@@ -200,4 +221,57 @@
             document.getElementById('thumbPreview').innerHTML = `<img src="${url}" class="rounded-4" style="width:100%;height:100%;object-fit:cover;">`;
         });
     </script>
+    <style>
+        /* modernized stepper */
+        .course-stepper {
+            background: #f8f9fa;
+            padding: 6px;
+            border-radius: 12px;
+            display: flex;
+            gap: 4px;
+            border: 1px solid #eee;
+        }
+
+        .course-stepper .nav-item {
+            flex: 1;
+        }
+
+        .course-stepper .nav-link {
+            width: 100%;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            background: transparent;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .course-stepper .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .course-stepper .nav-link.active {
+            background: #fff !important;
+            color: var(--purple) !important;
+            border-color: #eee;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        /* general refinements */
+        .btn-purple { background: var(--purple); color: #fff; border: none; }
+        .btn-purple:hover { background: var(--purple-dark); color: #fff; }
+        .inst-bg { background-color: #fbfbfb; }
+        .card { border: 1px solid #f0f0f0 !important; }
+        .form-label { color: #444; }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 0.25rem rgba(124, 58, 237, 0.1);
+        }
+    </style>
 }

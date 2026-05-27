@@ -22,6 +22,7 @@
         public string? Difficulty { get; set; }
         public string? CategoryName { get; set; }
         public string? ThumbnailUrl { get; set; }
+        public decimal CourseEarnings { get; set; }
         public bool IsWishlisted { get; set; }
 
         // Syllabus

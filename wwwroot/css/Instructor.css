@@ -588,8 +588,8 @@ body {
 
 /* tab nav  */
 .nav-tabs .nav-link.active {
-    color: var(--orange);
-    border-bottom-color: var(--orange);
+    color: var(--purple);
+    border-bottom-color: var(--purple);
     font-weight: 600;
 }
 
@@ -606,7 +606,7 @@ body {
 }
 
     .upload-box:hover {
-        border-color: var(--orange);
+        border-color: var(--purple);
     }
 
 /* Unified Syllabus & Stepper Styles */

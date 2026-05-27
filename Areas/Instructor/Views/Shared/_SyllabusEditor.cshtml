@@ -20,7 +20,7 @@
                                class="module-title-input" placeholder="Module Name" required onclick="event.stopPropagation()">
                         
                         <span class="lesson-count-badge me-2" id="lesson-count-badge-@mIdx">@(Model[mIdx].Lessons?.Count ?? 0) lessons</span>
-                        <i class="bi bi-chevron-down module-chevron me-3"></i>
+                        <i class="bi bi-chevron-down module-chevron me-3 d-none"></i>
                         
                         <button type="button" class="btn-remove-module" onclick="removeSyllabusElement('module-@mIdx'); event.stopPropagation();">
                             <i class="bi bi-trash"></i>
@@ -52,8 +52,7 @@
                             }
                         </div>
                         <button type="button" class="btn-add-lesson" onclick="addSyllabusLesson(@mIdx)">
-                            ⊕ Add Lesson
-                        </button>
+                            Add Lesson</button>
                     </div>
                     <input type="hidden" id="lesson-count-@mIdx" value="@(Model[mIdx].Lessons?.Count ?? 0)">
                 </div>
@@ -160,8 +159,7 @@
                 <div class="module-body" id="module-body-${mIdx}">
                     <div class="lesson-list" id="lesson-list-${mIdx}"></div>
                     <button type="button" class="btn-add-lesson" onclick="addSyllabusLesson(${mIdx})">
-                        ⊕ Add Lesson
-                    </button>
+                        Add Lesson</button>
                 </div>
                 <input type="hidden" id="lesson-count-${mIdx}" value="0">
             </div>
