@@ -233,10 +233,30 @@ namespace SkillForge.Services.Courses
         }
 
         // Get courses created by instructor
-        public List<MyCourseVM> MyCourses(int instructorId)
+        public List<MyCourseVM> MyCourses(int instructorId, string? search = null, string? category = null, string? status = null)
         {
-            return _context.Courses
-                .Where(c => c.instructor_id == instructorId && c.Status != CourseStatus.Deleted)
+            var query = _context.Courses
+                .Where(c => c.instructor_id == instructorId && c.Status != CourseStatus.Deleted);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(c => c.Title.Contains(search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(c => c.courseCategory != null && c.courseCategory.Name == category);
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (Enum.TryParse<CourseStatus>(status, true, out var courseStatus))
+                {
+                    query = query.Where(c => c.Status == courseStatus);
+                }
+            }
+
+            return query
                 .Include(c => c.CourseDetails)
                 .Include(c => c.courseCategory)
                 .Select(c => new MyCourseVM

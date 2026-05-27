@@ -198,15 +198,21 @@ namespace SkillForge.Areas.Instructor.Controllers
 
         // List instructor's courses
         [Authorize(Roles = "Instructor")]
-        public IActionResult MyCourses()
+        public IActionResult MyCourses(string? search = null, string? category = null, string? status = null)
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var InstructorId))
             {
                 return RedirectToAction("InstructorLogin", "Auth");
             }
-            var mycourse = _courseManagementService.MyCourses(InstructorId);
+
+            var mycourse = _courseManagementService.MyCourses(InstructorId, search, category, status);
             ViewBag.DeletedCourses = _courseManagementService.GetDeletedCourses(InstructorId);
+            
+            ViewBag.SearchTerm = search;
+            ViewBag.CategoryFilter = category;
+            ViewBag.StatusFilter = status;
+
             return View(mycourse);
         }
 

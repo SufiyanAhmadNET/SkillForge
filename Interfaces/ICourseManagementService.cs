@@ -14,7 +14,7 @@ namespace SkillForge.Interfaces
         CourseReturn UpdateCourse(CourseVM courseVM, int instructorId, IFormFile thumbnailFile, IFormFile videoFile, string youtubeUrl, string videoType, string submitAction = "draft");
         
         // Get instructor courses
-        List<MyCourseVM> MyCourses(int instructorId);
+        List<MyCourseVM> MyCourses(int instructorId, string? search = null, string? category = null, string? status = null);
 
         // Get instructor deleted courses
         List<MyCourseVM> GetDeletedCourses(int instructorId);
