@@ -18,7 +18,7 @@
         <aside class="sidebar d-flex flex-column">
 
             <div class="sidebar-brand px-4 py-3 d-flex align-items-center gap-2 border-bottom border-secondary">
-                <i class="bi bi-mortarboard-fill fs-5" style="color:var(--orange);"></i>
+                <i class="bi bi-mortarboard-fill fs-5 text-purple"></i>
                 <span class="fw-bold text-white">SkillForge</span>
                 <span class="badge inst-badge ms-1">INSTRUCTOR</span>
             </div>
@@ -86,7 +86,7 @@
 
             <!-- HEADER -->
             <header class="inst-header d-flex align-items-center justify-content-between px-4 bg-white border-bottom">
-                <span class="fw-semibold">Dashboard</span>
+                <span class="fw-semibold"></span>
                 <div class="d-flex align-items-center gap-3">
                     <div class="input-group input-group-sm" style="width:210px;">
                         <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
@@ -118,7 +118,9 @@
             <partial name="_Alert_Message_Partial" />
             <partial name="_ConfirmModal" />
 
-            @RenderBody()
+            <div class="inst-content-padding flex-grow-1">
+                @RenderBody()
+            </div>
             @RenderSection("Scripts", required: false)
 
             <script>

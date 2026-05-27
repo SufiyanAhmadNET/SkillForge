@@ -9,6 +9,7 @@ using SkillForge.Services.Students;
 using SkillForge.Services.Common;
 using SkillForge.Services.Admin;
 using SkillForge.Services;
+using SkillForge.Services.Analytics;
 using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +49,7 @@ builder.Services.AddScoped<ICourseProgressService, CourseProgressService>();
 builder.Services.AddScoped<IStudentActivityService, StudentActivityService>();
 builder.Services.AddScoped<IInstructorService, InstructorService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 // Register Enrollment Service
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();

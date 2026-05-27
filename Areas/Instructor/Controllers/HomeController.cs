@@ -21,6 +21,7 @@ namespace SkillForge.Areas.Instructor.Controllers
         private readonly IAuthService _authService;
         private readonly IOtpService _otpService;
         private readonly IMediaService _mediaService;
+        private readonly IAnalyticsService _analyticsService;
 
         public HomeController(SkillForgeDbContext context, 
             IInstructorService instructorService,
@@ -28,7 +29,8 @@ namespace SkillForge.Areas.Instructor.Controllers
             ICourseContentService courseContentService,
             IAuthService authService,
             IOtpService otpService,
-            IMediaService mediaService) : base(context)
+            IMediaService mediaService,
+            IAnalyticsService analyticsService) : base(context)
         {
             _instructorService = instructorService;
             _courseManagementService = courseManagementService;
@@ -36,18 +38,19 @@ namespace SkillForge.Areas.Instructor.Controllers
             _authService = authService;
             _otpService = otpService;
             _mediaService = mediaService;
+            _analyticsService = analyticsService;
         }
 
         // Instructor dashboard with stats
         [Authorize(Roles = "Instructor")]
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(idClaim, out var instructorId))
             {
                 return RedirectToAction("InstructorLogin", "Auth");
             }
-            var vm = _instructorService.GetInstructorDashboard(instructorId);
+            var vm = await _analyticsService.GetInstructorDashboardStatsAsync(instructorId);
             return View(vm);
         }
 
@@ -250,7 +253,7 @@ namespace SkillForge.Areas.Instructor.Controllers
         }
 
         // Instructor profile management view
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile()
         {
             var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(instructorIdClaim, out var instructorId))
@@ -258,50 +261,9 @@ namespace SkillForge.Areas.Instructor.Controllers
                 return RedirectToAction("InstructorLogin", "Auth");
             }
 
-            var instructor = _context.instructors
-                .Include(i => i.Profile)
-                .FirstOrDefault(i => i.Id == instructorId);
+            var vm = await _analyticsService.GetInstructorDashboardStatsAsync(instructorId);
             
-            if (instructor == null) return NotFound();
-            
-            var profile = instructor.Profile ?? new InstructorProfile();
-            
-            // Calculate stats
-            var coursesCount = _context.Courses.Count(c => c.instructor_id == instructorId);
-            var studentCount = _context.Enrollments
-                .Count(e => _context.Courses.Any(c => c.Id == e.CourseId && c.instructor_id == instructorId) && e.Status == EnrollmentStatus.Active);
-            
-            // Map to dashboard VM
-            var vm = new InstructorDashboardVM
-            {
-                Email = instructor.Email,
-                FirstName = profile.FirstName,
-                LastName = profile.LastName,
-                Mobile = profile.Mobile,
-                Location = profile.Location,
-                AboutYou = profile.AboutYou,
-                CurrentRole = profile.CurrentRole,
-                Expertise = profile.Expertise,
-                YearsExperience = profile.YearsExperience,
-                Headline = profile.Headline,
-                WebsiteUrl = profile.WebsiteUrl,
-                GithubUrl = profile.GithubUrl,
-                LinkedinUrl = profile.LinkedinUrl,
-                TwitterUrl = profile.TwitterUrl,
-                Skills = profile.Skills,
-                PhotoPath = profile.PhotoPath ?? "/images/DefaultProfilePhoto.jfif",
-                TotalCourses = coursesCount,
-                TotalStudents = studentCount
-            };
-
-            // Get Application Status
-            var application = _context.MentorApplications
-                .Where(m => m.InstructorId == instructorId)
-                .OrderByDescending(m => m.CreatedAt)
-                .FirstOrDefault();
-            
-            vm.ApplicationStatus = application?.Status ?? MentorApplicationStatus.NotApplied;
-            vm.ApplicationComment = application?.AdminComment;
+            if (vm == null) return NotFound();
 
             // Preserve security tab state
             TempData.Keep("EmailSent");

@@ -48,6 +48,7 @@ namespace SkillForge.Areas.Instructor.Models
         public int StudentCount { get; set; }
         public string? Status { get; set; }
         public double Rating { get; set; } = 4.9; 
+        public decimal Earnings { get; set; }
     }
 
     public class RecentEnrollmentVM
