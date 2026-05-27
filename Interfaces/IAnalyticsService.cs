@@ -12,6 +12,7 @@ namespace SkillForge.Interfaces
         Task<decimal> GetInstructorRevenueAsync(int instructorId);
         Task<int> GetInstructorStudentCountAsync(int instructorId);
         Task<decimal> GetCourseRevenueAsync(int courseId);
+        Task<InstructorEarningsVM> GetInstructorEarningsDashboardAsync(int instructorId, int? year, int? month);
 
         // Admin Analytics (Placeholders for future implementation)
         Task<int> GetTotalStudentsCountAsync();

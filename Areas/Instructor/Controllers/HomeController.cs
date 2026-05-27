@@ -248,9 +248,17 @@ namespace SkillForge.Areas.Instructor.Controllers
         }
 
         // Instructor earnings view
-        public IActionResult Earning()
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> Earning(int? year, int? month)
         {
-            return View();
+            var instructorIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(instructorIdClaim, out var instructorId))
+            {
+                return RedirectToAction("InstructorLogin", "Auth");
+            }
+
+            var earningsData = await _analyticsService.GetInstructorEarningsDashboardAsync(instructorId, year, month);
+            return View(earningsData);
         }
 
         // Instructor profile management view
