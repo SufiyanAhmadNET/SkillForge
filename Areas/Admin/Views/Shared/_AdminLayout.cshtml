@@ -31,7 +31,7 @@
 
     <nav class="flex-grow-1 px-3 py-3">
 
-      <p class="nav-section-label">OVERVIEW</p>
+      <p class="nav-section-label">Overview</p>
       <ul class="nav flex-column gap-1">
        
         <li>
@@ -42,7 +42,7 @@
         </li>
       </ul>
 
-      <p class="nav-section-label mt-3">MANAGEMENT</p>
+      <p class="nav-section-label mt-3">Management</p>
       <ul class="nav flex-column gap-1">
         <li>
           <a asp-area="Admin" asp-controller="Home" asp-action="Pending_Approvals"
@@ -75,7 +75,7 @@
         </li>
       </ul>
 
-      <p class="nav-section-label mt-3">SYSTEM</p>
+      <p class="nav-section-label mt-3">System</p>
       <ul class="nav flex-column gap-1">
         <li>
           <a asp-area="Admin" asp-controller="Home" asp-action="Reports"
@@ -106,19 +106,13 @@
   
         <header class="admin-header d-flex align-items-center px-4 bg-white border-bottom">
 
-                <!-- left spacer — keeps search centered -->
-                <div class="flex-grow-1"></div>
-
-                <!-- center: search -->
-                <div class="input-group input-group-sm" style="width:210px;">
-                    <span class="input-group-text bg-light border-end-0 text-muted">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" class="form-control bg-light border-start-0" placeholder="Search…">
+                <!-- left: brand/identity placeholder or spacer -->
+                <div class="flex-grow-1">
+                    <span class="text-muted small fw-medium">Platform Overview</span>
                 </div>
 
                 <!-- right: bell + profile -->
-                <div class="flex-grow-1 d-flex align-items-center justify-content-end gap-3">
+                <div class="d-flex align-items-center gap-3">
                     <button class="btn btn-light btn-sm position-relative">
                         <i class="bi bi-bell"></i>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:9px;">3</span>

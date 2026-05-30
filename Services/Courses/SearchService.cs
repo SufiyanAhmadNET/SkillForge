@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SkillForge.Areas.Admin.Models;
 using SkillForge.Data;
 using SkillForge.Interfaces;
 using SkillForge.Models;
@@ -73,6 +74,38 @@ namespace SkillForge.Services.Courses
                 .ToList();
 
             return result;
+        }
+
+        public List<StudentListVM> SearchStudents(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword)) return new List<StudentListVM>();
+
+            var searchTerm = keyword.ToLower().Trim();
+
+            // Fetch students matching name or email
+            var students = _context.Students
+                .Include(s => s.Profile)
+                .Where(s => s.Email.ToLower().Contains(searchTerm) ||
+                            (s.Profile != null && (s.Profile.FirstName + " " + s.Profile.LastName).ToLower().Contains(searchTerm)))
+                .ToList();
+
+            // Fetch all enrollments for matching students to avoid N+1
+            var studentIds = students.Select(s => s.Id).ToList();
+            var enrollments = _context.Enrollments
+                .Include(e => e.Course)
+                .Where(e => studentIds.Contains(e.StudentId))
+                .ToList();
+
+            return students.Select(s => new StudentListVM
+            {
+                Id = s.Id,
+                Name = s.Profile != null ? (s.Profile.FirstName + " " + s.Profile.LastName).Trim() : s.Email.Split('@')[0],
+                Email = s.Email,
+                CourseCount = enrollments.Count(e => e.StudentId == s.Id),
+                EnrolledCoursesList = enrollments.Where(e => e.StudentId == s.Id).Select(e => e.Course.Title).ToList(),
+                JoinedDate = s.CreatedAt,
+                Status = "Active"
+            }).ToList();
         }
 
         // Map Course entity to CourseCardVM

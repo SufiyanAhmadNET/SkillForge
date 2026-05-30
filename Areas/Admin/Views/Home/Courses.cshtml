@@ -6,38 +6,44 @@
 }
 
 <body>
-<main class="p-4 flex-grow-1 admin-bg">
+<main class="p-3 flex-grow-1 admin-bg">
 
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
         <div class="page-title-bar">
             <h5 class="fw-bold mb-0">Course Management</h5>
-            <p class="text-muted mb-0" style="font-size:14px;">Monitor all courses across the platform.</p>
+            <p class="text-muted mb-0" style="font-size:13px;">Monitor all courses across the platform.</p>
         </div>
-        <a href="#" class="btn btn-sm btn-outline-success">
-            <i class="bi bi-download me-1"></i>Export CSV
-        </a>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i>Download
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                <li><a class="dropdown-item py-2" asp-action="DownloadEnrollmentReport" asp-route-days="0"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+            </ul>
+        </div>
     </div>
 
     <!-- Quick stat pills — fast overview -->
     <div class="d-flex gap-3 mb-4 flex-wrap">
-        <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
-            <span class="badge bg-success">@Model.Count(c => c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published)</span><span style="font-size:13px;">Active</span>
+        <div class="card border-0 admin-card px-3 py-2 d-flex flex-row align-items-center gap-2">
+            <span class="status-active">@Model.Count(c => c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published)</span><span class="small fw-medium text-muted">Active</span>
         </div>
-        <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
-            <span class="badge bg-secondary">@Model.Count(c => c.Status == CourseStatus.Completed)</span><span style="font-size:13px;">Completed</span>
+        <div class="card border-0 admin-card px-3 py-2 d-flex flex-row align-items-center gap-2">
+            <span class="status-neutral">@Model.Count(c => c.Status == CourseStatus.Completed)</span><span class="small fw-medium text-muted">Completed</span>
         </div>
-        <div class="card border-0 admin-card px-4 py-2 d-flex flex-row align-items-center gap-2">
-            <span class="badge bg-warning text-dark">@Model.Count(c => c.Status == CourseStatus.PendingReview)</span><span style="font-size:13px;">Pending Review</span>
+        <div class="card border-0 admin-card px-3 py-2 d-flex flex-row align-items-center gap-2">
+            <span class="status-pending">@Model.Count(c => c.Status == CourseStatus.PendingReview)</span><span class="small fw-medium text-muted">Pending Review</span>
         </div>
     </div>
 
     <!-- Filter row -->
     <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
-        <div class="input-group input-group-sm" style="max-width:260px;">
+        <div class="input-group input-group-sm" style="max-width:240px;">
             <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
             <input type="text" class="form-control" placeholder="Search courses…">
         </div>
-        <select class="form-select form-select-sm" style="max-width:160px;">
+        <select class="form-select form-select-sm" style="max-width:150px;">
             <option>All Categories</option>
             @foreach (var cat in Model.Select(c => c.Category).Distinct())
             {
@@ -50,15 +56,15 @@
             <option>Completed</option>
             <option>Pending</option>
         </select>
-        <small class="text-muted ms-auto">Showing @Model.Count courses</small>
+        <small class="text-muted ms-auto" style="font-size: 12px;">Showing @Model.Count courses</small>
     </div>
 
     <!-- COURSES TABLE -->
     <div class="card border-0 admin-card">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
-                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 13px;">
+                    <thead class="table-light text-muted" style="font-size: 11px; letter-spacing: 0.02rem;">
                         <tr>
                             <th class="ps-3">#</th>
                             <th>Course</th>
@@ -68,61 +74,61 @@
                             <th>Price</th>
                             <th>Duration</th>
                             <th>Status</th>
-                            <th class="pe-3">Actions</th>
+                            <th class="text-center pe-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
-                            int index = 1;
+                            int index = ((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1;
                             foreach (var course in Model)
                             {
                                 <tr>
                                     <td class="ps-3 text-muted">@(index++)</td>
-                                    <td class="fw-semibold text-dark" style="max-width: 200px;">
+                                    <td class="fw-semibold text-dark" style="max-width: 180px;">
                                         <div class="text-truncate" title="@course.Title">@course.Title</div>
                                     </td>
                                     <td>
                                         <a href="#" class="text-decoration-none fw-medium" style="color:var(--orange);">@course.InstructorName</a>
                                     </td>
-                                    <td><span class="badge rounded-pill bg-light text-dark border fw-normal">@course.Category</span></td>
+                                    <td><span class="badge rounded-pill bg-light text-dark border fw-normal px-2">@course.Category</span></td>
                                     <td>
                                         <div class="small text-muted">@course.ModuleCount Modules</div>
-                                        <div class="small text-muted" style="font-size: 11px;">@course.LessonCount Lessons</div>
+                                        <div class="small text-muted" style="font-size: 10px;">@course.LessonCount Lessons</div>
                                     </td>
                                     <td class="fw-medium">₹@course.Price</td>
                                     <td class="text-muted">@course.DurationWeeks wks</td>
                                     <td>
                                         @if (course.Status == CourseStatus.Approved || course.Status == CourseStatus.Published)
                                         {
-                                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2">Active</span>
+                                            <span class="status-active">Active</span>
                                         }
                                         else if (course.Status == CourseStatus.PendingReview)
                                         {
-                                            <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2">Pending</span>
+                                            <span class="status-pending">Pending</span>
                                         }
                                         else if (course.Status == CourseStatus.Rejected)
                                         {
-                                            <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2">Rejected</span>
+                                            <span class="status-rejected">Rejected</span>
                                         }
                                         else if (course.Status == CourseStatus.Draft)
                                         {
-                                            <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-2">Draft</span>
+                                            <span class="status-draft">Draft</span>
                                         }
                                         else
                                         {
-                                            <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-2">@course.Status</span>
+                                            <span class="status-neutral">@course.Status</span>
                                         }
                                     </td>
-                                    <td class="pe-3">
-                                        <div class="d-flex gap-1">
+                                    <td class="text-center pe-3">
+                                        <div class="d-flex gap-1 justify-content-center">
                                             @if (course.Status == CourseStatus.PendingReview)
                                             {
                                                 <form asp-action="ApproveCourse" method="post" onsubmit="return confirm('Are you sure you want to approve this course?');" style="display:inline;">
                                                     <input type="hidden" name="id" value="@course.Id" />
-                                                    <button type="submit" class="btn btn-sm btn-success py-0 px-2" style="font-size: 12px;">Approve</button>
+                                                    <button type="submit" class="btn btn-sm btn-success py-0 px-2" style="font-size: 11px;">Approve</button>
                                                 </form>
-                                                <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 12px;" data-bs-toggle="modal" data-bs-target="#rejectModal-@course.Id">Reject</button>
+                                                <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 11px;" data-bs-toggle="modal" data-bs-target="#rejectModal-@course.Id">Reject</button>
 
                                                 <!-- Reject Modal -->
                                                 <div class="modal fade" id="rejectModal-@course.Id" tabindex="-1" aria-hidden="true">
@@ -158,7 +164,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-muted">No courses found.</td>
+                            <td colspan="9" class="text-center py-4 text-muted">No courses found.</td>
                         </tr>
                     }
                 </tbody>
@@ -166,7 +172,30 @@
         </div>
 
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-            <small class="text-muted">Showing @Model.Count courses</small>
+            @{
+                int startRange = ((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1;
+                int endRange = Math.Min(ViewBag.CurrentPage * ViewBag.PageSize, ViewBag.TotalRecords);
+                if (ViewBag.TotalRecords == 0) { startRange = 0; endRange = 0; }
+            }
+            <small class="text-muted">Showing @startRange–@endRange of @ViewBag.TotalRecords courses</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Courses" asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                    
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                            <a class="page-link" asp-action="Courses" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages || ViewBag.TotalPages == 0 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Courses" asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
     </div>

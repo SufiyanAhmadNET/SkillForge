@@ -1,4 +1,5 @@
 using SkillForge.Models;
+using SkillForge.Areas.Admin.Models;
 
 namespace SkillForge.Interfaces
 {
@@ -6,5 +7,6 @@ namespace SkillForge.Interfaces
     public interface ISearchService
     {
         SearchResultVM SearchCourses(string keyword, int studentId = 0);
+        List<StudentListVM> SearchStudents(string keyword);
     }
 }

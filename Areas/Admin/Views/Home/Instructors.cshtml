@@ -5,40 +5,46 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<main class="p-4 flex-grow-1 admin-bg">
+<main class="p-3 flex-grow-1 admin-bg">
 
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
         <div class="page-title-bar">
             <h5 class="fw-bold mb-0">Instructor List</h5>
-            <p class="text-muted mb-0" style="font-size:14px;">All approved instructors on SkillForge.</p>
+            <p class="text-muted mb-0" style="font-size:13px;">All approved instructors on SkillForge.</p>
         </div>
-        <a href="#" class="btn btn-sm btn-outline-success">
-            <i class="bi bi-download me-1"></i>Export CSV
-        </a>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-download me-1"></i>Download
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                <li><a class="dropdown-item py-2" asp-action="DownloadInstructorReport" asp-route-days="0"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+            </ul>
+        </div>
     </div>
 
     <!-- Filter row -->
     <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
-        <div class="input-group input-group-sm" style="max-width:260px;">
+        <div class="input-group input-group-sm" style="max-width:240px;">
             <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
             <input type="text" class="form-control" id="instructorSearch" placeholder="Search by name…">
         </div>
-        <select class="form-select form-select-sm" id="statusFilter" style="max-width:150px;">
+        <select class="form-select form-select-sm" id="statusFilter" style="max-width:140px;">
             <option value="all">All Status</option>
             <option value="Approved">Approved</option>
             <option value="Pending">Pending</option>
             <option value="Rejected">Rejected</option>
             <option value="NotApplied">Not Applied</option>
         </select>
-        <small class="text-muted ms-auto">Showing @Model.Count() instructors</small>
+        <small class="text-muted ms-auto" style="font-size: 12px;">Showing @Model.Count() instructors</small>
     </div>
 
     <!-- INSTRUCTORS TABLE -->
     <div class="card border-0 admin-card">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
-                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
+                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 13px;">
+                    <thead class="table-light text-muted" style="font-size: 11px; letter-spacing: 0.02rem;">
                         <tr>
                             <th class="ps-3">#</th>
                             <th>Instructor</th>
@@ -47,12 +53,12 @@
                             <th>Total Students</th>
                             <th>Joined</th>
                             <th>Status</th>
-                            <th class="pe-3">Actions</th>
+                            <th class="text-center pe-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="instructorTableBody">
                         @{
-                            int index = 1;
+                            int index = ((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1;
                         }
                         @foreach (var ins in Model)
                         {
@@ -60,7 +66,7 @@
                                 <td class="ps-3 text-muted">@index++</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
-                                        <div class="tbl-avatar bg-primary bg-opacity-10 text-primary fw-bold" style="width: 28px; height: 28px; font-size: 11px;">
+                                        <div class="tbl-avatar bg-primary bg-opacity-10 text-primary fw-bold" style="width: 26px; height: 26px; font-size: 10px;">
                                             @ins.Name.Substring(0, 1).ToUpper()
                                         </div>
                                         <span class="fw-medium text-dark">@ins.Name</span>
@@ -73,30 +79,36 @@
                                 <td>
                                     @if (ins.Status == "Approved")
                                     {
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2">Approved</span>
+                                        <span class="status-approved">Approved</span>
                                     }
                                     else if (ins.Status == "Pending")
                                     {
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2">Pending</span>
+                                        <span class="status-pending">Pending</span>
                                     }
                                     else if (ins.Status == "Rejected")
                                     {
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-2">Rejected</span>
+                                        <span class="status-rejected">Rejected</span>
                                     }
                                     else
                                     {
-                                        <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-2">Not Applied</span>
+                                        <span class="status-neutral">Not Applied</span>
                                     }
                                 </td>
-                                <td class="pe-3">
-                                    <div class="d-flex gap-1">
-                                        <a href="#" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 12px;">Profile</a>
+                                <td class="text-center pe-3">
+                                    <div class="d-flex gap-1 justify-content-center">
+                                        <a href="#" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 11px;">Profile</a>
                                         @if (ins.Status == "Pending")
                                         {
-                                            <a asp-action="Pending_Approvals" class="btn btn-sm btn-success py-0 px-2" style="font-size: 12px;">Review</a>
+                                            <a asp-action="Pending_Approvals" class="btn btn-sm btn-success py-0 px-2" style="font-size: 11px;">Review</a>
                                         }
                                     </div>
                                 </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">No instructors found.</td>
                             </tr>
                         }
                     </tbody>
@@ -106,12 +118,28 @@
     </div>
 
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-            <small class="text-muted">Showing 1–@Model.Count() of @Model.Count() instructors</small>
+            @{
+                int startRange = ((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1;
+                int endRange = Math.Min(ViewBag.CurrentPage * ViewBag.PageSize, ViewBag.TotalRecords);
+                if (ViewBag.TotalRecords == 0) { startRange = 0; endRange = 0; }
+            }
+            <small class="text-muted">Showing @startRange–@endRange of @ViewBag.TotalRecords instructors</small>
             <nav>
                 <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Instructors" asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a>
+                    </li>
+                    
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                            <a class="page-link" asp-action="Instructors" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages || ViewBag.TotalPages == 0 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Instructors" asp-route-page="@(ViewBag.CurrentPage + 1)">Next</a>
+                    </li>
                 </ul>
             </nav>
         </div>

@@ -4,6 +4,7 @@ using SkillForge.Data;
 using SkillForge.Interfaces;
 using SkillForge.Models;
 using SkillForge.Services.Instructors.Models;
+using SkillForge.Services.Courses.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -200,12 +201,37 @@ namespace SkillForge.Services.Analytics
             return await _context.instructors.CountAsync();
         }
 
-        public async Task<int> GetTotalPlatformRevenueAsync()
+        public async Task<decimal> GetTotalPlatformRevenueAsync()
         {
-            return (int)(await _context.Payments
+            return await _context.Payments
                 .AsNoTracking()
                 .Where(p => p.Status == PaymentStatus.Success)
-                .SumAsync(p => (decimal?)p.Amount) ?? 0);
+                .SumAsync(p => (decimal?)p.Amount) ?? 0;
+        }
+
+        public async Task<decimal> GetPlatformRevenueThisMonthAsync()
+        {
+            var now = DateTime.UtcNow;
+            return await _context.Payments
+                .AsNoTracking()
+                .Where(p => p.Status == PaymentStatus.Success && p.CreatedAt.Month == now.Month && p.CreatedAt.Year == now.Year)
+                .SumAsync(p => (decimal?)p.Amount) ?? 0;
+        }
+
+        public async Task<int> GetNewEnrolledCountAsync(int days)
+        {
+            var cutoff = DateTime.UtcNow.AddDays(-days);
+            return await _context.Enrollments
+                .AsNoTracking()
+                .CountAsync(e => e.EnrolledAt >= cutoff);
+        }
+
+        public async Task<int> GetNewPublishedCoursesCountAsync(int days)
+        {
+            var cutoff = DateTime.UtcNow.AddDays(-days);
+            return await _context.Courses
+                .AsNoTracking()
+                .CountAsync(c => c.CreatedAt >= cutoff && (c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published));
         }
 
         public async Task<CourseFinancialReportVM?> GetCourseFinancialReportAsync(int courseId, int instructorId)
@@ -374,6 +400,262 @@ namespace SkillForge.Services.Analytics
                 TotalGrossRevenue = allPayments.Sum(p => p.Amount),
                 TotalPlatformFee = allPayments.Sum(p => p.Amount) * 0.20m,
                 TotalNetEarnings = allPayments.Sum(p => p.Amount) * 0.80m
+            };
+        }
+
+        // ==========================================
+        // ADMIN REPORT DATA RETRIEVAL
+        // ==========================================
+
+        public async Task<AdminEnrollmentReportVM> GetAdminEnrollmentReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+            
+            var enrollmentsData = await (from e in _context.Enrollments
+                                         join c in _context.Courses on e.CourseId equals c.Id
+                                         join s in _context.Students on e.StudentId equals s.Id
+                                         join sp in _context.StudentProfiles on s.Id equals sp.StudentId into spGroup
+                                         from sp in spGroup.DefaultIfEmpty()
+                                         join i in _context.instructors on c.instructor_id equals i.Id
+                                         join ip in _context.instructorProfiles on i.Id equals ip.InstructorId into ipGroup
+                                         from ip in ipGroup.DefaultIfEmpty()
+                                         where e.EnrolledAt >= cutoff
+                                         orderby e.EnrolledAt descending
+                                         select new EnrollmentReportItemVM
+                                         {
+                                             StudentName = sp != null ? $"{sp.FirstName} {sp.LastName}" : "Student",
+                                             CourseTitle = c.Title,
+                                             InstructorName = ip != null ? $"{ip.FirstName} {ip.LastName}" : "Instructor",
+                                             EnrollmentDate = e.EnrolledAt.ToString("dd MMM yyyy")
+                                         }).ToListAsync();
+
+            return new AdminEnrollmentReportVM
+            {
+                Title = "Enrollment Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = enrollmentsData.Count,
+                TotalEnrollments = enrollmentsData.Count,
+                TotalCourses = enrollmentsData.Select(e => e.CourseTitle).Distinct().Count(),
+                UniqueStudents = enrollmentsData.Select(e => e.StudentName).Distinct().Count(),
+                Enrollments = enrollmentsData
+            };
+        }
+
+        public async Task<AdminSalesReportVM> GetAdminSalesReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+
+            var payments = await _context.Payments
+                .AsNoTracking()
+                .Include(p => p.Enrollment.Student.Profile)
+                .Include(p => p.Enrollment.Course)
+                .Where(p => p.Status == PaymentStatus.Success && p.CreatedAt >= cutoff)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            var totalRevenue = payments.Sum(p => p.Amount);
+            var totalOrders = payments.Count;
+
+            return new AdminSalesReportVM
+            {
+                Title = "Sales Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = totalOrders,
+                TotalOrders = totalOrders,
+                TotalRevenue = totalRevenue,
+                AvgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0,
+                Sales = payments.Select(p => new SalesReportItemVM
+                {
+                    OrderId = p.Id.ToString(),
+                    StudentName = p.Enrollment.Student.Profile != null ? $"{p.Enrollment.Student.Profile.FirstName} {p.Enrollment.Student.Profile.LastName}" : "Student",
+                    CourseTitle = p.Enrollment.Course.Title,
+                    Amount = p.Amount,
+                    PurchaseDate = p.CreatedAt.ToString("dd MMM yyyy")
+                }).ToList()
+            };
+        }
+
+        public async Task<AdminStudentReportVM> GetAdminStudentReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+
+            // Fetch students. If CreatedAt is default (0001), we include them in "All Time"
+            var students = await _context.Students
+                .AsNoTracking()
+                .Include(s => s.Profile)
+                .Where(s => days == 0 || s.CreatedAt >= cutoff)
+                .OrderByDescending(s => s.CreatedAt)
+                .ToListAsync();
+
+            var allEnrollments = await _context.Enrollments.AsNoTracking().ToListAsync();
+
+            var studentItems = students.Select(s => new StudentReportItemVM
+            {
+                Name = s.Profile != null ? $"{s.Profile.FirstName} {s.Profile.LastName}" : s.Email.Split('@')[0],
+                Email = s.Email,
+                JoinedDate = s.CreatedAt == DateTime.MinValue ? "N/A" : s.CreatedAt.ToString("dd MMM yyyy"),
+                TotalCourses = allEnrollments.Count(e => e.StudentId == s.Id),
+                Status = "Active"
+            }).ToList();
+
+            return new AdminStudentReportVM
+            {
+                Title = "Student Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = studentItems.Count,
+                TotalStudents = studentItems.Count,
+                ActiveStudents = studentItems.Count,
+                TotalEnrollments = allEnrollments.Count,
+                Students = studentItems
+            };
+        }
+
+        public async Task<AdminInstructorReportVM> GetAdminInstructorReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+
+            // Join with MentorApplications to get only Approved instructors
+            var instructorsData = await (from i in _context.instructors
+                                         join m in _context.MentorApplications on i.Id equals m.InstructorId
+                                         join ip in _context.instructorProfiles on i.Id equals ip.InstructorId into ipGroup
+                                         from ip in ipGroup.DefaultIfEmpty()
+                                         where m.Status == MentorApplicationStatus.Approved
+                                         && (days == 0 || i.CreatedAt >= cutoff)
+                                         orderby i.CreatedAt descending
+                                         select new { i, ip }).ToListAsync();
+
+            var allCourses = await _context.Courses.AsNoTracking().ToListAsync();
+            var allEnrollments = await _context.Enrollments.AsNoTracking().ToListAsync();
+
+            var instructorItems = instructorsData.Select(x => new InstructorReportItemVM
+            {
+                Name = x.ip != null ? $"{x.ip.FirstName} {x.ip.LastName}" : "Instructor",
+                Email = x.i.Email,
+                Courses = allCourses.Count(c => c.instructor_id == x.i.Id && (c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published)),
+                Students = allEnrollments.Count(e => allCourses.Any(c => c.Id == e.CourseId && c.instructor_id == x.i.Id)),
+                JoinedDate = x.i.CreatedAt.ToString("dd MMM yyyy"),
+                Status = "Approved"
+            }).ToList();
+
+            return new AdminInstructorReportVM
+            {
+                Title = "Instructor Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = instructorItems.Count,
+                TotalInstructors = instructorItems.Count,
+                TotalCourses = allCourses.Count(c => c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published),
+                TotalStudentsTaught = allEnrollments.Count,
+                Instructors = instructorItems
+            };
+        }
+
+        public async Task<AdminRevenueReportVM> GetAdminRevenueReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+
+            var payments = await _context.Payments
+                .AsNoTracking()
+                .Where(p => p.Status == PaymentStatus.Success && p.CreatedAt >= cutoff)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            var dailyData = payments
+                .GroupBy(p => p.CreatedAt.Date)
+                .Select(g => new RevenueReportItemVM
+                {
+                    Date = g.Key.ToString("dd MMM yyyy"),
+                    Orders = g.Count(),
+                    Revenue = g.Sum(p => p.Amount)
+                })
+                .OrderByDescending(x => x.Date)
+                .ToList();
+
+            var totalRevenue = payments.Sum(p => p.Amount);
+            var totalOrders = payments.Count;
+
+            return new AdminRevenueReportVM
+            {
+                Title = "Revenue Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = dailyData.Count,
+                GrossRevenue = totalRevenue,
+                TotalOrders = totalOrders,
+                AvgRevenuePerOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0,
+                RevenueData = dailyData
+            };
+        }
+
+        public async Task<AdminPayoutReportVM> GetAdminPayoutReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+
+            var payoutsData = await (from p in _context.Payments
+                                     join e in _context.Enrollments on p.EnrollmentId equals e.Id
+                                     join c in _context.Courses on e.CourseId equals c.Id
+                                     join i in _context.instructors on c.instructor_id equals i.Id
+                                     join ip in _context.instructorProfiles on i.Id equals ip.InstructorId into ipGroup
+                                     from ip in ipGroup.DefaultIfEmpty()
+                                     where p.Status == PaymentStatus.Success && p.CreatedAt >= cutoff
+                                     group p by new { i.Id, ip.FirstName, ip.LastName } into g
+                                     select new PayoutReportItemVM
+                                     {
+                                         InstructorName = g.Key.FirstName != null ? $"{g.Key.FirstName} {g.Key.LastName}" : "Instructor",
+                                         Courses = _context.Courses.Count(c => c.instructor_id == g.Key.Id),
+                                         RevenueGenerated = g.Sum(p => p.Amount),
+                                         Commission = g.Sum(p => p.Amount) * 0.20m,
+                                         PayoutAmount = g.Sum(p => p.Amount) * 0.80m
+                                     }).ToListAsync();
+
+            var totalRevenue = payoutsData.Sum(x => x.RevenueGenerated);
+
+            return new AdminPayoutReportVM
+            {
+                Title = "Instructor Payout Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = payoutsData.Count,
+                TotalInstructorRevenue = totalRevenue,
+                TotalPayouts = totalRevenue * 0.80m,
+                Payouts = payoutsData
+            };
+        }
+
+        public async Task<AdminApplicationsReportVM> GetAdminApplicationsReportAsync(int days)
+        {
+            var cutoff = days > 0 ? DateTime.UtcNow.AddDays(-days) : DateTime.MinValue;
+
+            var applicationsData = await _context.MentorApplications
+                .AsNoTracking()
+                .Include(a => a.Instructor.Profile)
+                .Where(a => a.CreatedAt >= cutoff)
+                .OrderByDescending(a => a.CreatedAt)
+                .Select(a => new ApplicationReportItemVM
+                {
+                    ApplicantName = a.Instructor != null && a.Instructor.Profile != null 
+                        ? $"{a.Instructor.Profile.FirstName} {a.Instructor.Profile.LastName}" 
+                        : "Applicant",
+                    Email = a.Instructor != null ? a.Instructor.Email : "-",
+                    Specialization = a.Topics, // Topics seems to be the expertise in MentorApplication
+                    AppliedDate = a.CreatedAt.ToString("dd MMM yyyy"),
+                    Status = a.Status.ToString()
+                }).ToListAsync();
+
+            return new AdminApplicationsReportVM
+            {
+                Title = "Instructor Applications Report",
+                GeneratedDate = DateTime.Now.ToString("dd MMM yyyy HH:mm"),
+                DateRange = days > 0 ? $"Last {days} Days" : "All Time",
+                TotalRecords = applicationsData.Count,
+                TotalApplications = applicationsData.Count,
+                Approved = _context.MentorApplications.Count(a => a.Status == MentorApplicationStatus.Approved && a.CreatedAt >= cutoff),
+                Pending = _context.MentorApplications.Count(a => a.Status == MentorApplicationStatus.Pending && a.CreatedAt >= cutoff),
+                Rejected = _context.MentorApplications.Count(a => a.Status == MentorApplicationStatus.Rejected && a.CreatedAt >= cutoff),
+                Applications = applicationsData
             };
         }
     }

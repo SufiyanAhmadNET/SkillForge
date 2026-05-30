@@ -5,6 +5,7 @@ using SkillForge.Data;
 using SkillForge.Interfaces;
 using SkillForge.Services.Instructors.Models;
 using SkillForge.Services.Courses.Models;
+using SkillForge.Models;
 
 namespace SkillForge.Services.Admin
 {
@@ -20,10 +21,25 @@ namespace SkillForge.Services.Admin
         // data for admin dashboard
         public AdminDashboardVM GetDashboardData()
         {
+            // metrics
             var totalStudents = _context.Students.Count();
             var totalInstructors = _context.instructors.Count();
             var activeCourses = _context.Courses.Count(c => c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published);
-            var completedCourses = _context.Courses.Count(c => c.Status == CourseStatus.Completed);
+            
+            // revenue summary
+            var totalRevenue = _context.Payments
+                .Where(p => p.Status == PaymentStatus.Success)
+                .Sum(p => (decimal?)p.Amount) ?? 0;
+
+            var now = DateTime.UtcNow;
+            var revenueThisMonth = _context.Payments
+                .Where(p => p.Status == PaymentStatus.Success && p.CreatedAt.Month == now.Month && p.CreatedAt.Year == now.Year)
+                .Sum(p => (decimal?)p.Amount) ?? 0;
+
+            // dynamic counts for subtitles
+            var cutoffDate = DateTime.UtcNow.AddDays(-30);
+            var newStudentsCount = _context.Enrollments.Count(e => e.EnrolledAt >= cutoffDate);
+            var newCoursesCount = _context.Courses.Count(c => c.CreatedAt >= cutoffDate && (c.Status == CourseStatus.Approved || c.Status == CourseStatus.Published));
 
             var recentApplications = GetAllMentorApplications().Take(5).ToList();
             var recentInstructors = GetAllInstructors().OrderByDescending(i => i.JoinedDate).Take(5).ToList();
@@ -33,7 +49,10 @@ namespace SkillForge.Services.Admin
                 TotalStudents = totalStudents,
                 TotalInstructors = totalInstructors,
                 ActiveCourses = activeCourses,
-                CompletedCourses = completedCourses,
+                TotalRevenue = totalRevenue,
+                RevenueThisMonth = revenueThisMonth,
+                NewStudentsCount = newStudentsCount,
+                NewCoursesCount = newCoursesCount,
                 RecentApplications = recentApplications,
                 RecentInstructors = recentInstructors
             };
@@ -167,14 +186,18 @@ namespace SkillForge.Services.Admin
                 .Include(e => e.Course)
                 .ToList();
 
-            return students.Select(s => new StudentListVM
-            {
-                Id = s.Id,
-                Name = s.Profile != null ? (s.Profile.FirstName + " " + s.Profile.LastName).Trim() : s.Email.Split('@')[0],
-                Email = s.Email,
-                EnrolledCourses = string.Join(", ", enrollments.Where(e => e.StudentId == s.Id).Select(e => e.Course.Title).Take(2)),
-                JoinedDate = s.CreatedAt,
-                Status = "Active"
+            return students.Select(s => {
+                var studentEnrollments = enrollments.Where(e => e.StudentId == s.Id).ToList();
+                return new StudentListVM
+                {
+                    Id = s.Id,
+                    Name = s.Profile != null ? (s.Profile.FirstName + " " + s.Profile.LastName).Trim() : s.Email.Split('@')[0],
+                    Email = s.Email,
+                    CourseCount = studentEnrollments.Count,
+                    EnrolledCoursesList = studentEnrollments.Select(e => e.Course.Title).ToList(),
+                    JoinedDate = s.CreatedAt,
+                    Status = "Active"
+                };
             }).ToList();
         }
 

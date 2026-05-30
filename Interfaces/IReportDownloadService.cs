@@ -11,6 +11,13 @@ namespace SkillForge.Interfaces
         Task<byte[]> GenerateMonthlyFinancialReportPdfAsync(MonthlyFinancialReportVM data);
         Task<byte[]> GenerateInstructorGlobalCourseReportPdfAsync(InstructorGlobalCourseReportVM data);
 
-        // Ready for future admin reports
+        // Admin Reports
+        Task<byte[]> GenerateAdminEnrollmentReportPdfAsync(AdminEnrollmentReportVM data);
+        Task<byte[]> GenerateAdminSalesReportPdfAsync(AdminSalesReportVM data);
+        Task<byte[]> GenerateAdminStudentReportPdfAsync(AdminStudentReportVM data);
+        Task<byte[]> GenerateAdminInstructorReportPdfAsync(AdminInstructorReportVM data);
+        Task<byte[]> GenerateAdminRevenueReportPdfAsync(AdminRevenueReportVM data);
+        Task<byte[]> GenerateAdminPayoutReportPdfAsync(AdminPayoutReportVM data);
+        Task<byte[]> GenerateAdminApplicationsReportPdfAsync(AdminApplicationsReportVM data);
     }
 }

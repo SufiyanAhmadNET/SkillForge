@@ -1,4 +1,4 @@
-﻿
+
 @{
     ViewData["Title"] = "Reports";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -7,186 +7,205 @@
 <body>
 <main class="p-4 flex-grow-1 admin-bg">
 
-    <div class="mb-4 page-title-bar">
-        <h5 class="fw-bold mb-0">Reports & Exports</h5>
-        <p class="text-muted mb-0" style="font-size:14px;">Download data exports for any module.</p>
-    </div>
-
-    <!-- PLATFORM SUMMARY — quick read before downloading -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 stat-card">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-people-fill"></i></div>
-                    <div><div class="stat-label">Total Students</div><div class="stat-value">50,240</div></div>
-                </div>
-            </div>
+    <!-- Header & Global Filter -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="page-title-bar">
+            <h5 class="fw-bold mb-0">Reports</h5>
+            <p class="text-muted mb-0" style="font-size:14px;">Generate and download platform reports and exports.</p>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 stat-card">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-person-video3"></i></div>
-                    <div><div class="stat-label">Total Instructors</div><div class="stat-value">148</div></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 stat-card">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon" style="background:var(--orange-soft);color:var(--orange);"><i class="bi bi-journal-check"></i></div>
-                    <div><div class="stat-label">Active Courses</div><div class="stat-value">183</div></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 stat-card">
-                <div class="card-body d-flex align-items-center gap-3">
-                    <div class="stat-icon bg-secondary bg-opacity-10 text-secondary"><i class="bi bi-trophy-fill"></i></div>
-                    <div><div class="stat-label">Completed</div><div class="stat-value">94</div></div>
-                </div>
-            </div>
+        <div class="d-flex align-items-center gap-2">
+            <label class="small fw-bold text-muted mb-0">Date Range:</label>
+            <select id="globalDateRange" class="form-select form-select-sm" style="max-width:160px; font-size:12px;">
+                <option value="7">Last 7 Days</option>
+                <option value="30" selected>Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+                <option value="0">All Time</option>
+            </select>
         </div>
     </div>
 
-    <!-- EXPORT CARDS -->
-    <h6 class="fw-bold text-muted mb-3" style="font-size:12px; letter-spacing:1px; text-transform:uppercase;">Available Exports</h6>
-
-    <div class="row g-3">
-
-        <!-- Student report -->
-        <div class="col-md-4">
-            <div class="card border-0 admin-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-people"></i></div>
+    <div class="row g-4">
+        
+        <!-- SECTION 1: COURSE REPORTS (Green) -->
+        <div class="col-lg-6">
+            <div class="card border-0 admin-card border-start border-4 border-success h-100">
+                <div class="card-header bg-white py-3 border-0">
+                    <h6 class="fw-bold mb-0 text-success"><i class="bi bi-journal-text me-2"></i>Course Reports</h6>
+                    <small class="text-muted">Course performance and enrollment data.</small>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Enrollment Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3 border-bottom">
                         <div>
-                            <h6 class="fw-bold mb-0">Student Report</h6>
-                            <small class="text-muted">All students, enrollments & status</small>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Enrollment Report</h6>
+                            <p class="text-muted mb-0 small">Student enrollments by course.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-success dropdown-toggle py-1 px-3" style="font-size:11px;" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadEnrollmentReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <!-- date filter — placeholder for controller wiring -->
-                    <div class="mb-3">
-                        <label class="form-label" style="font-size:12px;">Date Range</label>
-                        <div class="d-flex gap-2">
-                            <input type="date" class="form-control form-control-sm">
-                            <input type="date" class="form-control form-control-sm">
+                    <!-- Sales Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3">
+                        <div>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Sales Report</h6>
+                            <p class="text-muted mb-0 small">Course purchases and revenue summary.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-success dropdown-toggle py-1 px-3" style="font-size:11px;" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadSalesReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <button class="btn btn-sm btn-outline-success w-100">
-                        <i class="bi bi-download me-1"></i>Download CSV
-                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Instructor report -->
-        <div class="col-md-4">
-            <div class="card border-0 admin-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-person-video3"></i></div>
+        <!-- SECTION 2: USER REPORTS (Blue) -->
+        <div class="col-lg-6">
+            <div class="card border-0 admin-card border-start border-4 border-primary h-100">
+                <div class="card-header bg-white py-3 border-0">
+                    <h6 class="fw-bold mb-0 text-primary"><i class="bi bi-people me-2"></i>User Reports</h6>
+                    <small class="text-muted">Student and instructor information.</small>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Student Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3 border-bottom">
                         <div>
-                            <h6 class="fw-bold mb-0">Instructor Report</h6>
-                            <small class="text-muted">Instructors, courses & student count</small>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Student Report</h6>
+                            <p class="text-muted mb-0 small">Registered students and enrollment counts.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle py-1 px-3" style="font-size:11px;" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadStudentReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" style="font-size:12px;">Date Range</label>
-                        <div class="d-flex gap-2">
-                            <input type="date" class="form-control form-control-sm">
-                            <input type="date" class="form-control form-control-sm">
+                    <!-- Instructor Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3">
+                        <div>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Instructor Report</h6>
+                            <p class="text-muted mb-0 small">Approved instructors, courses, and student counts.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle py-1 px-3" style="font-size:11px;" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadInstructorReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <button class="btn btn-sm btn-outline-primary w-100">
-                        <i class="bi bi-download me-1"></i>Download CSV
-                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Course report -->
-        <div class="col-md-4">
-            <div class="card border-0 admin-card h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <!-- orange — brand tie-in -->
-                        <div class="stat-icon" style="background:var(--orange-soft);color:var(--orange);"><i class="bi bi-journal-bookmark"></i></div>
+        <!-- SECTION 3: FINANCIAL REPORTS (Orange) -->
+        <div class="col-lg-6">
+            <div class="card border-0 admin-card border-start border-4 h-100" style="border-color: var(--orange) !important;">
+                <div class="card-header bg-white py-3 border-0">
+                    <h6 class="fw-bold mb-0" style="color: var(--orange);"><i class="bi bi-currency-rupee me-2"></i>Financial Reports</h6>
+                    <small class="text-muted">Revenue and payout information.</small>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Revenue Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3 border-bottom">
                         <div>
-                            <h6 class="fw-bold mb-0">Course Report</h6>
-                            <small class="text-muted">All courses, enrollments & status</small>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Revenue Report</h6>
+                            <p class="text-muted mb-0 small">Revenue generated during the selected period.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle py-1 px-3 btn-outline-warning" style="font-size:11px; color: var(--orange); border-color: var(--orange);" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadRevenueReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" style="font-size:12px;">Date Range</label>
-                        <div class="d-flex gap-2">
-                            <input type="date" class="form-control form-control-sm">
-                            <input type="date" class="form-control form-control-sm">
+                    <!-- Instructor Payout Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3">
+                        <div>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Instructor Payout Report</h6>
+                            <p class="text-muted mb-0 small">Instructor earnings and payout calculations.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm dropdown-toggle py-1 px-3 btn-outline-warning" style="font-size:11px; color: var(--orange); border-color: var(--orange);" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadPayoutReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <button class="btn btn-sm w-100" style="background:var(--orange);color:#fff;border:none;">
-                        <i class="bi bi-download me-1"></i>Download CSV
-                    </button>
                 </div>
             </div>
         </div>
 
-    </div>
-
-    <!-- Recent exports log — nice-to-have, useful for admin -->
-    <h6 class="fw-bold text-muted mt-4 mb-3" style="font-size:12px; letter-spacing:1px; text-transform:uppercase;">Recent Exports</h6>
-
-    <div class="card border-0 admin-card">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-sm align-middle mb-0" style="font-size: 14px;">
-                    <thead class="table-light text-muted" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.03rem;">
-                        <tr>
-                            <th class="ps-3">Report</th>
-                            <th>Generated</th>
-                            <th>Records</th>
-                            <th class="pe-3 text-end"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-3"><i class="bi bi-file-earmark-spreadsheet me-2 text-success"></i><span class="fw-medium">Student Report</span></td>
-                            <td class="text-muted small">Mar 10, 2026 — 10:42 AM</td>
-                            <td class="fw-medium">50,240</td>
-                            <td class="pe-3 text-end">
-                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 12px;">
-                                    <i class="bi bi-download me-1"></i>Re-download
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3"><i class="bi bi-file-earmark-spreadsheet me-2 text-primary"></i><span class="fw-medium">Instructor Report</span></td>
-                            <td class="text-muted small">Mar 8, 2026 — 3:15 PM</td>
-                            <td class="fw-medium">148</td>
-                            <td class="pe-3 text-end">
-                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 12px;">
-                                    <i class="bi bi-download me-1"></i>Re-download
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3"><i class="bi bi-file-earmark-spreadsheet me-2" style="color:var(--orange);"></i><span class="fw-medium">Course Report</span></td>
-                            <td class="text-muted small">Mar 5, 2026 — 9:00 AM</td>
-                            <td class="fw-medium">289</td>
-                            <td class="pe-3 text-end">
-                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 12px;">
-                                    <i class="bi bi-download me-1"></i>Re-download
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- SECTION 4: APPLICATION REPORTS (Purple) -->
+        <div class="col-lg-6">
+            <div class="card border-0 admin-card border-start border-4 border-purple h-100">
+                <div class="card-header bg-white py-3 border-0">
+                    <h6 class="fw-bold mb-0 text-purple"><i class="bi bi-person-check me-2"></i>Application Reports</h6>
+                    <small class="text-muted">Instructor application activity.</small>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Instructor Applications Report -->
+                    <div class="report-row d-flex align-items-center justify-content-between p-3">
+                        <div>
+                            <h6 class="fw-bold mb-1" style="font-size:14px;">Instructor Applications Report</h6>
+                            <p class="text-muted mb-0 small">Submitted, approved, pending, and rejected applications.</p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-purple dropdown-toggle py-1 px-3" style="font-size:11px;" type="button" data-bs-toggle="dropdown">
+                                Download
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="font-size:12px;">
+                                <li><a class="dropdown-item py-2 download-link" data-action="DownloadApplicationsReport" href="#"><i class="bi bi-file-earmark-pdf text-danger me-2"></i>PDF</a></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-file-earmark-word text-primary me-2"></i>DOCX</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
     </div>
 
 </main>
 
-</div>
-</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateRangeSelect = document.getElementById('globalDateRange');
+        const downloadLinks = document.querySelectorAll('.download-link');
+
+        function updateDownloadLinks() {
+            const days = dateRangeSelect.value;
+            downloadLinks.forEach(link => {
+                const action = link.getAttribute('data-action');
+                link.href = `/Admin/Home/${action}?days=${days}`;
+            });
+        }
+
+        dateRangeSelect.addEventListener('change', updateDownloadLinks);
+        updateDownloadLinks(); // Initial call to set hrefs
+    });
+</script>
 
 </body>

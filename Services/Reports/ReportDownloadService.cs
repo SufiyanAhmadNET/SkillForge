@@ -297,6 +297,475 @@ namespace SkillForge.Services.Reports
             });
         }
 
+        public async Task<byte[]> GenerateAdminEnrollmentReportPdfAsync(AdminEnrollmentReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Text(t => { t.Span("Date Range: ").Bold(); t.Span(data.DateRange); });
+                                row.RelativeItem().AlignRight().Text(t => { t.Span("Total Enrollments: ").Bold(); t.Span(data.TotalEnrollments.ToString()); });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(30);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("#");
+                                    header.Cell().Element(AdminCellStyle).Text("Student");
+                                    header.Cell().Element(AdminCellStyle).Text("Course");
+                                    header.Cell().Element(AdminCellStyle).Text("Instructor");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Date");
+                                });
+
+                                int i = 1;
+                                foreach (var e in data.Enrollments)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text(i++.ToString());
+                                    table.Cell().Element(AdminRowStyle).Text(e.StudentName);
+                                    table.Cell().Element(AdminRowStyle).Text(e.CourseTitle);
+                                    table.Cell().Element(AdminRowStyle).Text(e.InstructorName);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(e.EnrollmentDate);
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        public async Task<byte[]> GenerateAdminSalesReportPdfAsync(AdminSalesReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Date Range: ").Bold(); t.Span(data.DateRange); });
+                                    c.Item().Text(t => { t.Span("Total Orders: ").Bold(); t.Span(data.TotalOrders.ToString()); });
+                                });
+                                row.RelativeItem().AlignRight().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Gross Revenue: ").Bold(); t.Span($"₹{data.TotalRevenue:N0}"); });
+                                    c.Item().Text(t => { t.Span("Avg Order Value: ").Bold(); t.Span($"₹{data.AvgOrderValue:N0}"); });
+                                });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(40);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("Order");
+                                    header.Cell().Element(AdminCellStyle).Text("Student");
+                                    header.Cell().Element(AdminCellStyle).Text("Course");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Amount");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Date");
+                                });
+
+                                foreach (var s in data.Sales)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text($"#{s.OrderId}");
+                                    table.Cell().Element(AdminRowStyle).Text(s.StudentName);
+                                    table.Cell().Element(AdminRowStyle).Text(s.CourseTitle);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text($"₹{s.Amount:N0}");
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(s.PurchaseDate);
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        public async Task<byte[]> GenerateAdminStudentReportPdfAsync(AdminStudentReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Text(t => { t.Span("Total Students: ").Bold(); t.Span(data.TotalStudents.ToString()); });
+                                row.RelativeItem().AlignRight().Text(t => { t.Span("Total Enrollments: ").Bold(); t.Span(data.TotalEnrollments.ToString()); });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(30);
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(5);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("#");
+                                    header.Cell().Element(AdminCellStyle).Text("Student Name");
+                                    header.Cell().Element(AdminCellStyle).Text("Email");
+                                    header.Cell().Element(AdminCellStyle).Text("Registered Date");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Total Courses");
+                                });
+
+                                int i = 1;
+                                foreach (var s in data.Students)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text(i++.ToString());
+                                    table.Cell().Element(AdminRowStyle).Text(s.Name);
+                                    table.Cell().Element(AdminRowStyle).Text(s.Email);
+                                    table.Cell().Element(AdminRowStyle).Text(s.JoinedDate);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(s.TotalCourses.ToString());
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        public async Task<byte[]> GenerateAdminInstructorReportPdfAsync(AdminInstructorReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Total Approved Instructors: ").Bold(); t.Span(data.TotalInstructors.ToString()); });
+                                    c.Item().Text(t => { t.Span("Total Published Courses: ").Bold(); t.Span(data.TotalCourses.ToString()); });
+                                });
+                                row.RelativeItem().AlignRight().Text(t => { t.Span("Total Students Taught: ").Bold(); t.Span(data.TotalStudentsTaught.ToString()); });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(1.5f);
+                                    columns.RelativeColumn(1.5f);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("Instructor");
+                                    header.Cell().Element(AdminCellStyle).Text("Email");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Courses");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Students");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Joined Date");
+                                });
+
+                                foreach (var ins in data.Instructors)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text(ins.Name);
+                                    table.Cell().Element(AdminRowStyle).Text(ins.Email);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(ins.Courses.ToString());
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(ins.Students.ToString());
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(ins.JoinedDate);
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        public async Task<byte[]> GenerateAdminRevenueReportPdfAsync(AdminRevenueReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Date Range: ").Bold(); t.Span(data.DateRange); });
+                                    c.Item().Text(t => { t.Span("Gross Revenue: ").Bold(); t.Span($"₹{data.GrossRevenue:N0}"); });
+                                });
+                                row.RelativeItem().AlignRight().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Total Orders: ").Bold(); t.Span(data.TotalOrders.ToString()); });
+                                    c.Item().Text(t => { t.Span("Avg Rev/Order: ").Bold(); t.Span($"₹{data.AvgRevenuePerOrder:N0}"); });
+                                });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(3);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("Date");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Orders");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Revenue");
+                                });
+
+                                foreach (var r in data.RevenueData)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text(r.Date);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(r.Orders.ToString());
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text($"₹{r.Revenue:N0}");
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        public async Task<byte[]> GenerateAdminPayoutReportPdfAsync(AdminPayoutReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Text(t => { t.Span("Total Instructor Revenue: ").Bold(); t.Span($"₹{data.TotalInstructorRevenue:N0}"); });
+                                row.RelativeItem().AlignRight().Text(t => { t.Span("Total Payouts: ").Bold(); t.Span($"₹{data.TotalPayouts:N0}"); });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(1.5f);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("Instructor");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Courses");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Revenue Generated");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Commission");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Payout Amount");
+                                });
+
+                                foreach (var p in data.Payouts)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text(p.InstructorName);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(p.Courses.ToString());
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text($"₹{p.RevenueGenerated:N0}");
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text($"₹{p.Commission:N0}");
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text($"₹{p.PayoutAmount:N0}");
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        public async Task<byte[]> GenerateAdminApplicationsReportPdfAsync(AdminApplicationsReportVM data)
+        {
+            return await Task.Run(() =>
+            {
+                var doc = Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(30);
+                        RenderAdminHeader(page, data.Title);
+
+                        page.Content().PaddingVertical(10).Column(col =>
+                        {
+                            col.Item().PaddingBottom(10).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Total Applications: ").Bold(); t.Span(data.TotalApplications.ToString()); });
+                                    c.Item().Text(t => { t.Span("Approved: ").Bold(); t.Span(data.Approved.ToString()); });
+                                });
+                                row.RelativeItem().AlignRight().Column(c =>
+                                {
+                                    c.Item().Text(t => { t.Span("Pending: ").Bold(); t.Span(data.Pending.ToString()); });
+                                    c.Item().Text(t => { t.Span("Rejected: ").Bold(); t.Span(data.Rejected.ToString()); });
+                                });
+                            });
+
+                            col.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(3);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(AdminCellStyle).Text("Applicant");
+                                    header.Cell().Element(AdminCellStyle).Text("Email");
+                                    header.Cell().Element(AdminCellStyle).Text("Specialization");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Applied Date");
+                                    header.Cell().Element(AdminCellStyle).AlignRight().Text("Status");
+                                });
+
+                                foreach (var a in data.Applications)
+                                {
+                                    table.Cell().Element(AdminRowStyle).Text(a.ApplicantName);
+                                    table.Cell().Element(AdminRowStyle).Text(a.Email);
+                                    table.Cell().Element(AdminRowStyle).Text(a.Specialization);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(a.AppliedDate);
+                                    table.Cell().Element(AdminRowStyle).AlignRight().Text(a.Status);
+                                }
+                            });
+                        });
+                        RenderAdminFooter(page, data.TotalRecords);
+                    });
+                });
+                return doc.GeneratePdf();
+            });
+        }
+
+        private void RenderAdminHeader(PageDescriptor page, string title)
+        {
+            page.Header().Row(row =>
+            {
+                row.RelativeItem().Column(col =>
+                {
+                    col.Item().Text("SkillForge").FontSize(24).Bold().FontColor(Colors.Green.Medium);
+                    col.Item().Text("Admin Report Center").FontSize(10).FontColor(Colors.Grey.Medium);
+                });
+                row.RelativeItem().AlignRight().Column(col =>
+                {
+                    col.Item().Text(title).FontSize(16).Bold().FontColor(Colors.Green.Medium);
+                    col.Item().Text($"Date: {System.DateTime.Now:dd MMM yyyy}").FontSize(9).FontColor(Colors.Grey.Medium);
+                });
+            });
+        }
+
+        private void RenderAdminFooter(PageDescriptor page, int totalRecords)
+        {
+            page.Footer().PaddingTop(10).Column(col =>
+            {
+                col.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+                col.Item().PaddingTop(5).Row(row =>
+                {
+                    row.RelativeItem().Column(c =>
+                    {
+                        c.Item().Text("Generated by SkillForge Admin").FontSize(9).FontColor(Colors.Grey.Medium);
+                        c.Item().Text($"Generated: {System.DateTime.Now:dd MMM yyyy HH:mm}").FontSize(8).FontColor(Colors.Grey.Lighten1);
+                    });
+                    
+                    row.RelativeItem().AlignCenter().Text(x =>
+                    {
+                        x.Span("Page ").FontSize(9).FontColor(Colors.Grey.Medium);
+                        x.CurrentPageNumber().FontSize(9).FontColor(Colors.Grey.Medium);
+                        x.Span(" of ").FontSize(9).FontColor(Colors.Grey.Medium);
+                        x.TotalPages().FontSize(9).FontColor(Colors.Grey.Medium);
+                    });
+
+                    row.RelativeItem().AlignRight().Text($"Total Records: {totalRecords}").FontSize(9).FontColor(Colors.Grey.Medium).Bold();
+                });
+            });
+        }
+
+        private static IContainer AdminCellStyle(IContainer container) => 
+            container.DefaultTextStyle(x => x.Bold().FontSize(10).FontColor(Colors.White))
+                     .PaddingVertical(5).PaddingHorizontal(5)
+                     .Background(Colors.Green.Medium);
+
+        private static IContainer AdminRowStyle(IContainer container) => 
+            container.PaddingVertical(5).PaddingHorizontal(5)
+                     .BorderBottom(1).BorderColor(Colors.Grey.Lighten4)
+                     .DefaultTextStyle(x => x.FontSize(10));
+
         private void RenderHeader(PageDescriptor page, string title, InstructorInfoVM instructor)
         {
             page.Header().Row(row =>
